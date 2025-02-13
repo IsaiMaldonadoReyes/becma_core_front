@@ -1,0 +1,9 @@
+.bec-navigation-drawer.theme--dark.v-navigation-drawer {
+  top: 0;
+  left: 0;
+  right: auto;
+  border-right-width: thin;
+  /*border-radius: 0 0.75rem 0.75rem 0;*/
+  --background-color: "#1E2022";
+  box-shadow: 0 3px 30px rgba(0, 0, 0, 0.3), 0 3px 24px rgba(0, 0, 0, 0.3);
+}

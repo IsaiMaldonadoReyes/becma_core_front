@@ -1,0 +1,88 @@
+<template>
+  <v-dialog v-model="dialogPropiedades.dialog" max-width="500px" persistent>
+    <v-card class="pa-6">
+      <v-card-text class="text-h6 pt-15 text-center" :color="dialogPropiedades.color">
+        <span>{{ dialogPropiedades.mensajeTitulo }}</span>
+      </v-card-text>
+
+      <v-divider></v-divider>
+
+      <v-card-text class="text-center">
+        <span class="text-subtitle-1 text-grey-darken-1" v-html="dialogPropiedades.mensajeCuerpo">
+        </span>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          :color="dialogPropiedades.color"
+          block
+          size="large"
+          variant="flat"
+          @click="cerrarDialogPropiedades"
+        >
+          {{ dialogPropiedades.boton }}
+        </v-btn>
+        <v-spacer></v-spacer>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
+<script lang="ts">
+import { defineComponent, ref, onMounted, watch } from 'vue'
+
+export default defineComponent({
+  name: 'DMSistema',
+  components: {},
+  props: {
+    dialogView: Boolean,
+    dialogTitle: String,
+    dialogContent: String,
+    dialogRoute: String,
+    dialogColour: String,
+    dialogTextButton: String,
+    dialogSpeed: Number,
+  },
+  setup(props, { emit }) {
+    const dialogPropiedades = ref({
+      dialog: ref(props.dialogView),
+      mensajeTitulo: ref(props.dialogTitle),
+      mensajeCuerpo: ref(props.dialogContent),
+      ruta: ref(props.dialogRoute),
+      color: ref(props.dialogColour),
+      boton: ref(props.dialogTextButton),
+      velocidad: ref(props.dialogSpeed),
+    })
+
+    const cerrarDialogPropiedades = () => {
+      emit('cerrarDialog')
+    }
+
+    const animationLink = ref('')
+
+    watch(
+      [() => props.dialogView, () => props.dialogRoute],
+      async ([newDialogView, newDialogRoute]) => {
+        dialogPropiedades.value = {
+          dialog: props.dialogView,
+          mensajeTitulo: props.dialogTitle,
+          mensajeCuerpo: props.dialogContent,
+          ruta: props.dialogRoute,
+          color: props.dialogColour,
+          boton: props.dialogTextButton,
+          velocidad: props.dialogSpeed,
+        }
+        if (newDialogView && newDialogRoute != '') {
+          animationLink.value = `/src/assets/images/${props.dialogRoute}.json`
+        }
+      },
+    )
+
+    return {
+      dialogPropiedades,
+      CorrectAnimation,
+      cerrarDialogPropiedades,
+      animationLink,
+    }
+  },
+})
+</script>
