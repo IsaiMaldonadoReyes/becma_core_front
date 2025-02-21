@@ -242,18 +242,29 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, toRaw, mergeProps, computed } from 'vue'
+import { ref, defineComponent, toRaw, mergeProps, computed, onMounted } from 'vue'
 
 import { useDisplay } from 'vuetify'
 
 import DialogConfirmation from '../../components/core/dialogMessage/DialogConfirmation.vue'
 import DialogInformation from '../../components/core/dialogMessage/DialogInformation.vue'
 import DialogSistema from '../../helpers/core/dialogForm/DialogSistema.vue'
+import { sistemaStore } from '../../stores/modules/Core/sistema'
 
 export interface Elementos {
+  id: number
   codigo: string
   descripcion: string
   nombre: string
+}
+
+interface InterfaceItem {
+  id: number
+  nombre: string
+  codigo: string
+  descripcion: string
+  fecha_creacion: string
+  estado: number
 }
 
 export default defineComponent({
@@ -261,6 +272,8 @@ export default defineComponent({
   components: { DialogInformation, DialogSistema, DialogConfirmation },
 
   setup() {
+    const sistema = sistemaStore()
+
     // breadcrumbs
     const vbrePrincipalItems = ref([
       {
@@ -286,26 +299,8 @@ export default defineComponent({
       { key: 'fecha', align: 'center', title: 'Fecha' },
       { title: 'Actions', key: 'actions', sortable: false, align: 'end' },
     ])
-    const vdtbPrincipalItems = ref([
-      {
-        nombre: 'Comercial',
-        codigo: '01CONTPAQ',
-        descripcion: '0.1',
-        fecha: '16-01-2025',
-      },
-      {
-        nombre: 'Nóminas',
-        codigo: '02CONTPAQ',
-        descripcion: '0.1',
-        fecha: '16-01-2025',
-      },
-      {
-        nombre: 'Contabilidad',
-        codigo: '03CONTPAQ',
-        descripcion: '0.1',
-        fecha: '16-01-2025',
-      },
-    ])
+    const vdtbPrincipalItems = ref<InterfaceItem[]>([])
+
     const vdtbPrincipalItemsPorPagina = ref(5)
     const vdtbPrincipalItemsSeleccionados = ref([])
     const vdtbPrincipalOpcionesCheck = ref([{ title: 'Eliminar' }, { title: 'Click Me2' }])
@@ -402,28 +397,35 @@ export default defineComponent({
 
     const methods: Record<Eventos, (...args: any[]) => void> = {
       onSave: () => {
-        alert('Save new')
         dialogSistemaPropiedades.value.dialog = false
+        fnCargarListado()
       },
       onEdit: () => {
         dialogSistemaPropiedades.value.dialog = false
-        onOpenDialogInformation(
-          '#438701',
-          `Se guardo correctamente`,
-          'correct',
-          'Registro guardado',
-          1,
-        )
+        fnCargarListado()
       },
-      onDelete: (items: Elementos) => {
+      onDelete: async (items: Elementos) => {
         dialogConfirmation.value.dialog = false
-        onOpenDialogInformation(
-          '#438701',
-          `Esta acción eliminará ${items.codigo} de forma definitiva. ¿Desea continuar?`,
-          'correct',
-          'Registro eliminado',
-          1,
-        )
+
+        try {
+          await sistema.destroySistema(items.id)
+          onOpenDialogInformation(
+            '#438701',
+            sistema.object.message,
+            'correct',
+            'Registro eliminado',
+            1,
+          )
+        } catch (error) {
+          onOpenDialogInformation(
+            '#438701',
+            sistema.responseMessage,
+            'incorrect',
+            'Ocurrió un error en el registro guardado',
+            1,
+          )
+        }
+        fnCargarListado()
       },
     }
 
@@ -443,6 +445,25 @@ export default defineComponent({
     const onSaveDialogSistema = (evento: Eventos) => {
       methods[evento]()
     }
+
+    async function fnCargarListado() {
+      vdtbPrincipalItems.value = []
+
+      await sistema.indexSistema()
+
+      vdtbPrincipalItems.value = sistema.object.data.map((item: InterfaceItem) => ({
+        id: item.id,
+        nombre: item.nombre,
+        codigo: item.codigo,
+        descripcion: item.descripcion,
+        fecha: item.fecha_creacion,
+        estado: item.estado,
+      }))
+    }
+
+    onMounted(() => {
+      fnCargarListado()
+    })
 
     return {
       dialogConfirmation,
