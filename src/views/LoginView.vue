@@ -124,7 +124,7 @@ export default defineComponent({
     })
 
     const datosForm = ref({
-      email: ref('dulce@gmail.com'),
+      email: ref('isai@gmail.com'),
       password: ref('123456'),
     })
 
