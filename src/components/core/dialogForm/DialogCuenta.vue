@@ -39,7 +39,8 @@
                         v-bind="mergeProps(tooltip)"
                         color="primary"
                         icon="mdi-floppy"
-                        @click="onSave"
+                        :disabled="!isPasswordFilled || isSavingBtn"
+                        @click="onDecision"
                       />
                     </template>
                     <span>Clic aquí para guardar</span>
@@ -71,9 +72,9 @@
                         :src="
                           propsAvatar.avatar
                             ? propsAvatar.avatar
-                            : 'https://cdn.vuetifyjs.com/images/john.jpg'
+                            : dialogPropiedades.elementos.imagen
                         "
-                        alt="DD"
+                        :alt="dialogPropiedades.elementos.iniciales"
                       />
                     </v-avatar>
                   </v-card-text>
@@ -88,7 +89,7 @@
                             @click="show = true"
                           />
                         </template>
-                        <span>Clic aquí para guardar</span>
+                        <span>Clic aquí para modificar</span>
                       </v-tooltip>
 
                       <v-tooltip>
@@ -109,11 +110,10 @@
               <v-col cols="12" sm="6">
                 <v-text-field
                   v-model="dialogPropiedades.elementos.nombre"
-                  :rules="[rules.required]"
                   clearable
                   label="Nombre *"
                   placeholder="Nombre"
-                  prepend-inner-icon="mdi-laptop"
+                  prepend-inner-icon="mdi-account-cog"
                   variant="outlined"
                   :disabled="isDisableForm"
                 >
@@ -127,12 +127,11 @@
                   </template>
                 </v-text-field>
                 <v-text-field
-                  v-model="dialogPropiedades.elementos.codigo"
-                  :rules="[rules.required]"
+                  v-model="dialogPropiedades.elementos.apellidoPaterno"
                   clearable
                   label="Apellido paterno"
                   placeholder="Apellido paterno"
-                  prepend-inner-icon="mdi-barcode"
+                  prepend-inner-icon="mdi-account-cog"
                   variant="outlined"
                   :disabled="isDisableForm"
                 >
@@ -146,12 +145,11 @@
                   </template>
                 </v-text-field>
                 <v-text-field
-                  v-model="dialogPropiedades.elementos.codigo"
-                  :rules="[rules.required]"
+                  v-model="dialogPropiedades.elementos.apellidoMaterno"
                   clearable
                   label="Apellido materno"
                   placeholder="Apellido materno"
-                  prepend-inner-icon="mdi-barcode"
+                  prepend-inner-icon="mdi-account-cog"
                   variant="outlined"
                   :disabled="isDisableForm"
                 >
@@ -165,12 +163,11 @@
                   </template>
                 </v-text-field>
                 <v-text-field
-                  v-model="dialogPropiedades.elementos.codigo"
-                  :rules="[rules.required]"
+                  v-model="dialogPropiedades.elementos.correo"
                   clearable
                   label="Correo"
                   placeholder="Correo electrónico"
-                  prepend-inner-icon="mdi-barcode"
+                  prepend-inner-icon="mdi-email-fast"
                   variant="outlined"
                   :disabled="isDisableForm"
                 >
@@ -184,9 +181,9 @@
                   </template>
                 </v-text-field>
                 <v-text-field
-                  v-model="dialogPropiedades.elementos.codigo"
+                  v-model="dialogPropiedades.elementos.password"
                   :append-inner-icon="visiblePassword ? 'mdi-eye-off' : 'mdi-eye'"
-                  :rules="[rules.required]"
+                  :rules="[rules.requiredEmpty, rules.validatePasswordUpdate]"
                   :type="visiblePassword ? 'text' : 'password'"
                   class="custom-text-field"
                   clearable
@@ -194,9 +191,32 @@
                   hint="Ingresa al menos 8 caracteres"
                   label="Contraseña"
                   name="input-10-1"
+                  prepend-inner-icon="mdi-lock-question"
                   variant="outlined"
                   @click:append-inner="visiblePassword = !visiblePassword"
-                  :disabled="isDisableForm"
+                >
+                  <template v-slot:prepend>
+                    <v-tooltip>
+                      <template v-slot:activator="{ props: tooltip }">
+                        <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                      </template>
+                      <span>Mensaje de ayuda o informativo del campo.</span>
+                    </v-tooltip>
+                  </template>
+                </v-text-field>
+                <v-text-field
+                  v-model="dialogPropiedades.elementos.passwordConfirm"
+                  :append-inner-icon="visiblePasswordConfirm ? 'mdi-eye-off' : 'mdi-eye'"
+                  :rules="[rules.requiredEmpty, rules.validatePasswordUpdate]"
+                  :type="visiblePasswordConfirm ? 'text' : 'password'"
+                  class="custom-text-field"
+                  clearable
+                  counter
+                  hint="Ingresa al menos 8 caracteres"
+                  label="Confirmación de contraseña"
+                  prepend-inner-icon="mdi-lock-alert"
+                  variant="outlined"
+                  @click:append-inner="visiblePasswordConfirm = !visiblePasswordConfirm"
                 >
                   <template v-slot:prepend>
                     <v-tooltip>
@@ -212,6 +232,25 @@
           </v-card-text>
         </v-form>
       </v-card>
+      <dialog-confirmation
+        :dialog-content="dialogConfirmation.cuerpo"
+        :dialog-event="dialogConfirmation.evento"
+        :dialog-icon="dialogConfirmation.icono"
+        :dialog-items="dialogConfirmation.items"
+        :dialog-title="dialogConfirmation.titulo"
+        :dialog-view="dialogConfirmation.dialog"
+        @clickNo="onCloseDialogConfirmation"
+        @clickYes="onClickYesDialogConfirmation"
+      />
+      <dialog-information
+        :dialog-color="dialogInformation.color"
+        :dialog-content="dialogInformation.cuerpo"
+        :dialog-icon="dialogInformation.icono"
+        :dialog-speed-icon="dialogInformation.velocidad"
+        :dialog-title="dialogInformation.titulo"
+        :dialog-view="dialogInformation.dialog"
+        @close="onCloseDialogInformation"
+      />
       <VueAvatarUpload
         v-if="show"
         v-show="show"
@@ -228,38 +267,40 @@
           <v-btn color="primary" @click="onCloseAvatar" class="ma-3">Cancelar</v-btn>
         </template>
         <template #confirm>
-          <v-btn color="primary" @click="onCloseAvatar" class="ma-3">Confrimar</v-btn>
+          <v-btn color="primary" @click="onCloseAvatar" class="ma-3">Confirmar</v-btn>
         </template>
-        <template #closeIcon>
+        <!--template #closeIcon>
           <v-btn color="primary" @click="onCloseAvatar">Confirmare </v-btn>
-        </template>
+        </template-->
       </VueAvatarUpload>
     </v-dialog>
   </div>
 </template>
 <script lang="ts">
-import {
-  ref,
-  computed,
-  defineComponent,
-  mergeProps,
-  onMounted,
-  onUnmounted,
-  watch,
-  toRaw,
-} from 'vue'
+import { ref, computed, defineComponent, mergeProps, onMounted, onUnmounted, watch } from 'vue'
 import VueAvatarUpload from '@pkhadson/vue-avatar-upload'
 import '@pkhadson/vue-avatar-upload/lib/style.css'
+import { validationRules } from '@/utils/validationRules'
+import DialogConfirmation from '../../../components/core/dialogMessage/DialogConfirmation.vue'
+import DialogInformation from '../../../components/core/dialogMessage/DialogInformation.vue'
+import { sessionStore } from '@/stores/modules/Core/sesion'
 
 export interface Item {
-  codigo: string
-  descripcion: string
+  id: number
+  correo: string
   nombre: string
+  apellidoPaterno: string
+  apellidoMaterno: string
+  imagen: string
+  rol: string
+  password: string
+  passwordConfirm: string
+  iniciales: string
 }
 
 export default defineComponent({
   name: 'DialogCuenta ',
-  components: { VueAvatarUpload },
+  components: { DialogConfirmation, DialogInformation, VueAvatarUpload },
   props: {
     dialogEvent: String,
     dialogItems: {
@@ -270,15 +311,27 @@ export default defineComponent({
     dialogView: Boolean,
   },
   setup(props, { emit }) {
+    const sesion = sessionStore()
+
     // Estado reactivo
     const form = ref()
     const isValid = ref(false)
+    const isSavingBtn = ref(false)
+    type Eventos = 'onEdit'
+
     const rules = {
-      required: (v: string) => !!v || 'Este dato es requerido para continuar.',
+      requiredEmpty: (v: string) =>
+        validationRules.requiredEmpty(v, isPasswordUpdateRequired.value),
+      validatePasswordUpdate: () =>
+        validationRules.validatePasswordUpdate(
+          dialogPropiedades.value.elementos.password,
+          dialogPropiedades.value.elementos.passwordConfirm,
+        ),
     }
     const nombreEvento = ref<string>('')
 
     const visiblePassword = ref(false)
+    const visiblePasswordConfirm = ref(false)
 
     const dialogPropiedades = ref({
       dialog: ref(props.dialogView),
@@ -286,6 +339,112 @@ export default defineComponent({
       evento: ref(props.dialogEvent),
       titulo: ref(props.dialogTitle),
     })
+
+    // DialogConfirmation
+    const dialogConfirmation = ref({
+      cuerpo: '',
+      dialog: false,
+      evento: '',
+      icono: '',
+      items: {},
+      titulo: '',
+    })
+
+    const onOpenDialogConfirmation = (
+      cuerpo: string,
+      evento: string,
+      items: object,
+      titulo: string,
+    ) => {
+      dialogConfirmation.value = {
+        cuerpo: cuerpo,
+        dialog: true,
+        evento: evento,
+        icono: 'alert',
+        items: items,
+        titulo: titulo,
+      }
+    }
+
+    const onClickYesDialogConfirmation = (evento: Eventos, items: object) => {
+      methods[evento](items)
+    }
+
+    const onCloseDialogConfirmation = () => {
+      dialogConfirmation.value.dialog = false
+    }
+
+    // DialogInformation
+    const dialogInformation = ref({
+      color: '',
+      cuerpo: '',
+      dialog: false,
+      icono: '',
+      titulo: '',
+      velocidad: 0,
+    })
+
+    const onOpenDialogInformation = (
+      color: string,
+      cuerpo: string,
+      icono: string,
+      titulo: string,
+      velocidad: number,
+    ) => {
+      dialogInformation.value = {
+        color: color,
+        cuerpo: cuerpo,
+        dialog: true,
+        icono: icono,
+        titulo: titulo,
+        velocidad: velocidad,
+      }
+    }
+
+    const onCloseDialogInformation = () => {
+      dialogInformation.value.dialog = false
+      emit('save', nombreEvento.value)
+    }
+
+    const methods: Record<Eventos, (...args: any[]) => void> = {
+      onEdit: async () => {
+        dialogConfirmation.value.dialog = false
+        const isValidForm = await form.value?.validate()
+
+        if (isValidForm.valid) {
+          isSavingBtn.value = true
+
+          const data = {
+            password: dialogPropiedades.value.elementos.password,
+            passwordConfirm: dialogPropiedades.value.elementos.passwordConfirm,
+          }
+
+          try {
+            await sesion.resetPassword(data)
+
+            await form.value?.reset()
+
+            onOpenDialogInformation(
+              '#438701',
+              sesion.object.message,
+              'correct',
+              'Registro guardado',
+              1,
+            )
+          } catch (error) {
+            onOpenDialogInformation(
+              '#438701',
+              sesion.responseMessage,
+              'incorrect',
+              'Ocurrió un error en el registro guardado',
+              1,
+            )
+          } finally {
+            isSavingBtn.value = false
+          }
+        }
+      },
+    }
 
     // Metodos
     const onCancel = () => {
@@ -296,12 +455,17 @@ export default defineComponent({
       emit('close')
     }
 
-    const onSave = async () => {
-      const isValidForm = await form.value?.validate()
+    async function onDecision() {
+      let mensaje = ''
+      let titulo = ''
+      let evento = 'onEdit'
 
-      if (isValidForm.valid) {
-        emit('save', nombreEvento.value)
+      if (dialogPropiedades.value.elementos.id) {
+        titulo = 'Actualización de contraseña'
+        mensaje = `¿Está seguro de que desea actualizar su contraseña? Recuerde guardar su nueva contraseña.`
       }
+
+      onOpenDialogConfirmation(mensaje, evento, [], titulo)
     }
 
     watch(
@@ -315,6 +479,20 @@ export default defineComponent({
         }
         nombreEvento.value = props.dialogEvent ?? ''
       },
+    )
+
+    // forza que se validen todas las reglas cuando detecta un cambio en los valores (password, confirm)
+    watch(
+      () => [
+        dialogPropiedades.value.elementos.password,
+        dialogPropiedades.value.elementos.passwordConfirm,
+      ],
+      () => {
+        if (form.value) {
+          form.value.validate()
+        }
+      },
+      { deep: true },
     )
 
     // Header
@@ -341,6 +519,24 @@ export default defineComponent({
       }
 
       return { paddingTop: `${headerHeight.value}px !important` }
+    })
+
+    // auxilia las reglas de los campos, para que valide siempre y cuando alguno de los campos tenga contenido
+    const isPasswordUpdateRequired = computed(() => {
+      return (
+        !!dialogPropiedades.value.elementos.password ||
+        !!dialogPropiedades.value.elementos.passwordConfirm
+      )
+    })
+
+    // habilita el botón de guardar cuando los campos coincidan y tengan contenido
+    const isPasswordFilled = computed(() => {
+      return (
+        dialogPropiedades.value.elementos.password &&
+        dialogPropiedades.value.elementos.passwordConfirm &&
+        dialogPropiedades.value.elementos.password ===
+          dialogPropiedades.value.elementos.passwordConfirm
+      )
     })
 
     const show = ref(false)
@@ -374,7 +570,10 @@ export default defineComponent({
     const isDisableForm = ref(true)
 
     return {
+      dialogConfirmation,
+      dialogInformation,
       visiblePassword,
+      visiblePasswordConfirm,
       isDisableForm,
       handleSuccess,
       dialogHeader,
@@ -385,11 +584,16 @@ export default defineComponent({
       mergeProps,
       onCancel,
       onClose,
-      onSave,
+      onDecision,
+      onCloseDialogConfirmation,
+      onClickYesDialogConfirmation,
+      onCloseDialogInformation,
+      onCloseAvatar,
       rules,
       show,
       propsAvatar,
-      onCloseAvatar,
+      isSavingBtn,
+      isPasswordFilled,
     }
   },
 })

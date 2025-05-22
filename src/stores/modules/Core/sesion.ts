@@ -5,16 +5,37 @@ axios.defaults.withCredentials = true
 axios.defaults.withXSRFToken = true
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL
 
+interface sessionState {
+  object: any
+  responseMessage: string
+  type: string
+  auth: boolean
+  userInformation: UserInformation
+  userRoutes: UserRoute[]
+  authRoutes: boolean
+}
+
 interface UserRoute {
   sistema: string
   ruta: string
 }
 
+interface UserInformation {
+  id: string
+  correo: string
+  nombre: string
+  apellidoPaterno: string
+  apellidoMaterno: string
+  imagen: string
+  rol: string
+}
+
 export const sessionStore = defineStore({
   id: 'session',
-  state: () => ({
+  state: (): sessionState => ({
     auth: false,
     object: {},
+    userInformation: {} as UserInformation,
     userRoutes: [] as UserRoute[],
     authRoutes: false,
     responseMessage: '',
@@ -65,10 +86,25 @@ export const sessionStore = defineStore({
         // 1. Intentar la petición
         const response = await axios.get('/api/authUserInformation')
 
-        this.object = response.data
+        this.userInformation = response.data
       } catch (error: any) {
         // 4. Manejo de errores
         console.error('Error en obtener información:', error)
+        //throw error
+      }
+    },
+
+    async resetPassword(data: any) {
+      try {
+        // 1. Intentar la petición
+        const response = await axios.post('/api/resetPassword', data)
+
+        this.object = response.data
+      } catch (error: any) {
+        // 4. Manejo de errores
+        console.log(error)
+
+        this.responseMessage = error.message
         //throw error
       }
     },
@@ -93,7 +129,7 @@ export const sessionStore = defineStore({
       }
     },
 
-    async resetPassword(data: any) {
+    async resetPassword2(data: any) {
       try {
         const response = await axios.post('/users/recovery_password', data)
         //this.responseMessage = response.data.sys.mensaje_operacion;
