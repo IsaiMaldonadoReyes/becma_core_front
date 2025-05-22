@@ -3,7 +3,7 @@
     <v-menu v-model="menu" :close-on-content-click="false">
       <template v-slot:activator="{ props }">
         <v-avatar v-bind="props" class="mx-2" color="primary">
-          <v-img v-if="item.imagen" :src="item.imagen" alt="DD" />
+          <v-img v-if="item.imagen" :src="item.imagen" :alt="getIniciales" />
           <span v-else class="text-h6">{{ getIniciales }}</span>
         </v-avatar>
       </template>
@@ -13,7 +13,7 @@
           <v-list-item lines="three">
             <template v-slot:prepend>
               <v-avatar color="primary" size="x-large">
-                <v-img v-if="item.imagen" :src="item.imagen" alt="DD" />
+                <v-img v-if="item.imagen" :src="item.imagen" :alt="getIniciales" />
                 <span v-else class="text-h5">{{ getIniciales }}</span>
               </v-avatar>
             </template>
@@ -59,7 +59,7 @@
 <script lang="ts">
 import { ref, defineComponent, mergeProps, onMounted, computed } from 'vue'
 import DialogCuenta from '../core/dialogForm/DialogCuenta.vue'
-import axios from 'axios'
+import { sessionStore } from '../../stores/modules/Core/sesion'
 
 export interface Item {
   id: number
@@ -69,28 +69,38 @@ export interface Item {
   apellidoMaterno: string
   imagen: string
   rol: string
+  password: string
+  passwordConfirm: string
+  iniciales: string
 }
 
 export default defineComponent({
   name: 'Avatar',
   components: { DialogCuenta },
   setup() {
+    const session = sessionStore()
+
     const item = ref<Item | any>({})
     const menu = ref(false)
 
     // Método para obtener datos desde la API
     const getItems = async () => {
       try {
-        //const response = await axios.get('https://api.ejemplo.com/items') // URL de la API
-        //items.value = response.data // Asignar los datos recibidos a items
+        await session.authUserInformation()
+
         item.value = {
-          id: 1,
-          correo: 'dulce@gmail.com',
-          nombre: 'Dulce',
-          apellidoPaterno: 'Díaz',
-          apellidoMaterno: 'Sánchez',
-          imagen: 'https://cdn.vuetifyjs.com/images/john.jpg',
-          rol: 'Desarrollador',
+          id: session.userInformation.id,
+          correo: session.userInformation.correo,
+          nombre: session.userInformation.nombre,
+          apellidoPaterno: session.userInformation.apellidoPaterno,
+          apellidoMaterno: session.userInformation.apellidoMaterno,
+          imagen:
+            import.meta.env.VITE_APP_API_URL +
+            '/storage/profile_images/' +
+            session.userInformation.imagen,
+          rol: session.userInformation.rol,
+          password: '',
+          passwordConfirm: '',
         }
       } catch (error) {
         console.error('Error al obtener los datos:', error)

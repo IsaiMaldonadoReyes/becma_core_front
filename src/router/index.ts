@@ -36,7 +36,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  /*
+
   const session = sessionStore()
 
   if (!session.authRoutes) {
@@ -59,7 +59,7 @@ router.beforeEach(async (to, from, next) => {
     next({ path: '/error' }) // Si no tiene acceso, lo manda a /error
   } else {
     next() // Si todo está bien, deja que navegue normalmente
-  }*/
+  }
 
   next()
 })
