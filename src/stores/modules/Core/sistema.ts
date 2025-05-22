@@ -74,16 +74,15 @@ export const sistemaStore = defineStore({
         //throw error
       }
     },
-
-    async authUserInformation() {
+    async destroySistemasByIds(ids: number[]) {
       try {
-        // 1. Intentar la petición
-        const response = await axios.get('/api/authUserInformation')
+        const response = await axios.delete(`/api/destroySistemaByIds`, { data: { ids } })
 
         this.object = response.data
       } catch (error: any) {
-        // 4. Manejo de errores
-        console.error('Error en obtener información:', error)
+        console.log(error)
+
+        this.responseMessage = error.message
         //throw error
       }
     },

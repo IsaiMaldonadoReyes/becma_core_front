@@ -157,6 +157,7 @@ import { ref, computed, defineComponent, mergeProps, onMounted, onUnmounted, wat
 import { sistemaStore } from '../../../stores/modules/Core/sistema'
 import DialogConfirmation from '../../../components/core/dialogMessage/DialogConfirmation.vue'
 import DialogInformation from '../../../components/core/dialogMessage/DialogInformation.vue'
+import { validationRules } from '@/utils/validationRules'
 
 export interface Item {
   id: number
@@ -184,7 +185,7 @@ export default defineComponent({
     const sistema = sistemaStore()
 
     const rules = {
-      required: (v: string) => !!v || 'Este dato es requerido para continuar.',
+      required: validationRules.required,
     }
 
     const form = ref()
