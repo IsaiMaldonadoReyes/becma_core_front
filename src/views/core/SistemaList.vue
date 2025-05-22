@@ -143,13 +143,25 @@
                   <template v-slot:activator="{ props: menu }">
                     <v-tooltip>
                       <template v-slot:activator="{ props: tooltip }">
-                        <v-btn icon="mdi-menu-down" v-bind="mergeProps(menu, tooltip)" />
+                        <v-btn
+                          icon="mdi-menu-down"
+                          v-bind="mergeProps(menu, tooltip)"
+                          :disabled="vdtbPrincipalItemsSeleccionados.length === 0"
+                        />
                       </template>
                       <span>Acciones</span>
                     </v-tooltip>
                   </template>
                   <v-list>
-                    <v-list-item v-for="(item, index) in vdtbPrincipalOpcionesCheck" :key="index">
+                    <v-list-item
+                      v-for="(item, index) in vdtbPrincipalOpcionesCheck"
+                      :key="index"
+                      @click="onExecuteOpcionesCheck(item.action)"
+                      :disabled="
+                        vdtbPrincipalItemsSeleccionados.length === 0 &&
+                        item.action === 'onDeleteIds'
+                      "
+                    >
                       <v-list-item-title>{{ item.title }}</v-list-item-title>
                     </v-list-item>
                   </v-list>
@@ -302,8 +314,10 @@ export default defineComponent({
     const vdtbPrincipalItems = ref<InterfaceItem[]>([])
 
     const vdtbPrincipalItemsPorPagina = ref(5)
-    const vdtbPrincipalItemsSeleccionados = ref([])
-    const vdtbPrincipalOpcionesCheck = ref([{ title: 'Eliminar' }, { title: 'Click Me2' }])
+    const vdtbPrincipalItemsSeleccionados = ref<string[]>([])
+    const vdtbPrincipalOpcionesCheck = ref([
+      { title: 'Eliminar', action: 'onDeleteIds' as Eventos },
+    ])
     const vdtbPrincipalOpcionesItemsPorPagina = ref([
       { titulo: '5', valor: 5 },
       { titulo: '10', valor: 10 },
@@ -388,12 +402,12 @@ export default defineComponent({
       dialogConfirmation.value.dialog = false
     }
 
-    const onClickYesDialogConfirmation = (evento: Eventos, items: object) => {
+    const onClickYesDialogConfirmation = (evento: Eventos, items: object | object[]) => {
       methods[evento](items)
     }
 
     // DialogSistema
-    type Eventos = 'onSave' | 'onEdit' | 'onDelete'
+    type Eventos = 'onSave' | 'onEdit' | 'onDelete' | 'onDeleteIds'
 
     const methods: Record<Eventos, (...args: any[]) => void> = {
       onSave: () => {
@@ -404,28 +418,50 @@ export default defineComponent({
         dialogSistemaPropiedades.value.dialog = false
         fnCargarListado()
       },
-      onDelete: async (items: Elementos) => {
+      onDelete: async (items: Elementos | Elementos[]) => {
         dialogConfirmation.value.dialog = false
 
+        const idsToDelete = Array.isArray(items) ? items.map((item) => item.id) : [items.id]
+
         try {
-          await sistema.destroySistema(items.id)
+          // Llamar a la API para eliminar los registros por sus IDs
+          await sistema.destroySistemasByIds(idsToDelete) // Asegúrate de que esta función exista en tu store
+
+          // Mostrar mensaje de éxito
           onOpenDialogInformation(
             '#438701',
             sistema.object.message,
             'correct',
-            'Registro eliminado',
+            'Registros eliminados',
             1,
           )
+
+          // Refrescar la lista
+          fnCargarListado()
+
+          // Limpiar la selección
+          vdtbPrincipalItemsSeleccionados.value = []
         } catch (error) {
+          // Mostrar mensaje de error
           onOpenDialogInformation(
-            '#438701',
+            '#FF0000',
             sistema.responseMessage,
             'incorrect',
-            'Ocurrió un error en el registro guardado',
+            'Error al eliminar',
             1,
           )
         }
-        fnCargarListado()
+      },
+      onDeleteIds: () => {
+        let titulo = 'Eliminar registro(s)'
+        let mensaje = 'Esta acción eliminará los sistemas seleccionados. ¿Desea continuar?'
+        let evento = 'onDelete'
+
+        const itemsSeleccionados = vdtbPrincipalItems.value.filter((item) =>
+          vdtbPrincipalItemsSeleccionados.value.includes(item.codigo),
+        )
+
+        onOpenDialogConfirmation(mensaje, evento, itemsSeleccionados, titulo)
       },
     }
 
@@ -443,6 +479,10 @@ export default defineComponent({
     }
 
     const onSaveDialogSistema = (evento: Eventos) => {
+      methods[evento]()
+    }
+
+    const onExecuteOpcionesCheck = (evento: Eventos) => {
       methods[evento]()
     }
 
@@ -490,6 +530,7 @@ export default defineComponent({
       vdtbPrincipalOpcionesCheck,
       vdtbPrincipalOpcionesItemsPorPagina,
       vdtbPrincipalPaginaActual,
+      onExecuteOpcionesCheck,
     }
   },
 })
