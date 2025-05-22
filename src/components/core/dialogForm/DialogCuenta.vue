@@ -103,8 +103,8 @@
                         </template>
                         <span>Clic aquí para salir</span>
                       </v-tooltip>
-                    </v-btn-group></v-card-actions
-                  >
+                    </v-btn-group>
+                  </v-card-actions>
                 </v-card>
               </v-col>
               <v-col cols="12" sm="6">

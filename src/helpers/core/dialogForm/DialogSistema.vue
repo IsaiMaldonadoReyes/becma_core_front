@@ -72,9 +72,10 @@
                 placeholder="Nombre del sistema"
                 prepend-inner-icon="mdi-laptop"
                 variant="outlined"
+                :glow="true"
               >
                 <template v-slot:prepend>
-                  <v-tooltip>
+                  <v-tooltip interactive>
                     <template v-slot:activator="{ props: tooltip }">
                       <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                     </template>
