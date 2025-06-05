@@ -19,7 +19,7 @@
               height="48px"
               min-width="48px"
               width="48px"
-              @click="fetchExcel"
+              @click=""
             >
               <v-icon color="white" icon="mdi-microsoft-excel" size="24px" />
             </v-btn>
@@ -91,16 +91,73 @@
                 <v-divider></v-divider>
                 <v-card-text>
                   <v-row>
+                    <v-col cols="12">
+                      <v-autocomplete
+                        v-model="dataModel.id_nomina_gape_empresa"
+                        :disabled="false"
+                        :items="itemsEmpresasNomina"
+                        auto-select-first
+                        chips
+                        clear-icon="mdi-close"
+                        clear-on-select
+                        clearable
+                        closable-chips
+                        color="primary"
+                        filter-mode="every"
+                        item-color="primary"
+                        item-props
+                        item-title="nombre_empresa"
+                        item-value="id"
+                        label="Cliente"
+                        no-data-text="No hay información disponible"
+                        placeholder="Buscar"
+                        prepend-inner-icon="mdi-home-account"
+                        variant="outlined"
+                      >
+                        <template v-slot:chip="{ props, item }">
+                          <v-chip
+                            v-bind="props"
+                            :text="item.raw.nombre_empresa"
+                            color="primary"
+                            variant="flat"
+                          />
+                        </template>
+
+                        <template v-slot:item="{ props, item }">
+                          <v-list-item
+                            v-bind="props"
+                            :subtitle="item.raw.nombre_base"
+                            :title="item.raw.nombre_empresa"
+                          />
+                        </template>
+
+                        <template v-slot:prepend>
+                          <v-tooltip interactive>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon
+                                icon="mdi-information-slab-circle-outline"
+                                v-bind="mergeProps(tooltip)"
+                              />
+                            </template>
+                            <span>
+                              Ruta del archivo de la base de datos de la empresa del cliente.
+                            </span>
+                          </v-tooltip>
+                        </template>
+                      </v-autocomplete>
+                    </v-col>
                     <v-col cols="12" lg="4">
                       <v-text-field
+                        v-model="dataModel.codigoempleado"
+                        :rules="[reglaMascarillaCodigo]"
+                        class="mt-3"
+                        clear-icon="mdi-close"
                         clearable
+                        color="primary"
                         label="Código *"
-                        placeholder="COD0001"
+                        placeholder="XXXX"
                         prepend-inner-icon="mdi-barcode"
                         variant="outlined"
-                        class="mt-3"
-                        color="primary"
-                        clear-icon="mdi-close"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
@@ -115,20 +172,19 @@
                     <v-col cols="12" lg="4">
                       <v-locale-provider locale="es-MX">
                         <v-date-input
-                          v-model="modelFechas"
+                          v-model="dataModel.fechaalta"
                           :mobile="smAndDown"
+                          class="mt-3"
                           clear-icon="mdi-close"
                           clearable
                           color="primary"
-                          label="Fecha de baja"
+                          label="Fecha de alta"
                           multiple="range"
                           prepend-icon=""
                           prepend-inner-icon="mdi-calendar"
                           title="Rango de fechas"
                           type="chip"
                           variant="outlined"
-                          @update:modelValue="fetchMarcas"
-                          class="mt-3"
                         >
                           <template v-slot:prepend>
                             <v-icon icon="mdi-information-outline" />
@@ -138,10 +194,10 @@
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.tipocontrato"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsTipoContratoNomina"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         class="pt-3"
@@ -153,8 +209,8 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
+                        item-title="Descripcion"
+                        item-value="ClaveTipoContrato"
                         label="Tipo de contrato *"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
@@ -164,7 +220,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.ClaveTipoContrato"
                             color="primary"
                             variant="flat"
                           />
@@ -173,8 +229,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.Descripcion"
+                            :title="item.raw.ClaveTipoContrato"
                           />
                         </template>
 
@@ -183,77 +239,97 @@
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span> Seleccione para poder ver las opciones del campo Marca(s) </span>
+                            <span>
+                              Seleccione para poder ver las opciones de los tipos de contrato
+                            </span>
                           </v-tooltip>
                         </template>
                       </v-autocomplete>
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-text-field
+                        v-model="dataModel.apellidopaterno"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateLettersField(v, { required: true, max: 80 }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
-                        label="Apellido paterno"
+                        color="primary"
+                        label="Apellido paterno *"
                         placeholder=""
                         prepend-inner-icon="mdi-badge-account-outline"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
+                        @keypress="inputFilters.onlyLetters"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Código identificador del empleado</span>
+                            <span>Apellido paterno del empleado</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-text-field
+                        v-model="dataModel.apellidomaterno"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateLettersField(v, { required: true, max: 80 }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
-                        label="Apellido materno"
+                        color="primary"
+                        label="Apellido materno *"
                         placeholder="Apellido materno"
                         prepend-inner-icon="mdi-badge-account-outline"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
+                        @keypress="inputFilters.onlyLetters"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Código identificador del empleado</span>
+                            <span>Apellido materno del empleado</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-text-field
+                        v-model="dataModel.nombre"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateLettersField(v, { required: true, max: 90 }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
-                        label="Nombre(s)"
+                        color="primary"
+                        label="Nombre(s) *"
                         placeholder=""
                         prepend-inner-icon="mdi-badge-account-outline"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
+                        @keypress="inputFilters.onlyLetters"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Código identificador del empleado</span>
+                            <span>Nombre del empleado</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.idtipoperiodo"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsTipoPeriodoNomina"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -264,9 +340,9 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
-                        label="Tipo de periodo"
+                        item-title="nombretipoperiodo"
+                        item-value="idtipoperiodo"
+                        label="Tipo de periodo *"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
                         prepend-inner-icon="mdi-clipboard-text-clock-outline"
@@ -275,7 +351,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.nombretipoperiodo"
                             color="primary"
                             variant="flat"
                           />
@@ -284,8 +360,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.idtipoperiodo"
+                            :title="item.raw.nombretipoperiodo"
                           />
                         </template>
 
@@ -294,37 +370,45 @@
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span> Seleccione para poder ver las opciones del campo Marca(s) </span>
+                            <span
+                              >Seleccione para poder ver las opciones de los tipos de periodos
+                            </span>
                           </v-tooltip>
                         </template>
                       </v-autocomplete>
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-text-field
+                        v-model="dataModel.sueldodiario"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validatePositiveNumber(v, { required: false }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
+                        color="primary"
                         label="Salario diario"
                         placeholder=""
                         prepend-inner-icon="mdi-currency-usd"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
+                        @keypress="(e: any) => inputFilters.onlyDecimal(e, dataModel.sueldodiario)"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Código identificador del empleado</span>
+                            <span>Sueldo diario del empleado</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.basecotizacionimss"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsBaseCotizacion"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -335,8 +419,8 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
+                        item-title="Descripcion"
+                        item-value="Codigo"
                         label="Base de cotización"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
@@ -346,7 +430,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.Descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -355,8 +439,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.Codigo"
+                            :title="item.raw.Descripcion"
                           />
                         </template>
 
@@ -365,67 +449,77 @@
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span> Seleccione para poder ver las opciones del campo Marca(s) </span>
+                            <span> Seleccione para poder ver las bases de cotización </span>
                           </v-tooltip>
                         </template>
                       </v-autocomplete>
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-text-field
+                        v-model="dataModel.sueldointegrado"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validatePositiveNumber(v, { required: false }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
+                        color="primary"
                         label="SBC Parte fija"
                         placeholder=""
                         prepend-inner-icon="mdi-currency-usd"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
+                        @keypress="
+                          (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldointegrado)
+                        "
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Código identificador del empleado</span>
+                            <span>Sueldo integrado del empleado</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-text-field
+                        clear-icon="mdi-close"
                         clearable
+                        color="primary"
+                        disabled
                         label="SBC Parte variable"
                         placeholder=""
                         prepend-inner-icon="mdi-currency-usd"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Código identificador del empleado</span>
+                            <span>SBC Parte variable</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-text-field
+                        clear-icon="mdi-close"
                         clearable
+                        color="primary"
+                        disabled
                         label="SBC (Topado a 25 UMA)"
                         placeholder=""
                         prepend-inner-icon="mdi-currency-usd"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Código identificador del empleado</span>
+                            <span>SBC (Topado a 25 UMA)</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
@@ -442,10 +536,9 @@
                   <v-row>
                     <v-col cols="12" md="4">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.iddepartamento"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsDepartamentoNomina"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -456,8 +549,8 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
+                        item-title="descripcion"
+                        item-value="iddepartamento"
                         label="Departamento"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
@@ -467,7 +560,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -476,8 +569,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.iddepartamento"
+                            :title="item.raw.descripcion"
                           />
                         </template>
 
@@ -496,10 +589,9 @@
                     </v-col>
                     <v-col cols="12" md="4">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.idpuesto"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsPuestoNomina"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -510,8 +602,8 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
+                        item-title="descripcion"
+                        item-value="idpuesto"
                         label="Puesto"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
@@ -521,7 +613,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -530,8 +622,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.idpuesto"
+                            :title="item.raw.descripcion"
                           />
                         </template>
 
@@ -549,10 +641,10 @@
                     </v-col>
                     <v-col cols="12" md="4">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.tipoempleado"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsTipoEmpleado"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -563,9 +655,9 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
-                        label="Sindicalizado"
+                        item-title="Descripcion"
+                        item-value="Codigo"
+                        label="Sindicalizado *"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
                         prepend-inner-icon="mdi-cash-check"
@@ -574,7 +666,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.Descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -583,8 +675,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.Codigo"
+                            :title="item.raw.Descripcion"
                           />
                         </template>
 
@@ -593,17 +685,17 @@
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span> Seleccione para poder ver las opciones del campo Marca(s) </span>
+                            <span> Seleccione para poder ver las opciones </span>
                           </v-tooltip>
                         </template>
                       </v-autocomplete>
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.TipoPrestacion"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsTipoPrestacionNomina"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -614,9 +706,9 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
-                        label="Tipo de prestación"
+                        item-title="Nombre"
+                        item-value="IDTabla"
+                        label="Tipo de prestación *"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
                         prepend-inner-icon="mdi-account-cash"
@@ -625,7 +717,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.Nombre"
                             color="primary"
                             variant="flat"
                           />
@@ -634,8 +726,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.IDTabla"
+                            :title="item.raw.Nombre"
                           />
                         </template>
 
@@ -654,10 +746,10 @@
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.basepago"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsBasePago"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -668,9 +760,9 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
-                        label="Base pago"
+                        item-title="Descripcion"
+                        item-value="Codigo"
+                        label="Base pago *"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
                         prepend-inner-icon="mdi-account-cash"
@@ -679,7 +771,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.Descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -688,8 +780,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.Codigo"
+                            :title="item.raw.Descripcion"
                           />
                         </template>
 
@@ -710,10 +802,10 @@
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.formapago"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsFormaPago"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -724,9 +816,9 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
-                        label="Método de pago"
+                        item-title="Descripcion"
+                        item-value="Codigo"
+                        label="Método de pago *"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
                         prepend-inner-icon="mdi-account-credit-card"
@@ -735,7 +827,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.Descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -744,8 +836,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.Codigo"
+                            :title="item.raw.Descripcion"
                           />
                         </template>
 
@@ -754,17 +846,17 @@
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span> Seleccione para poder ver las opciones del campo Marca(s) </span>
+                            <span> Seleccione para poder ver las opciones </span>
                           </v-tooltip>
                         </template>
                       </v-autocomplete>
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.idturno"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsTurnoNomina"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -775,9 +867,9 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
-                        label="Turno de trabajo"
+                        item-title="descripcion"
+                        item-value="idturno"
+                        label="Turno de trabajo *"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
                         prepend-inner-icon="mdi-briefcase-clock"
@@ -786,7 +878,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -795,8 +887,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.idturno"
+                            :title="item.raw.descripcion"
                           />
                         </template>
 
@@ -805,17 +897,17 @@
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span> Seleccione para poder ver las opciones del campo Marca(s) </span>
+                            <span> Seleccione para poder ver las opciones </span>
                           </v-tooltip>
                         </template>
                       </v-autocomplete>
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.zonasalario"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsZonaSalario"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -826,9 +918,9 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
-                        label="Zona de salario"
+                        item-title="Descripcion"
+                        item-value="Codigo"
+                        label="Zona de salario *"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
                         prepend-inner-icon="mdi-cash-marker"
@@ -837,7 +929,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.Descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -846,8 +938,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.Codigo"
+                            :title="item.raw.Descripcion"
                           />
                         </template>
 
@@ -866,51 +958,11 @@
                       </v-autocomplete>
                     </v-col>
                     <v-col cols="12" lg="4">
-                      <v-text-field
-                        clearable
-                        label="Número de FONACOT"
-                        placeholder="COD0001"
-                        prepend-inner-icon="mdi-bank"
-                        variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
-                      >
-                        <template v-slot:prepend>
-                          <v-tooltip interactive>
-                            <template v-slot:activator="{ props: tooltip }">
-                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
-                            </template>
-                            <span>Número de la cuenta de <b>AFORE</b> del empleado</span>
-                          </v-tooltip>
-                        </template>
-                      </v-text-field>
-                    </v-col>
-                    <v-col cols="12" lg="4">
-                      <v-text-field
-                        clearable
-                        label="Afore"
-                        placeholder="COD0001"
-                        prepend-inner-icon="mdi-piggy-bank"
-                        variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
-                      >
-                        <template v-slot:prepend>
-                          <v-tooltip interactive>
-                            <template v-slot:activator="{ props: tooltip }">
-                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
-                            </template>
-                            <span>Número de la cuenta de <b>AFORE</b> del empleado.</span>
-                          </v-tooltip>
-                        </template>
-                      </v-text-field>
-                    </v-col>
-                    <v-col cols="12" lg="4">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.TipoSemanaReducida"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsTipoJornadaNomina"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -921,8 +973,59 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
+                        item-title="Descripcion"
+                        item-value="TipoSemanaReducida"
+                        label="Tipo jornada / Semana reducida *"
+                        no-data-text="No hay información disponible"
+                        placeholder="Seleccione"
+                        prepend-inner-icon="mdi-cash-marker"
+                        variant="outlined"
+                      >
+                        <template v-slot:chip="{ props, item }">
+                          <v-chip
+                            v-bind="props"
+                            :text="item.raw.Descripcion"
+                            color="primary"
+                            variant="flat"
+                          />
+                        </template>
+
+                        <template v-slot:item="{ props, item }">
+                          <v-list-item
+                            v-bind="props"
+                            :subtitle="item.raw.TipoSemanaReducida"
+                            :title="item.raw.Descripcion"
+                          />
+                        </template>
+
+                        <template v-slot:prepend>
+                          <v-tooltip>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                            </template>
+                            <span> Tipo de jornada o semana reducida </span>
+                          </v-tooltip>
+                        </template>
+                      </v-autocomplete>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-autocomplete
+                        v-model="dataModel.TipoRegimen"
+                        :disabled="false"
+                        :items="itemsTipoRegimen"
+                        :rules="[validationRules.required]"
+                        auto-select-first
+                        chips
+                        clear-icon="mdi-close"
+                        clear-on-select
+                        clearable
+                        closable-chips
+                        color="primary"
+                        filter-mode="every"
+                        item-color="primary"
+                        item-props
+                        item-title="descripcion"
+                        item-value="claveTipoRegimen"
                         label="Tipo de régimen fiscal *"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
@@ -932,7 +1035,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -941,8 +1044,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.claveTipoRegimen"
+                            :title="item.raw.descripcion"
                           />
                         </template>
 
@@ -961,10 +1064,41 @@
                     </v-col>
                     <v-col cols="12" lg="4">
                       <v-text-field
+                        v-model="dataModel.NumeroFonacot"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateNumericField(v, {
+                              required: false,
+                              min: 10,
+                              max: 10,
+                            }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
-                        label="Correo electrónico"
-                        placeholder="usuario@gmail.com"
-                        prepend-inner-icon="mdi-email"
+                        color="primary"
+                        label="Número de FONACOT"
+                        placeholder="00000000000"
+                        prepend-inner-icon="mdi-bank"
+                        variant="outlined"
+                        @keypress="inputFilters.onlyNumbers"
+                      >
+                        <template v-slot:prepend>
+                          <v-tooltip interactive>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                            </template>
+                            <span>Número de FONACOT</span>
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-text-field
+                        v-model="dataModel.numeroafore"
+                        clearable
+                        label="Afore"
+                        placeholder="COD0001"
+                        prepend-inner-icon="mdi-piggy-bank"
                         variant="outlined"
                         color="primary"
                         clear-icon="mdi-close"
@@ -975,6 +1109,29 @@
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
                             <span>Número de la cuenta de <b>AFORE</b> del empleado.</span>
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+
+                    <v-col cols="12" lg="4">
+                      <v-text-field
+                        v-model="dataModel.CorreoElectronico"
+                        :rules="[validationRules.emailIfNotEmpty]"
+                        clear-icon="mdi-close"
+                        clearable
+                        color="primary"
+                        label="Correo electrónico"
+                        placeholder="usuario@domain.com"
+                        prepend-inner-icon="mdi-email"
+                        variant="outlined"
+                      >
+                        <template v-slot:prepend>
+                          <v-tooltip interactive>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                            </template>
+                            <span>Corrreo electrónico del empleado.</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
@@ -991,13 +1148,23 @@
                   <v-row>
                     <v-col cols="12" lg="3">
                       <v-text-field
+                        v-model="dataModel.numerosegurosocial"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateNumericField(v, {
+                              required: true,
+                              min: 11,
+                              max: 11,
+                            }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
+                        color="primary"
                         label="Número de seguridad social"
-                        placeholder="Código de 15 caracteres"
+                        placeholder="Código de 11 caracteres"
                         prepend-inner-icon="mdi-hospital-box-outline"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
+                        @keypress="inputFilters.onlyNumbers"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
@@ -1011,10 +1178,10 @@
                     </v-col>
                     <v-col cols="12" lg="3">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.cidregistropatronal"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsRegistroPatronalNomina"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -1025,8 +1192,8 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
+                        item-title="cregistroimss"
+                        item-value="cidregistropatronal"
                         label="Registro patronal del IMSS"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
@@ -1036,7 +1203,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.cregistroimss"
                             color="primary"
                             variant="flat"
                           />
@@ -1045,8 +1212,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.cidregistropatronal"
+                            :title="item.raw.cregistroimss"
                           />
                         </template>
 
@@ -1062,13 +1229,14 @@
                     </v-col>
                     <v-col cols="12" lg="3">
                       <v-text-field
+                        v-model="dataModel.umf"
+                        clear-icon="mdi-close"
                         clearable
+                        color="primary"
                         label="U.M.F"
                         placeholder="U.M.F"
                         prepend-inner-icon="mdi-mother-nurse"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
@@ -1082,10 +1250,9 @@
                     </v-col>
                     <v-col cols="12" lg="3">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.estadocivil"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsEstadoCivil"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -1096,8 +1263,8 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
+                        item-title="Descripcion"
+                        item-value="Codigo"
                         label="Estado civil"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
@@ -1107,7 +1274,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.Descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -1116,8 +1283,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.Codigo"
+                            :title="item.raw.Descripcion"
                           />
                         </template>
 
@@ -1126,7 +1293,7 @@
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Identificador del <b>Registro Patronal</b></span>
+                            <span>Identificador del estado civil del empleado</span>
                           </v-tooltip>
                         </template>
                       </v-autocomplete>
@@ -1134,10 +1301,10 @@
                     <v-divider></v-divider>
                     <v-col cols="12" lg="3">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.sexo"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsSexo"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -1148,8 +1315,8 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
+                        item-title="Descripcion"
+                        item-value="Codigo"
                         label="Sexo"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
@@ -1159,7 +1326,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.Descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -1168,8 +1335,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.Codigo"
+                            :title="item.raw.Descripcion"
                           />
                         </template>
 
@@ -1186,8 +1353,9 @@
                     <v-col cols="12" lg="3">
                       <v-locale-provider locale="es-MX">
                         <v-date-input
-                          v-model="modelFechas"
+                          v-model="dataModel.fechanacimiento"
                           :mobile="smAndDown"
+                          :rules="[validationRules.required]"
                           clear-icon="mdi-close"
                           clearable
                           color="primary"
@@ -1206,10 +1374,10 @@
                     </v-col>
                     <v-col cols="12" lg="3">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.EntidadFederativa"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsClaveEntidad"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -1220,8 +1388,8 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
+                        item-title="Descripcion"
+                        item-value="Codigo"
                         label="Entidad federativa de nacimiento"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
@@ -1231,7 +1399,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.Descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -1240,59 +1408,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
-                          />
-                        </template>
-
-                        <template v-slot:prepend>
-                          <v-tooltip>
-                            <template v-slot:activator="{ props: tooltip }">
-                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
-                            </template>
-                            <span>Identificador del <b>Registro Patronal</b></span>
-                          </v-tooltip>
-                        </template>
-                      </v-autocomplete>
-                    </v-col>
-                    <v-col cols="12" lg="3">
-                      <v-autocomplete
-                        v-model="modelEmpresa"
-                        :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
-                        auto-select-first
-                        chips
-                        clear-icon="mdi-close"
-                        clear-on-select
-                        clearable
-                        closable-chips
-                        color="primary"
-                        filter-mode="every"
-                        item-color="primary"
-                        item-props
-                        item-title="nombre"
-                        item-value="id"
-                        label="Ciudad de nacimiento"
-                        no-data-text="No hay información disponible"
-                        placeholder="Seleccione"
-                        prepend-inner-icon="mdi-map-marker-radius"
-                        variant="outlined"
-                      >
-                        <template v-slot:chip="{ props, item }">
-                          <v-chip
-                            v-bind="props"
-                            :text="item.raw.nombre_empresa"
-                            color="primary"
-                            variant="flat"
-                          />
-                        </template>
-
-                        <template v-slot:item="{ props, item }">
-                          <v-list-item
-                            v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.Codigo"
+                            :title="item.raw.Descripcion"
                           />
                         </template>
 
@@ -1308,98 +1425,151 @@
                     </v-col>
                     <v-col cols="12" lg="3">
                       <v-text-field
-                        v-model="rfc"
-                        :rules="[validateRfc]"
-                        clearable
-                        label="R.F.C."
-                        placeholder="RFC"
-                        prepend-inner-icon="mdi-file-key-outline"
-                        variant="outlined"
-                        color="primary"
+                        v-model="dataModel.lugarnacimiento"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateLettersField(v, { required: false, max: 40 }),
+                        ]"
                         clear-icon="mdi-close"
+                        clearable
+                        color="primary"
+                        label="Ciudad de nacimiento"
+                        placeholder="Ciudad de nacimiento"
+                        prepend-inner-icon="mdi-file-account-outline"
+                        variant="outlined"
+                        @keypress="inputFilters.onlyLetters"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Unidad Medica Familiar.</span>
+                            <span>Ciudad de nacimiento</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
                     </v-col>
                     <v-col cols="12" lg="3">
                       <v-text-field
-                        v-model="rfc"
-                        :rules="[validateRfc]"
-                        clearable
-                        label="C.U.R.P."
-                        placeholder="CURP"
-                        prepend-inner-icon="mdi-file-account-outline"
-                        variant="outlined"
-                        color="primary"
+                        v-model="dataModel.curpf"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateAlphanumericField(v, {
+                              required: true,
+                              max: 3,
+                            }),
+                        ]"
                         clear-icon="mdi-close"
+                        clearable
+                        color="primary"
+                        label="RFC"
+                        placeholder="Homoclave"
+                        prepend-inner-icon="mdi-file-key-outline"
+                        variant="outlined"
+                        @keypress="inputFilters.onlyAlphanumeric"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Clave única de registro poblacional</span>
+                            <span>Homoclave de RFC.</span>
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+                    <v-col cols="12" lg="3">
+                      <v-text-field
+                        v-model="dataModel.curpi"
+                        :rules="[validationRules.required]"
+                        clear-icon="mdi-close"
+                        color="primary"
+                        label="C.U.R.P."
+                        placeholder="CURP"
+                        prepend-inner-icon="mdi-file-account-outline"
+                        readonly
+                        variant="outlined"
+                      >
+                        <template v-slot:prepend>
+                          <v-tooltip interactive>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                            </template>
+                            <span
+                              >Clave única de registro poblacional (A partir de apellido paterno,
+                              materno y nombre)</span
+                            >
                           </v-tooltip>
                         </template>
                       </v-text-field>
                     </v-col>
                     <v-col cols="12" lg="6">
-                      <v-checkbox color="primary" label="Extranjero sin CURP"> </v-checkbox>
+                      <v-checkbox
+                        v-model="dataModel.ExtranjeroSinCURP"
+                        color="primary"
+                        label="Extranjero sin CURP"
+                      >
+                      </v-checkbox>
                     </v-col>
                     <v-divider></v-divider>
                     <v-col cols="12" lg="3">
                       <v-text-field
+                        v-model="dataModel.direccion"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateLettersField(v, { required: false, max: 60 }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
+                        color="primary"
                         label="Dirección"
                         placeholder="Dirección"
                         prepend-inner-icon="mdi-file-account-outline"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
+                        @keypress="inputFilters.onlyAlphanumeric"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Unidad Medica Familiar.</span>
+                            <span>Direccion del empleado.</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
                     </v-col>
                     <v-col cols="12" lg="3">
                       <v-text-field
+                        v-model="dataModel.poblacion"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateLettersField(v, { required: false, max: 60 }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
+                        color="primary"
                         label="Población"
                         placeholder="Población"
                         prepend-inner-icon="mdi-file-account-outline"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
+                        @keypress="inputFilters.onlyAlphanumeric"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Unidad Medica Familiar.</span>
+                            <span>Ciudad de residencia del empleado.</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
                     </v-col>
                     <v-col cols="12" lg="3">
                       <v-autocomplete
-                        v-model="modelEmpresa"
+                        v-model="dataModel.estado"
                         :disabled="false"
-                        :items="itemsEmpresas"
-                        :rules="[vforFiltrosRule.required]"
+                        :items="itemsEntidadFederativaNomina"
+                        :rules="[validationRules.required]"
                         auto-select-first
                         chips
                         clear-icon="mdi-close"
@@ -1410,8 +1580,8 @@
                         filter-mode="every"
                         item-color="primary"
                         item-props
-                        item-title="nombre"
-                        item-value="id"
+                        item-title="Descripcion"
+                        item-value="ClaveEstado"
                         label="Entidad federativa de domicilio *"
                         no-data-text="No hay información disponible"
                         placeholder="Seleccione"
@@ -1421,7 +1591,7 @@
                         <template v-slot:chip="{ props, item }">
                           <v-chip
                             v-bind="props"
-                            :text="item.raw.nombre_empresa"
+                            :text="item.raw.Descripcion"
                             color="primary"
                             variant="flat"
                           />
@@ -1430,8 +1600,8 @@
                         <template v-slot:item="{ props, item }">
                           <v-list-item
                             v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
+                            :subtitle="item.raw.ClaveEstado"
+                            :title="item.raw.Descripcion"
                           />
                         </template>
 
@@ -1440,20 +1610,26 @@
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Identificador del <b>Registro Patronal</b></span>
+                            <span>Entidad federativa de residencia del empleado</span>
                           </v-tooltip>
                         </template>
                       </v-autocomplete>
                     </v-col>
                     <v-col cols="12" lg="3">
                       <v-text-field
+                        v-model="dataModel.codigopostal"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateNumericField(v, { required: true, max: 5 }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
-                        label="C.P."
+                        color="primary"
+                        label="C.P. *"
                         placeholder="Código postal"
                         prepend-inner-icon="mdi-file-account-outline"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
+                        @keypress="inputFilters.onlyNumbers"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
@@ -1467,20 +1643,30 @@
                     </v-col>
                     <v-col cols="12" lg="3">
                       <v-text-field
+                        v-model="dataModel.telefono"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateNumericField(v, {
+                              required: false,
+                              min: 10,
+                              max: 10,
+                            }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
+                        color="primary"
                         label="Teléfono"
                         placeholder="Teléfono"
                         prepend-inner-icon="mdi-phone"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
+                        @keypress="inputFilters.onlyNumbers"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Código Postal</span>
+                            <span>Teléfono de contacto del empleado</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
@@ -1488,15 +1674,19 @@
                     <v-divider />
                     <v-col cols="12" lg="3">
                       <v-text-field
-                        v-model="rfc"
-                        :rules="[validateRfc]"
+                        v-model="dataModel.nombrepadre"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateLettersField(v, { required: false, max: 60 }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
+                        color="primary"
                         label="Nombre del padre"
                         placeholder="Nombre del padre"
                         prepend-inner-icon="mdi-face-man"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
+                        @keypress="inputFilters.onlyLetters"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
@@ -1510,46 +1700,411 @@
                     </v-col>
                     <v-col cols="12" lg="3">
                       <v-text-field
-                        v-model="rfc"
-                        :rules="[validateRfc]"
+                        v-model="dataModel.nombremadre"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateLettersField(v, { required: false, max: 60 }),
+                        ]"
+                        clear-icon="mdi-close"
                         clearable
+                        color="primary"
                         label="Nombre de la madre"
                         placeholder="Nombre de la madre"
                         prepend-inner-icon="mdi-face-woman"
                         variant="outlined"
-                        color="primary"
-                        clear-icon="mdi-close"
+                        @keypress="inputFilters.onlyLetters"
                       >
                         <template v-slot:prepend>
                           <v-tooltip interactive>
                             <template v-slot:activator="{ props: tooltip }">
                               <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
                             </template>
-                            <span>Nombre del padre</span>
+                            <span>Nombre de la madre</span>
                           </v-tooltip>
                         </template>
                       </v-text-field>
                     </v-col>
+                    <v-divider />
+                    <v-card-subtitle color="primary"
+                      >Avisos pendientes ante el IMSS</v-card-subtitle
+                    >
                     <v-col cols="12" lg="3">
-                      <v-select
-                        :items="['Alta', 'Baja', 'Modif. salario']"
-                        chips
-                        clear-icon="mdi-close"
-                        clearable
+                      <v-checkbox v-model="dataModel.altaimss" color="primary" label="Alta">
+                      </v-checkbox>
+                    </v-col>
+                    <v-col cols="12" lg="3">
+                      <v-checkbox v-model="dataModel.bajaimss" color="primary" label="Baja">
+                      </v-checkbox>
+                    </v-col>
+                    <v-col cols="12" lg="3">
+                      <v-checkbox
+                        v-model="dataModel.modificacionsalarioimss"
                         color="primary"
-                        label="Avisos pendientes ante el IMSS"
-                        placeholder="Avisos pendientes ante el IMSS"
-                        prepend-inner-icon="mdi-hospital-building"
-                        variant="outlined"
-                      ></v-select>
+                        label="Modif. salario"
+                      >
+                      </v-checkbox>
                     </v-col>
                   </v-row>
                 </v-card-text>
               </v-card>
             </v-tabs-window-item>
-            <v-tabs-window-item value="tab04" eager> Datos Sueldos y salarios</v-tabs-window-item>
+            <v-tabs-window-item value="tab04" eager>
+              <v-card>
+                <v-card-title color="primary">Datos sueldos y salarios</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text>
+                  <v-row>
+                    <v-col cols="12" lg="4">
+                      <v-text-field
+                        v-model="dataModel.sueldovariable"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validatePositiveNumber(v, { required: false }),
+                        ]"
+                        clear-icon="mdi-close"
+                        clearable
+                        color="primary"
+                        label="Sueldo variable"
+                        placeholder="Sueldo variable"
+                        prepend-inner-icon="mdi-hospital-box-outline"
+                        variant="outlined"
+                        @keypress="
+                          (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldovariable)
+                        "
+                      >
+                        <template v-slot:prepend>
+                          <v-tooltip interactive>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                            </template>
+                            <span>Sueldo variable.</span>
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-locale-provider locale="es-MX">
+                        <v-date-input
+                          v-model="dataModel.fechasueldovariable"
+                          :mobile="smAndDown"
+                          clear-icon="mdi-close"
+                          clearable
+                          color="primary"
+                          label="Fecha salario variable"
+                          multiple="range"
+                          prepend-icon=""
+                          prepend-inner-icon="mdi-calendar"
+                          title="Rango de fechas"
+                          type="chip"
+                          variant="outlined"
+                        >
+                          <template v-slot:prepend>
+                            <v-icon icon="mdi-information-outline" />
+                          </template>
+                        </v-date-input>
+                      </v-locale-provider>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-locale-provider locale="es-MX">
+                        <v-date-input
+                          v-model="dataModel.fechasueldodiario"
+                          :mobile="smAndDown"
+                          clear-icon="mdi-close"
+                          clearable
+                          color="primary"
+                          label="Fecha salario diario"
+                          multiple="range"
+                          prepend-icon=""
+                          prepend-inner-icon="mdi-calendar"
+                          title="Rango de fechas"
+                          type="chip"
+                          variant="outlined"
+                        >
+                          <template v-slot:prepend>
+                            <v-icon icon="mdi-information-outline" />
+                          </template>
+                        </v-date-input>
+                      </v-locale-provider>
+                    </v-col>
+                    <v-divider></v-divider>
+                    <v-col cols="12" lg="4">
+                      <v-text-field
+                        v-model="dataModel.sueldopromedio"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validatePositiveNumber(v, { required: false }),
+                        ]"
+                        clear-icon="mdi-close"
+                        clearable
+                        color="primary"
+                        label="Salario promedio"
+                        placeholder="Salario promedio"
+                        prepend-inner-icon="mdi-hospital-box-outline"
+                        variant="outlined"
+                        @keypress="
+                          (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldopromedio)
+                        "
+                      >
+                        <template v-slot:prepend>
+                          <v-tooltip interactive>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                            </template>
+                            <span>Sueldo promedio.</span>
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-locale-provider locale="es-MX">
+                        <v-date-input
+                          v-model="dataModel.fechasueldopromedio"
+                          :mobile="smAndDown"
+                          clear-icon="mdi-close"
+                          clearable
+                          color="primary"
+                          label="Fecha salario promedio"
+                          multiple="range"
+                          prepend-icon=""
+                          prepend-inner-icon="mdi-calendar"
+                          title="Rango de fechas"
+                          type="chip"
+                          variant="outlined"
+                        >
+                          <template v-slot:prepend>
+                            <v-icon icon="mdi-information-outline" />
+                          </template>
+                        </v-date-input>
+                      </v-locale-provider>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-locale-provider locale="es-MX">
+                        <v-date-input
+                          v-model="dataModel.fechasueldointegrado"
+                          :mobile="smAndDown"
+                          clear-icon="mdi-close"
+                          clearable
+                          color="primary"
+                          label="Fecha salario integrado"
+                          multiple="range"
+                          prepend-icon=""
+                          prepend-inner-icon="mdi-calendar"
+                          title="Rango de fechas"
+                          type="chip"
+                          variant="outlined"
+                        >
+                          <template v-slot:prepend>
+                            <v-icon icon="mdi-information-outline" />
+                          </template>
+                        </v-date-input>
+                      </v-locale-provider>
+                    </v-col>
+                    <v-divider></v-divider>
+                    <v-col cols="12" lg="4">
+                      <v-text-field
+                        v-model="dataModel.sueldobaseliquidacion"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validatePositiveNumber(v, { required: false }),
+                        ]"
+                        clear-icon="mdi-close"
+                        clearable
+                        color="primary"
+                        label="Salario base liquidación"
+                        placeholder="Salario base liquidación"
+                        prepend-inner-icon="mdi-hospital-box-outline"
+                        variant="outlined"
+                        @keypress="
+                          (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldobaseliquidacion)
+                        "
+                      >
+                        <template v-slot:prepend>
+                          <v-tooltip interactive>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                            </template>
+                            <span>Salario base liquidación.</span>
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-text-field
+                        v-model="dataModel.ajustealneto"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validatePositiveNumber(v, { required: false }),
+                        ]"
+                        clear-icon="mdi-close"
+                        clearable
+                        color="primary"
+                        label="Saldo del ajuste al neto"
+                        placeholder="Saldo del ajuste al neto"
+                        prepend-inner-icon="mdi-hospital-box-outline"
+                        variant="outlined"
+                        @keypress="(e: any) => inputFilters.onlyDecimal(e, dataModel.ajustealneto)"
+                      >
+                        <template v-slot:prepend>
+                          <v-tooltip interactive>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                            </template>
+                            <span>Saldo del ajuste al neto.</span>
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </v-tabs-window-item>
             <v-tabs-window-item value="tab05" eager>Datos Cálculos</v-tabs-window-item>
-            <v-tabs-window-item value="tab06" eager>Datos Pagos extras</v-tabs-window-item>
+            <v-tabs-window-item value="tab06" eager>
+              <v-card>
+                <v-card-title color="primary">Datos Pagos extras</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text>
+                  <v-row>
+                    <v-col cols="12" lg="4">
+                      <v-autocomplete
+                        v-model="dataModel.bancopagoelectronico"
+                        :disabled="false"
+                        :items="itemsBancoNomina"
+                        auto-select-first
+                        chips
+                        clear-icon="mdi-close"
+                        clear-on-select
+                        clearable
+                        closable-chips
+                        color="primary"
+                        filter-mode="every"
+                        item-color="primary"
+                        item-props
+                        item-title="Descripcion"
+                        item-value="ClaveBanco"
+                        label="Banco para pago electronico"
+                        no-data-text="No hay información disponible"
+                        placeholder="Seleccione"
+                        prepend-inner-icon="mdi-draw-pen"
+                        variant="outlined"
+                      >
+                        <template v-slot:chip="{ props, item }">
+                          <v-chip
+                            v-bind="props"
+                            :text="item.raw.Descripcion"
+                            color="primary"
+                            variant="flat"
+                          />
+                        </template>
+
+                        <template v-slot:item="{ props, item }">
+                          <v-list-item
+                            v-bind="props"
+                            :subtitle="item.raw.ClaveBanco"
+                            :title="item.raw.Descripcion"
+                          />
+                        </template>
+
+                        <template v-slot:prepend>
+                          <v-tooltip>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                            </template>
+                            <span> Seleccione para poder ver los bancos </span>
+                          </v-tooltip>
+                        </template>
+                      </v-autocomplete>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-text-field
+                        v-model="dataModel.sucursalpagoelectronico"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateAlphanumericField(v, {
+                              required: false,
+                              max: 50,
+                            }),
+                        ]"
+                        clear-icon="mdi-close"
+                        clearable
+                        color="primary"
+                        label="Sucursal para pago electrónico"
+                        placeholder="Sucursal para pago electrónico"
+                        prepend-inner-icon="mdi-hospital-box-outline"
+                        variant="outlined"
+                        @keypress="inputFilters.onlyAlphanumeric"
+                      >
+                        <template v-slot:prepend>
+                          <v-tooltip interactive>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                            </template>
+                            <span>Sucursal para pago electrónico.</span>
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-text-field
+                        v-model="dataModel.cuentapagoelectronico"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateLettersField(v, { required: false, max: 20 }),
+                        ]"
+                        clear-icon="mdi-close"
+                        clearable
+                        color="primary"
+                        label="Numero de cuenta para pago electrónico"
+                        placeholder="Numero de cuenta para pago electrónico"
+                        prepend-inner-icon="mdi-hospital-box-outline"
+                        variant="outlined"
+                        @keypress="inputFilters.onlyAlphanumeric"
+                      >
+                        <template v-slot:prepend>
+                          <v-tooltip interactive>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                            </template>
+                            <span>Numero de cuenta para pago electrónico.</span>
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-text-field
+                        v-model="dataModel.ClabeInterbancaria"
+                        :rules="[
+                          (v: any) =>
+                            validationRules.validateNumericField(v, {
+                              required: false,
+                              min: 18,
+                              max: 30,
+                            }),
+                        ]"
+                        clear-icon="mdi-close"
+                        clearable
+                        color="primary"
+                        label="Clabe interbancaria"
+                        placeholder="Clabe interbancaria"
+                        prepend-inner-icon="mdi-hospital-box-outline"
+                        variant="outlined"
+                        @keypress="inputFilters.onlyNumbers"
+                      >
+                        <template v-slot:prepend>
+                          <v-tooltip interactive>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
+                            </template>
+                            <span>Clabe interbancaria.</span>
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+                    <v-divider></v-divider>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </v-tabs-window-item>
             <v-tabs-window-item value="tab07" eager>
               Historial de cambios de tipo de periodo
             </v-tabs-window-item>
@@ -1567,49 +2122,40 @@ import {
   mergeProps,
   computed,
   onMounted,
-  onUnmounted,
-  watch,
   nextTick,
   onBeforeUnmount,
+  watch,
 } from 'vue'
 
 import { useDisplay } from 'vuetify'
-import { Chart, type ChartData, type ChartOptions } from 'chart.js/auto'
+//import { useNomGeneralesStore } from '../../stores/modules/Nomina/nomGenerales'
 
-import { sistemaStore } from '../../stores/modules/Core/sistema'
-import { options } from 'node_modules/axios/index.cjs'
+import { useEmpresasStore } from '../../stores/modules/Core/empresas'
+import { useTipoContratoStore } from '../../stores/modules/Nomina/nomGenerales/SATCatTipoContrato'
+import { useTipoPeriodoStore } from '../../stores/modules/Nomina/default/TipoPeriodo'
+import { useDepartamentoStore } from '../../stores/modules/Nomina/default/Departamento'
+import { usePuestoStore } from '../../stores/modules/Nomina/default/Puesto'
+import { useTipoPrestacionStore } from '../../stores/modules/Nomina/default/TipoPrestacion'
+import { useTurnoStore } from '../../stores/modules/Nomina/default/Turno'
+import { useRegistroPatronalStore } from '../../stores/modules/Nomina/default/RegistroPatronal'
+import { useEmpresaStore } from '../../stores/modules/Nomina/default/Empresa'
 
-import { rpt2VentasPorMarcas } from '../../stores/modules/Comercial/rpt2VentasPorMarcas'
+import { getDefaultSATCatBaseCotizacion } from '@/utils/nomina/nomGenerales/getDefaultSATCatBaseCotizacion'
+import { getDefaultSATCatTipoEmpleado } from '@/utils/nomina/nomGenerales/getDefaultSATCatTipoEmpleado'
+import { getDefaultSATCatBasePago } from '@/utils/nomina/nomGenerales/getDefaultSATCatBasePago'
+import { getDefaultSATCatFormaPago } from '@/utils/nomina/nomGenerales/getDefaultSATCatFormaPago'
+import { getDefaultSATCatZonaSalario } from '@/utils/nomina/nomGenerales/getDefaultSATCatZonaSalario'
+import { useTipoRegimenStore } from '../../stores/modules/Nomina/nomGenerales/SATCatTipoRegimen'
+import { getDefaultSATCatEstadoCivil } from '@/utils/nomina/nomGenerales/getDefaultSATCatEstadoCivil'
+import { getDefaultSATCatSexo } from '@/utils/nomina/nomGenerales/getDefaultSATCatSexo'
+import { getDefaultSATCatClaveEntidadFederativa } from '@/utils/nomina/nomGenerales/getDefaultSATCatClaveEntidadFederativa'
+import { useEntidadFederativaStore } from '../../stores/modules/Nomina/nomGenerales/SATCatEntidadFederativa'
+import { useBancoStore } from '../../stores/modules/Nomina/nomGenerales/SATCatBancos'
+import { useTipoJornadaStore } from '../../stores/modules/Nomina/nomGenerales/IMSSCatTipoSemanaReducida'
 
-interface Empresa {
-  id: number
-  nombre_empresa: string
-  nombre_base: string
-}
-
-interface Marca {
-  cidvalorclasificacion: number
-  cvalorclasificacion: string
-}
-
-interface Modo {
-  subtitle: string
-  title: string
-  value: string
-}
-
-interface FiltroModel {
-  empresa: object | null
-  marcas: Array<{ cidvalorclasificacion: number; cvalorclasificacion: string }> | null
-  modo: string | null
-  fechas: string | null
-}
-
-interface FiltroItems {
-  empresa: Array<{ id: number; nombre_empresa: string; nombre_base: string }>
-  marca: Array<{ cidvalorclasificacion: number; cvalorclasificacion: string }> | null
-  modo: Array<{ subtitle: string; title: string; value: string }>
-}
+import { useEmpleadoModel } from '@/composables/nomina/gape/useEmpleado'
+import { validationRules } from '@/utils/validationRules'
+import { inputFilters } from '@/utils/inputFilters'
 
 export default defineComponent({
   name: 'EmpleadoForm',
@@ -1623,6 +2169,31 @@ export default defineComponent({
     // 5.Computed
     // 6.Watchers
     // 7.Functions
+
+    // import Stores
+    //const nomGeneralesStore = useNomGeneralesStore()
+
+    const empresasStore = useEmpresasStore()
+
+    const tipoContratoStore = useTipoContratoStore()
+    const tipoPeriodoStore = useTipoPeriodoStore()
+    const departamentoStore = useDepartamentoStore()
+    const puestoStore = usePuestoStore()
+    const tipoPrestacionStore = useTipoPrestacionStore()
+    const turnoStore = useTurnoStore()
+    const tipoRegimenStore = useTipoRegimenStore()
+
+    const empresaStore = useEmpresaStore()
+
+    const registroPatronalStore = useRegistroPatronalStore()
+    const entidadFederativaStore = useEntidadFederativaStore()
+    const bancoStore = useBancoStore()
+    const tipoJornadaStore = useTipoJornadaStore()
+
+    // Composable del empleado
+    const { dataModel, setEmpleado, resetModel } = useEmpleadoModel()
+
+    // breadcrumbs
     const vbrePrincipalItems = ref([
       {
         disabled: false,
@@ -1639,10 +2210,7 @@ export default defineComponent({
     const vconPrincipalRef = ref()
 
     const vforFiltrosRef = ref()
-    const vforFiltrosRule = {
-      required: (v: string) => !!v || 'Este dato es requerido para continuar.',
-      required2: (v: any) => (v != null && String(v).length > 0) || 'Selecciona',
-    }
+
     const vnavFiltrosIsOpen = ref(true)
 
     const vtabGraficaRef = ref()
@@ -1688,54 +2256,7 @@ export default defineComponent({
     const cardHeight = ref(0)
     const chartHeight = ref(0)
 
-    const filtroItems = ref<FiltroItems>({
-      empresa: [],
-      marca: null,
-      modo: [
-        {
-          subtitle: 'Filtrar por cantidades totales de productos vendidos por marca.',
-          title: 'Cantidad',
-          value: 'cantidad',
-        },
-        {
-          subtitle: 'Mostrar reporte por precio de los productos vendidos por marca.',
-          title: 'Precio',
-          value: 'precio',
-        },
-      ],
-    })
-
-    const modelMarca = ref<Marca[]>([])
-    const itemsMarcas = ref<Marca[]>([])
-
-    const modelEmpresa = ref<Empresa>()
-    const itemsEmpresas = ref<Empresa[]>([])
-
-    const modelModo = ref<string>()
-    const itemsModos = ref<Modo[]>([
-      {
-        subtitle: 'Filtrar por cantidades totales de productos vendidos por marca.',
-        title: 'Cantidad',
-        value: 'cantidad',
-      },
-      {
-        subtitle: 'Mostrar reporte por precio de los productos vendidos por marca.',
-        title: 'Precio',
-        value: 'precio',
-      },
-    ])
-
-    const modelFechas = ref<string[]>([])
-
-    const filtroModels = ref<FiltroModel>({
-      empresa: null,
-      marcas: null,
-      modo: filtroItems.value.modo?.[0].value,
-      fechas: null,
-    })
-
     // Computed
-
     const getCardHeight = computed(() => {
       if (vconPrincipalRef.value) {
         calcularDimensiones()
@@ -1751,258 +2272,23 @@ export default defineComponent({
       return { height: `${chartHeight.value}px !important` }
     })
 
-    const getMarcas = computed(() => itemsMarcas.value)
-
     // Funcionalidad vuetify
     const { name, mobile, smAndDown } = useDisplay()
-
-    // Chart Js
-    const chartBarrasV = ref<HTMLCanvasElement | null>(null)
-    const chartBarrasH = ref<HTMLCanvasElement | null>(null)
-    const chartLineal = ref<HTMLCanvasElement | null>(null)
-    let chartInstanceV: Chart
-    let chartInstanceH: Chart
-    let chartInstanceLineal: Chart
-
-    const chartData = ref<ChartData>({
-      labels: [],
-      datasets: [],
-    })
-
-    const getNextColor = (index: number) => {
-      const CHART_COLORS = ['#BB3337', '#FF6000', '#ED3237', '#00335F', '#00A859', '#025595']
-
-      const colorIndex = index % CHART_COLORS.length
-      const variationIndex = Math.floor(index / CHART_COLORS.length)
-
-      const baseHex = CHART_COLORS[colorIndex]
-
-      const r = parseInt(baseHex.slice(1, 3), 16)
-      const g = parseInt(baseHex.slice(3, 5), 16)
-      const b = parseInt(baseHex.slice(5, 7), 16)
-
-      // Función para variar ligeramente el color (más claro/oscuro)
-      const vary = (value: number, factor: number) =>
-        Math.min(255, Math.max(0, value + factor))
-          .toString(16)
-          .padStart(2, '0')
-
-      // Calcula un factor cíclico para generar variaciones (+/-20 cada ciclo)
-      const variation = (variationIndex % 2 === 0 ? 1 : -1) * 20 * Math.ceil(variationIndex / 2)
-
-      const newR = vary(r, variation)
-      const newG = vary(g, variation)
-      const newB = vary(b, variation)
-
-      return `#${newR}${newG}${newB}`
-    }
 
     // Metodos
     const validarFiltros = async () => {
       await vforFiltrosRef.value?.validate()
     }
 
-    let delayed = false
-    const chartOptions: ChartOptions = {
-      animation: {
-        onComplete: () => {
-          delayed = true
-        },
-        delay: (context) => {
-          let delay = 0
-          if (context.type === 'data' && context.mode === 'default' && !delayed) {
-            delay = context.dataIndex * 300 + context.datasetIndex * 100
-          }
-          return delay
-        },
-      },
-      aspectRatio: 1,
-      interaction: { mode: 'point' },
-      maintainAspectRatio: false,
-      plugins: {
-        title: {
-          display: true,
-          text: 'Ventas por marcas barra',
-        },
-        legend: {
-          position: mobile.value ? 'top' : 'right',
-          onHover: (evt, item, legend) => {
-            legend.chart.data.datasets.forEach((dataset) => {
-              dataset.backgroundColor =
-                dataset.label === item.text
-                  ? dataset.backgroundColor
-                  : (dataset.backgroundColor as string) + '4D'
-            })
-            legend.chart.update()
-          },
-          onLeave: (evt, item, legend) => {
-            legend.chart.data.datasets.forEach((dataset) => {
-              dataset.backgroundColor =
-                dataset.label === item.text
-                  ? dataset.backgroundColor
-                  : (dataset.backgroundColor as string).slice(0, -2)
-            })
-            legend.chart.update()
-          },
-        },
-      },
-      responsive: true,
-      onClick: (e, elements, chart) => {
-        if (elements.length > 0) {
-          const clickedElement = elements[0]
-          const datasetIndex = clickedElement.datasetIndex
-          const index = clickedElement.index
-          const value = chart.data.datasets[datasetIndex].data[index]
-          const label = chart.data.labels?.[index]
-          const legend = chart.legend?.legendItems?.[0].text
-
-          alert(`Hiciste clic en: ${legend}: ${label} con valor ${value}`)
-        }
-      },
-    }
-    const chartOptions2: ChartOptions = {
-      animation: {
-        onComplete: () => {
-          delayed = true
-        },
-        delay: (context) => {
-          let delay = 0
-          if (context.type === 'data' && context.mode === 'default' && !delayed) {
-            delay = context.dataIndex * 300 + context.datasetIndex * 100
-          }
-          return delay
-        },
-      },
-
-      aspectRatio: 1,
-      maintainAspectRatio: false,
-      indexAxis: 'y',
-      interaction: {
-        mode: 'point',
-      },
-      plugins: {
-        title: {
-          display: true,
-          text: 'Ventas por marcas',
-        },
-        legend: {
-          position: mobile.value ? 'top' : 'right',
-          onHover: (evt, item, legend) => {
-            legend.chart.data.datasets.forEach((dataset) => {
-              dataset.backgroundColor =
-                dataset.label === item.text
-                  ? dataset.backgroundColor
-                  : (dataset.backgroundColor as string) + '4D'
-            })
-            legend.chart.update()
-          },
-          onLeave: (evt, item, legend) => {
-            legend.chart.data.datasets.forEach((dataset) => {
-              dataset.backgroundColor =
-                dataset.label === item.text
-                  ? dataset.backgroundColor
-                  : (dataset.backgroundColor as string).slice(0, -2)
-            })
-            legend.chart.update()
-          },
-        },
-      },
-      responsive: true,
-      onClick: (e, elements, chart) => {
-        if (elements.length > 0) {
-          const clickedElement = elements[0]
-          const datasetIndex = clickedElement.datasetIndex
-          const index = clickedElement.index
-          const value = chart.data.datasets[datasetIndex].data[index]
-          const label = chart.data.labels?.[index]
-          const legend = chart.legend?.legendItems?.[0].text
-
-          console.log(`Hiciste clic en: ${label} con valor ${value}`)
-          alert(`Hiciste clic en: ${legend}: ${label} con valor ${value}`)
-        }
-      },
-    }
-    const chartOptions3: ChartOptions = {
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: mobile.value ? 'top' : 'right',
-          onHover: (evt, item, legend) => {
-            legend.chart.data.datasets.forEach((dataset) => {
-              dataset.backgroundColor =
-                dataset.label === item.text
-                  ? dataset.backgroundColor
-                  : (dataset.backgroundColor as string) + '4D'
-            })
-            legend.chart.update()
-          },
-          onLeave: (evt, item, legend) => {
-            legend.chart.data.datasets.forEach((dataset) => {
-              dataset.backgroundColor =
-                dataset.label === item.text
-                  ? dataset.backgroundColor
-                  : (dataset.backgroundColor as string).slice(0, -2)
-            })
-            legend.chart.update()
-          },
-        },
-        title: {
-          display: true,
-          text: 'Ventas por marcas Lineal',
-        },
-      },
-      responsive: true,
-      onClick: (e, elements, chart) => {
-        if (elements.length > 0) {
-          const clickedElement = elements[0]
-          const datasetIndex = clickedElement.datasetIndex
-          const index = clickedElement.index
-          const value = chart.data.datasets[datasetIndex].data[index]
-          const label = chart.data.labels?.[index]
-          const legend = chart.legend?.legendItems?.[0].text
-
-          console.log(`Hiciste clic en: ${label} con valor ${value}`)
-          alert(`Hiciste clic en: ${legend}: ${label} con valor ${value}`)
-        }
-      },
-    }
-
     onMounted(() => {
       nextTick(() => {
-        if (chartBarrasV.value) {
-          chartInstanceV = new Chart(chartBarrasV.value, {
-            type: 'bar',
-            data: chartData.value,
-            options: chartOptions,
-          })
-        }
-
-        if (chartBarrasH.value) {
-          chartInstanceH = new Chart(chartBarrasH.value, {
-            type: 'bar',
-            data: chartData.value,
-            options: chartOptions2,
-          })
-        }
-
-        if (chartLineal.value) {
-          chartInstanceLineal = new Chart(chartLineal.value, {
-            type: 'line',
-            data: chartData.value,
-            options: chartOptions3,
-          })
-        }
-
         window.addEventListener('resize', calcularDimensiones)
 
-        fetchEmpresas()
+        fetchEmpresasNomina()
       })
     })
 
     onBeforeUnmount(() => {
-      if (chartInstanceV) chartInstanceV.destroy()
-      if (chartInstanceH) chartInstanceH.destroy()
-      if (chartInstanceLineal) chartInstanceLineal.destroy()
       window.removeEventListener('resize', calcularDimensiones)
     })
 
@@ -2018,208 +2304,159 @@ export default defineComponent({
       }
     }
 
-    const exportStore = sistemaStore()
-    const reporte = rpt2VentasPorMarcas()
+    const itemsEmpresasNomina = computed(() => empresasStore.empresas)
 
-    const fetchChartData = async () => {
-      const isValidForm = await vforFiltrosRef.value?.validate()
+    const itemsTipoContratoNomina = computed(() => tipoContratoStore.tipoContrato)
 
-      if (isValidForm.valid) {
-        const fechaInicio = filtroModels.value.fechas?.[0]
-          ? new Date(filtroModels.value.fechas[0])
-          : null
+    const itemsTipoPeriodoNomina = computed(() => tipoPeriodoStore.tipoPeriodo)
 
-        const fechaInicioFormateada = fechaInicio
-          ? `${fechaInicio.getFullYear()}-${String(fechaInicio.getMonth() + 1).padStart(2, '0')}-${String(fechaInicio.getDate()).padStart(2, '0')}`
-          : ''
+    const itemsDepartamentoNomina = computed(() => departamentoStore.departamento)
 
-        const fechaFin = filtroModels.value.fechas?.[filtroModels.value.fechas.length - 1]
-          ? new Date(filtroModels.value.fechas[filtroModels.value.fechas.length - 1])
-          : null
+    const itemsBaseCotizacion = computed(() => getDefaultSATCatBaseCotizacion())
 
-        const fechaFinFormateada = fechaFin
-          ? `${fechaFin.getFullYear()}-${String(fechaFin.getMonth() + 1).padStart(2, '0')}-${String(fechaFin.getDate()).padStart(2, '0')}`
-          : ''
+    const itemsPuestoNomina = computed(() => puestoStore.puesto)
 
-        const data = {
-          empresa: modelEmpresa.value,
-          marcas: modelMarca.value.map((m) => m.cidvalorclasificacion).join(', '),
-          modo: modelModo.value,
-          fechaInicio: fechaInicioFormateada,
-          fechaFin: fechaFinFormateada,
-        }
+    const itemsTipoEmpleado = computed(() => getDefaultSATCatTipoEmpleado())
 
-        try {
-          await reporte.labelRpt2(data)
+    const itemsTipoPrestacionNomina = computed(() => tipoPrestacionStore.tipoPrestacion)
 
-          const labels = reporte.label.data
-          const months = labels.map(
-            (item: any) => item.labels.charAt(0).toUpperCase() + item.labels.slice(1),
-          )
-          await reporte.dataRpt2(data)
+    const itemsBasePago = computed(() => getDefaultSATCatBasePago())
 
-          const dataset = reporte.dataset.data
+    const itemsFormaPago = computed(() => getDefaultSATCatFormaPago())
 
-          let index = 0
+    const itemsTurnoNomina = computed(() => turnoStore.turno)
 
-          let datasets = dataset.map((concepto: any) => {
-            const data = months.map((mes: any) => parseFloat(concepto[mes.toLowerCase()]) || 0)
-            const color = getNextColor(index++)
-            return {
-              label: concepto.marca,
-              data: data,
-              backgroundColor: color,
-              borderColor: color,
-              stack: 'stack_' + concepto.marca, // Agrupar por stack si es necesario
-            }
-          })
+    const itemsZonaSalario = computed(() => getDefaultSATCatZonaSalario())
 
-          chartInstanceV.data = {
-            labels: months,
-            datasets: datasets,
-          }
+    const itemsTipoRegimen = computed(() => tipoRegimenStore.tipoRegimen)
 
-          chartInstanceV.update()
+    const itemsRegistroPatronalNomina = computed(() => registroPatronalStore.registroPatronal)
 
-          chartInstanceH.data = {
-            labels: months,
-            datasets: datasets,
-          }
+    const itemsEstadoCivil = computed(() => getDefaultSATCatEstadoCivil())
 
-          chartInstanceH.update()
+    const itemsSexo = computed(() => getDefaultSATCatSexo())
 
-          chartInstanceLineal.data = {
-            labels: months,
-            datasets: datasets,
-          }
+    const itemsClaveEntidad = computed(() => getDefaultSATCatClaveEntidadFederativa())
 
-          chartInstanceLineal.update()
-        } catch (error) {
-        } finally {
-        }
-      }
-    }
+    const itemsEntidadFederativaNomina = computed(() => entidadFederativaStore.entidadFederativa)
 
-    const fetchExcel = async () => {
-      // Obtener los legends (nombres de los datasets) y agregar un primer elemento vacío
-      const legends = ['', ...chartInstanceV.data.datasets.map((ds) => ds.label as string)]
+    const itemsBancoNomina = computed(() => bancoStore.banco)
 
-      // Obtener los labels (eje X) de la gráfica
-      const labels = chartInstanceV.data.labels as string[]
+    const itemsTipoJornadaNomina = computed(() => tipoJornadaStore.tipoJornada)
 
-      // Inicializar la matriz con la primera fila de legends
-      const transformedData: (string | number)[][] = [legends]
+    const reglaMascarillaCodigo = computed(() => {
+      return validationRules.codeMask(empresaStore.empresa?.mascarillacodigo ?? '')
+    })
 
-      // Recorrer los labels y construir cada fila
-      for (let i = 0; i < labels.length; i++) {
-        const row: (string | number)[] = [labels[i]] // Primer elemento de la fila es el label (Q1, Q2...)
-
-        // Agregar los datos correspondientes de cada dataset en esta posición
-        for (let j = 0; j < chartInstanceV.data.datasets.length; j++) {
-          row.push(chartInstanceV.data.datasets[j].data[i] as number)
-        }
-
-        // Agregar la fila a la matriz transformada
-        transformedData.push(row)
-      }
-
-      const backgroundColors = chartInstanceV.data.datasets.map((ds) => ds.backgroundColor)
-
-      console.log(transformedData)
-
-      /*const data = {
-          info: transformedData,
-          colors: backgroundColors.map((color) => rgbaToHex(color as string)),
-        }*/
-
-      const data = {
-        info: transformedData,
-        colors: backgroundColors.map((color) => (color as string).replace('#', '')),
-        tipo: vtabGraficaSelected.value,
-      }
-
-      await exportStore.fetchExcel(data)
-
-      console.log(exportStore.object)
-
-      console.log(chartInstanceV.data.datasets)
-      console.log(chartInstanceV.data.labels)
-    }
-
-    const fetchEmpresas = async () => {
+    const fetchEmpresasNomina = async () => {
       try {
-        await reporte.rptEmpresas()
-
-        itemsEmpresas.value = reporte.empresas.data
+        await empresasStore.empresasNominas()
       } catch (error) {
-      } finally {
+        console.error('Error al cargar empresas nómina:', error)
       }
     }
 
-    const fetchMarcas = async () => {
-      modelMarca.value = []
-      itemsMarcas.value = []
-      const fechaInicio = modelFechas.value?.[0] ? new Date(modelFechas.value[0]) : null
+    watch(
+      () => dataModel.value.id_nomina_gape_empresa,
+      async (idEmpresa) => {
+        console.log('watch')
+        if (idEmpresa) {
+          await tipoContratoStore.catalogoTipoContrato(idEmpresa)
 
-      const fechaInicioFormateada = fechaInicio
-        ? `${fechaInicio.getFullYear()}-${String(fechaInicio.getMonth() + 1).padStart(2, '0')}-${String(fechaInicio.getDate()).padStart(2, '0')}`
-        : ''
+          await tipoPeriodoStore.catalogoTipoPeriodo(idEmpresa)
 
-      const fechaFin = modelFechas.value?.[modelFechas.value.length - 1]
-        ? new Date(modelFechas.value[modelFechas.value.length - 1])
-        : null
+          await departamentoStore.catalogoDepartamento(idEmpresa)
 
-      const fechaFinFormateada = fechaFin
-        ? `${fechaFin.getFullYear()}-${String(fechaFin.getMonth() + 1).padStart(2, '0')}-${String(fechaFin.getDate()).padStart(2, '0')}`
-        : ''
+          await puestoStore.catalogoPuesto(idEmpresa)
 
-      const data = {
-        empresa: modelEmpresa.value,
-        fechaInicio: fechaInicioFormateada,
-        fechaFin: fechaFinFormateada,
-      }
+          await tipoPrestacionStore.catalogoTipoPrestacion(idEmpresa)
 
-      try {
-        await reporte.marcasRpt2(data)
+          await turnoStore.catalogoTurno(idEmpresa)
 
-        itemsMarcas.value = reporte.object.data
-      } catch (error) {
-      } finally {
-      }
-    }
+          await tipoRegimenStore.catalogoTipoRegimen(idEmpresa)
 
-    const rfc = ref<string>('')
+          await registroPatronalStore.catalogoRegistroPatronal(idEmpresa)
 
-    const validateRfc = (value: string): true | string => {
-      if (!value) return 'El RFC es requerido'
+          await entidadFederativaStore.catalogoEntidadFederativa(idEmpresa)
 
-      const rfcRegex =
-        /^([A-ZÑ&]{3,4})(\d{2})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[A-Z\d]{2}([A\d])$/
+          await bancoStore.catalogoBanco(idEmpresa)
 
-      return rfcRegex.test(value.toUpperCase()) ? true : 'RFC no válido'
+          await empresaStore.catalogoEmpresa(idEmpresa)
+
+          await tipoJornadaStore.catalogoTipoJornada(idEmpresa)
+        } else {
+          // Limpiar departamentos si se deselecciona la empresa
+          //tipoContratoStore.tipoContrato = []
+        }
+      },
+    )
+
+    watch(
+      () => [
+        dataModel.value.apellidopaterno,
+        dataModel.value.apellidomaterno,
+        dataModel.value.nombre,
+      ],
+      ([paterno, materno, nombre]) => {
+        if (paterno && materno && nombre) {
+          dataModel.value.curpi = generarCurpParcial(paterno, materno, nombre)
+        } else {
+          dataModel.value.curpi = ''
+        }
+      },
+      { immediate: true },
+    )
+
+    function generarCurpParcial(paterno: string, materno: string, nombre: string): string {
+      const clean = (s: string) =>
+        s
+          .toUpperCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^A-Z]/g, '')
+
+      const pa = clean(paterno)
+      const ma = clean(materno)
+      const no = clean(nombre)
+
+      const primeraLetraP = pa.charAt(0)
+      const primeraVocalInternaP = pa.slice(1).match(/[AEIOU]/)?.[0] || 'X'
+      const primeraLetraM = ma.charAt(0) || 'X'
+      const primeraLetraN =
+        no
+          .split(' ')
+          .filter((n) => n !== 'JOSE' && n !== 'MARIA')[0]
+          ?.charAt(0) ||
+        no.charAt(0) ||
+        'X'
+
+      return (primeraLetraP + primeraVocalInternaP + primeraLetraM + primeraLetraN).toUpperCase()
     }
 
     return {
-      rfc,
-      validateRfc,
-      modelFechas,
-      modelModo,
-      itemsModos,
-      modelEmpresa,
-      itemsEmpresas,
-      modelMarca,
-      itemsMarcas,
-      chartBarrasH,
-      chartBarrasV,
-      chartLineal,
-      fetchExcel,
-      fetchChartData,
-      fetchMarcas,
-      filtroItems,
-      filtroModels,
+      itemsEmpresasNomina,
+      itemsTipoContratoNomina,
+      itemsTipoPeriodoNomina,
+      itemsBaseCotizacion,
+      itemsDepartamentoNomina,
+      itemsPuestoNomina,
+      itemsTipoEmpleado,
+      itemsTipoPrestacionNomina,
+      itemsBasePago,
+      itemsFormaPago,
+      itemsTurnoNomina,
+      itemsZonaSalario,
+      itemsTipoRegimen,
+      itemsRegistroPatronalNomina,
+      itemsEstadoCivil,
+      itemsSexo,
+      itemsClaveEntidad,
+      itemsEntidadFederativaNomina,
+      itemsBancoNomina,
+      itemsTipoJornadaNomina,
+      dataModel,
       getCardHeight,
       getChartHeight,
-      getMarcas,
       mergeProps,
       name,
       validarFiltros,
@@ -2227,12 +2464,14 @@ export default defineComponent({
       vbrePrincipalRef,
       vconPrincipalRef,
       vforFiltrosRef,
-      vforFiltrosRule,
       vnavFiltrosIsOpen,
       vtabMenuItems,
       vtabGraficaRef,
       vtabGraficaSelected,
       smAndDown,
+      validationRules,
+      inputFilters,
+      reglaMascarillaCodigo,
     }
   },
 })

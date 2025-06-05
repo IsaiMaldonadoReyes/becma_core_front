@@ -830,6 +830,8 @@ export default defineComponent({
         await reporte.rptEmpresas()
 
         itemsEmpresas.value = reporte.empresas.data
+
+        console.log(itemsEmpresas.value)
       } catch (error) {
       } finally {
       }

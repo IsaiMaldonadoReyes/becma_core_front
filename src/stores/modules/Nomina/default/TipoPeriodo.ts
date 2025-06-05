@@ -1,0 +1,32 @@
+import { defineStore } from 'pinia'
+import axios from 'axios'
+import type { TipoPeriodoModel } from '@/interfaces/nomina/default/nom10023'
+
+axios.defaults.withCredentials = true
+axios.defaults.withXSRFToken = true
+axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL
+
+interface TipoPeriodoState {
+  tipoPeriodo: TipoPeriodoModel[]
+  responseMessage: string
+}
+
+export const useTipoPeriodoStore = defineStore({
+  id: 'nominaTipoPeriodo',
+  state: (): TipoPeriodoState => ({
+    tipoPeriodo: [],
+    responseMessage: '',
+  }),
+  actions: {
+    async catalogoTipoPeriodo(idEmpresa: number) {
+      try {
+        const response = await axios.post(`/api/nominaTipoPeriodo/${idEmpresa}`)
+        this.tipoPeriodo = response.data.data
+      } catch (error: any) {
+        console.error('Error al obtener tipo de periodo:', error)
+        this.responseMessage = error.message
+        throw error
+      }
+    },
+  },
+})
