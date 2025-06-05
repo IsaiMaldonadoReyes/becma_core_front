@@ -6,6 +6,7 @@ import SistemaList from '../views/core/SistemaList.vue'
 import VentasPorMarcasChart from '@/views/comercial/VentasPorMarcasChart.vue'
 import EmpleadoList from '@/views/nominas/EmpleadoList.vue'
 import EmpleadoForm from '@/views/nominas/EmpleadoForm.vue'
+import EmpresaForm from '@/views/nominas/gape/EmpresaForm.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +35,7 @@ const router = createRouter({
       path: '/comercial/ventasPorMarcasChart',
       meta: { requiresAuth: true, sistema: 'comercial' },
     },
+
     {
       component: EmpleadoList,
       name: 'EmpleadoList',
@@ -46,11 +48,17 @@ const router = createRouter({
       path: '/nominas/empleadoForm',
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
+    {
+      component: EmpresaForm,
+      name: 'EmpresaForm',
+      path: '/nominas/gape/empresaForm',
+      meta: { requiresAuth: true, sistema: 'nominas' },
+    },
   ],
 })
 
 router.beforeEach(async (to, from, next) => {
-
+  /*
   const session = sessionStore()
 
   if (!session.authRoutes) {
@@ -74,6 +82,7 @@ router.beforeEach(async (to, from, next) => {
   } else {
     next() // Si todo está bien, deja que navegue normalmente
   }
+  */
 
   next()
 })

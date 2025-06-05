@@ -12,4 +12,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    port: 8080, // Puerto que desees
+    strictPort: true, // (opcional) evita que use otro si este está ocupado
+  },
 })
