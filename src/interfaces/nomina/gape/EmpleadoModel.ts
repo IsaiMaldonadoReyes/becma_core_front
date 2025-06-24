@@ -1,8 +1,8 @@
 export interface EmpleadoModel {
   id: number
-  estado?: boolean
   id_nomina_gape_empresa?: number
   idempleado?: number
+  estado_empleado?: boolean
   iddepartamento?: number
   idpuesto?: number
   idtipoperiodo?: number
@@ -97,4 +97,6 @@ export interface EmpleadoModel {
   Insumo?: string
   DireccionTeletrabajo?: string
   carga_masiva?: boolean
+  estado?: string
+  curpCompleto?: string
 }

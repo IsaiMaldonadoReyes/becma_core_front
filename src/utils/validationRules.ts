@@ -31,6 +31,17 @@ export const validationRules = {
 
     return rfcRegex.test(value.toUpperCase()) ? true : 'RFC no válido'
   },
+  curp: (value: string): true | string => {
+    if (!value) return 'El CURP es requerido'
+
+    const curpRegex =
+      /^[A-Z][AEIOU][A-Z]{2}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[HM](AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d]\d$/
+
+    return curpRegex.test(value.toUpperCase())
+      ? true
+      : 'CURP no válido. Verifica que tenga 18 caracteres y esté bien formado.'
+  },
+
   codeMask:
     (mask: string) =>
     (value: string): true | string => {

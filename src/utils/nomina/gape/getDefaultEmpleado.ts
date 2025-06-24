@@ -3,7 +3,7 @@ import type { EmpleadoModel } from '@/interfaces/nomina/gape/EmpleadoModel'
 export function getDefaultEmpleado(): EmpleadoModel {
   return {
     id: 0,
-    estado: undefined,
+    estado_empleado: false,
     id_nomina_gape_empresa: undefined,
     idempleado: undefined,
     iddepartamento: undefined,
@@ -100,5 +100,7 @@ export function getDefaultEmpleado(): EmpleadoModel {
     Insumo: '',
     DireccionTeletrabajo: '',
     carga_masiva: false,
+    estado: '',
+    curpCompleto: '',
   }
 }

@@ -5,8 +5,14 @@ import { getDefaultEmpleado } from '@/utils/nomina/gape/getDefaultEmpleado' // o
 export function useEmpleadoModel() {
   const dataModel = ref<EmpleadoModel>(getDefaultEmpleado())
 
-  const resetModel = () => {
+  const resetModel = (preservarEmpresa = true) => {
+    const empresaId = dataModel.value.id_nomina_gape_empresa
+
     dataModel.value = getDefaultEmpleado()
+
+    if (preservarEmpresa) {
+      dataModel.value.id_nomina_gape_empresa = empresaId
+    }
   }
 
   const setEmpleado = (data: Partial<EmpleadoModel>) => {
