@@ -77,7 +77,7 @@
             <v-row>
               <v-col cols="12" class="d-flex align-center justify-end">
                 <v-btn
-                  class="px-4"
+                  class="text-capitalize px-4"
                   color="primary"
                   prepend-icon="mdi-file-download"
                   text="Generar layout"
@@ -252,14 +252,18 @@ export default defineComponent({
     };
 
     return {
-      getCardHeight,
-      items,
-      itemsEmpresas,
       itemsSeleccionados,
+      items,
+
+      myCustomUpdate,
+      getCardHeight,
+
+      itemsEmpresas,
       mergeProps,
       modelEmpresa,
+
       modelSueldoIMSS,
-      myCustomUpdate,
+
       name,
       rfc,
       smAndDown,
@@ -269,6 +273,7 @@ export default defineComponent({
       vbtnActivarModel,
       vbtnMenuExportarModel,
       vconPrincipalRef,
+
       vforFiltrosRule,
       vrowClienteRef,
       vtabMenuItems,

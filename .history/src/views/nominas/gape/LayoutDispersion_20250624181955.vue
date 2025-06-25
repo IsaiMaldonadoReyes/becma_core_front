@@ -252,14 +252,18 @@ export default defineComponent({
     };
 
     return {
-      getCardHeight,
-      items,
-      itemsEmpresas,
       itemsSeleccionados,
+      items,
+
+      myCustomUpdate,
+      getCardHeight,
+
+      itemsEmpresas,
       mergeProps,
       modelEmpresa,
+
       modelSueldoIMSS,
-      myCustomUpdate,
+
       name,
       rfc,
       smAndDown,
@@ -269,6 +273,7 @@ export default defineComponent({
       vbtnActivarModel,
       vbtnMenuExportarModel,
       vconPrincipalRef,
+
       vforFiltrosRule,
       vrowClienteRef,
       vtabMenuItems,
