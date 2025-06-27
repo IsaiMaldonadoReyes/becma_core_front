@@ -85,7 +85,7 @@ export const sessionStore = defineStore({
       try {
         // 1. Intentar la petición
         const response = await axios.get('/api/authUserInformation')
-
+        this.auth = true
         this.userInformation = response.data
       } catch (error: any) {
         // 4. Manejo de errores

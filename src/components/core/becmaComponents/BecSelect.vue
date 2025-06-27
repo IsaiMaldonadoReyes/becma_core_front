@@ -1,12 +1,14 @@
 <template>
   <v-select
     v-model="model"
-    no-data-text="No hay información disponible"
+    :item-title="itemTitle"
+    :item-value="returnObject ? undefined : itemValue"
     :items="items"
     :label="label"
     :multiple="multiple"
     :placeholder="placeholder"
     :prepend-inner-icon="prependIcon"
+    :return-object="returnObject"
     :rules="rules"
     :variant="variant"
     clear-icon="mdi-close"
@@ -15,7 +17,61 @@
     density="compact"
     hide-details="auto"
     item-color="primary"
+    no-data-text="No hay información disponible"
   >
+    <!-- SELECCIÓN DINÁMICA -->
+    <template v-slot:selection="{ item }">
+      {{
+        itemTitleDinamic
+          ? typeof itemTitleDinamic === 'function'
+            ? itemTitleDinamic(item.raw)
+            : typeof item.raw === 'object'
+              ? item.raw[itemTitleDinamic]
+              : item.raw
+          : typeof item.raw === 'object'
+            ? item.raw[itemTitle]
+            : item.raw
+      }}
+    </template>
+
+    <!-- CHIP DINÁMICO -->
+    <template v-if="multiple" v-slot:chip="{ props, item }">
+      <v-chip
+        v-bind="props"
+        :text="typeof item.raw === 'object' ? item.raw[itemTitle] : item.raw"
+        color="primary"
+        variant="flat"
+      />
+    </template>
+
+    <!-- ITEM DINÁMICO -->
+    <template v-slot:item="{ props, item }">
+      <v-list-item
+        v-bind="props"
+        :title="
+          itemTitleDinamic
+            ? typeof itemTitleDinamic === 'function'
+              ? itemTitleDinamic(item.raw)
+              : typeof item.raw === 'object'
+                ? item.raw[itemTitleDinamic]
+                : item.raw
+            : typeof item.raw === 'object'
+              ? item.raw[itemTitle]
+              : item.raw
+        "
+      >
+        <v-list-item-subtitle v-if="itemSubtitle">
+          {{
+            typeof itemSubtitle === 'function'
+              ? itemSubtitle(item.raw)
+              : typeof item.raw === 'object'
+                ? item.raw[itemSubtitle]
+                : item.raw
+          }}
+        </v-list-item-subtitle>
+      </v-list-item>
+    </template>
+
     <template v-if="tooltip" v-slot:prepend>
       <v-tooltip interactive>
         <template v-slot:activator="{ props: tooltipProps }">
@@ -32,19 +88,35 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, mergeProps } from "vue";
-import type { PropType } from "vue";
+import { defineComponent, computed, mergeProps } from 'vue'
+import type { PropType } from 'vue'
 
 export default defineComponent({
-  name: "BecSelect",
+  name: 'BecSelect',
   props: {
     modelValue: {
-      type: [String, Number, Object, Array] as PropType<any>,
-      required: true,
+      type: [String, Number, Object, Array, null] as PropType<any>,
+      default: null,
+    },
+    itemSubtitle: {
+      type: [String, Function] as PropType<string | ((item: any) => string)>,
+      default: null,
+    },
+    itemTitle: {
+      type: String,
+      default: 'label',
+    },
+    itemTitleDinamic: {
+      type: [String, Function] as PropType<string | ((item: any) => string)>,
+      default: null,
+    },
+    itemValue: {
+      type: String,
+      default: 'value',
     },
     items: {
       type: Array as PropType<any[]>,
-      required: true,
+      default: () => [],
     },
     label: String,
     multiple: {
@@ -58,53 +130,46 @@ export default defineComponent({
       type: Array as PropType<((v: any) => true | string)[]>,
       default: () => [],
     },
+    returnObject: {
+      type: Boolean,
+      default: false,
+    },
     onModelUpdate: Function as PropType<(val: any) => void>,
     variant: {
       type: String as PropType<
-        | "outlined"
-        | "filled"
-        | "plain"
-        | "underlined"
-        | "solo"
-        | "solo-inverted"
-        | "solo-filled"
+        'outlined' | 'filled' | 'plain' | 'underlined' | 'solo' | 'solo-inverted' | 'solo-filled'
       >,
-      default: "outlined",
+      default: 'outlined',
     },
   },
-  emits: ["update:modelValue"],
+  emits: ['update:modelValue'],
   setup(props, { emit }) {
     const model = computed({
       get: () => props.modelValue,
       set: (val) => {
-        emit("update:modelValue", val); // 🔧 actualiza el v-model en el padre
+        emit('update:modelValue', val) // 🔧 actualiza el v-model en el padre
         if (props.onModelUpdate) {
-          props.onModelUpdate(val); // 🔧 llama  función personalizada desde el Padre
+          props.onModelUpdate(val) // 🔧 llama  función personalizada desde el Padre
         }
       },
-    });
-
-    const items = computed(() => props.items);
-    const label = computed(() => props.label);
-    const multiple = computed(() => props.multiple);
-    const placeholder = computed(() => props.placeholder);
-    const prependIcon = computed(() => props.prependIcon);
-    const rules = computed(() => props.rules);
-    const tooltip = computed(() => props.tooltip);
-    const variant = computed(() => props.variant);
+    })
 
     return {
-      items,
-      label,
+      itemSubtitle: computed(() => props.itemSubtitle),
+      itemTitle: computed(() => props.itemTitle),
+      itemTitleDinamic: computed(() => props.itemTitleDinamic),
+      itemValue: computed(() => props.itemValue),
+      items: computed(() => props.items),
+      label: computed(() => props.label),
       mergeProps,
       model,
-      multiple,
-      placeholder,
-      prependIcon,
-      rules,
-      tooltip,
-      variant,
-    };
+      multiple: computed(() => props.multiple),
+      placeholder: computed(() => props.placeholder),
+      prependIcon: computed(() => props.prependIcon),
+      rules: computed(() => props.rules),
+      tooltip: computed(() => props.tooltip),
+      variant: computed(() => props.variant),
+    }
   },
-});
+})
 </script>

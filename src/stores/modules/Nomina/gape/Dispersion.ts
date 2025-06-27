@@ -23,13 +23,13 @@ export const useDispersionStore = defineStore({
         // Determinar nombre de archivo según tipo
         const filename = (() => {
           switch (tipo) {
-            case 'fondeadora':
+            case 'Fondeadora':
               return 'dispersion_fondeadora.csv'
-            case 'azteca_bancario':
+            case 'AztecaBancario':
               return 'dispersion_azteca_bancaria.xlsx'
-            case 'azteca_interbancario':
+            case 'AztecaInterbancario':
               return 'dispersion_azteca_interbancaria.xlsx'
-            case 'banorte_tercero':
+            case 'BanorteTerceros':
               return 'dispersion_banorte_tab.csv'
             default:
               return 'dispersion_generica.txt'
