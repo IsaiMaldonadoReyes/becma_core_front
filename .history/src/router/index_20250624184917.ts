@@ -7,7 +7,6 @@ import VentasPorMarcasChart from '@/views/comercial/VentasPorMarcasChart.vue'
 import EmpleadoList from '@/views/nominas/EmpleadoList.vue'
 import EmpleadoForm from '@/views/nominas/EmpleadoForm.vue'
 import EmpresaForm from '@/views/nominas/gape/EmpresaForm.vue'
-import EmpresaList from '@/views/nominas/gape/EmpresaList.vue'
 import ParametrizacionForm from '@/views/nominas/gape/ParametrizacionForm.vue'
 import LayoutDispersion from '@/views/nominas/gape/LayoutDispersion.vue'
 import IncidenciasForm from '@/views/nominas/gape/IncidenciasForm.vue'
@@ -56,12 +55,6 @@ const router = createRouter({
       component: EmpresaForm,
       name: 'EmpresaForm',
       path: '/nominas/gape/empresaForm',
-      meta: { requiresAuth: true, sistema: 'nominas' },
-    },
-    {
-      component: EmpresaList,
-      name: 'EmpresaList',
-      path: '/nominas/gape/empresaList',
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
     {

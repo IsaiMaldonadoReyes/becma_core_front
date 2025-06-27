@@ -60,8 +60,8 @@ const router = createRouter({
     },
     {
       component: EmpresaList,
-      name: 'EmpresaList',
-      path: '/nominas/gape/empresaList',
+      name: 'EmpresaForm',
+      path: '/nominas/gape/empresaForm',
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
     {

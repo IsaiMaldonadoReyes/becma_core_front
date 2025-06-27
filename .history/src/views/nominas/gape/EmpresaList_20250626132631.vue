@@ -359,7 +359,7 @@
                 show-first-last-page
                 variant="tonal"
                 class="pt-1"
-                density="compact"
+                density="com´pact"
               />
             </template>
           </v-data-table>
