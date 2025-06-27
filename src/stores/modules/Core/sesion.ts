@@ -65,6 +65,17 @@ export const sessionStore = defineStore({
       }
     },
 
+    async logout() {
+      try {
+        const response = await axios.post('/api/logout')
+
+        this.auth = false
+        this.object = {}
+      } catch (error) {
+        //throw new Error("Error al cerrar la sesión");
+      }
+    },
+
     async authDirectories() {
       try {
         // 1. Intentar la petición
@@ -156,17 +167,6 @@ export const sessionStore = defineStore({
 
         this.responseMessage = errorReq
         this.type = 'error'
-      }
-    },
-
-    async logout() {
-      try {
-        const response = await axios.put('/login/token')
-
-        this.auth = false
-        this.object = {}
-      } catch (error) {
-        //throw new Error("Error al cerrar la sesión");
       }
     },
   },
