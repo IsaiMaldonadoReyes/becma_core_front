@@ -38,7 +38,13 @@
             </template>
           </v-list-item>
 
-          <v-list-item class="py-3 border-b" color="primary" title="Cerrar" value="cerrar">
+          <v-list-item
+            class="py-3 border-b"
+            color="primary"
+            title="Cerrar"
+            value="cerrar"
+            @click="cerrarSesion()"
+          >
             <template v-slot:prepend>
               <v-icon icon="mdi-logout" size="30" />
             </template>
@@ -59,6 +65,7 @@
 <script lang="ts">
 import { ref, defineComponent, mergeProps, onMounted, computed } from 'vue'
 import DialogCuenta from '../core/dialogForm/DialogCuenta.vue'
+import { useRouter } from "vue-router";
 import { sessionStore } from '../../stores/modules/Core/sesion'
 
 export interface Item {
@@ -78,6 +85,7 @@ export default defineComponent({
   name: 'Avatar',
   components: { DialogCuenta },
   setup() {
+    const router = useRouter();
     const session = sessionStore()
 
     const item = ref<Item | any>({})
@@ -146,6 +154,16 @@ export default defineComponent({
       return ''
     })
 
+    const cerrarSesion = () => {
+      try {
+        session.logout()
+
+        router.push({ name: "Login" });
+      } catch (err) {
+        alert('Ocurrió un error al cerrar sesión')
+      }
+    }
+
     return {
       dialogCuentaPropiedades,
       getIniciales,
@@ -154,6 +172,7 @@ export default defineComponent({
       mergeProps,
       onCloseDialogForm,
       onOpenDialogForm,
+      cerrarSesion,
     }
   },
 })
