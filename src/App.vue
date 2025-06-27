@@ -61,7 +61,7 @@
         </v-card-text>
       </v-card>
     </v-footer>
-    <!--dialog-confirmation
+    <dialog-confirmation
       :dialog-content="dialogStore.dialogConfirmation.cuerpo"
       :dialog-icon="dialogStore.dialogConfirmation.icono"
       :dialog-items="dialogStore.dialogConfirmation.items"
@@ -79,63 +79,65 @@
       :dialog-title="dialogStore.dialogInformation.titulo"
       :dialog-view="dialogStore.dialogInformation.dialog"
       @close="dialogStore.onCloseDialogInformation"
-    /-->
+    />
   </v-app>
 </template>
 
 <script lang="ts">
-import { RouterLink, RouterView } from "vue-router";
-import router from "./router";
-import { ref, getCurrentInstance, defineComponent, computed, mergeProps } from "vue";
-import { useTheme } from "vuetify";
-import NavigationDrawer from "./components/core/NavigationDrawer.vue";
-import Notificacion from "./components/core/Notification.vue";
-import Avatar from "./components/core/Avatar.vue";
-import { sessionStore } from "@/stores/modules/Core/sesion";
+import { RouterLink, RouterView } from 'vue-router'
+import router from './router'
+import { ref, getCurrentInstance, defineComponent, computed, mergeProps, onMounted } from 'vue'
+import { useTheme } from 'vuetify'
+import NavigationDrawer from './components/core/NavigationDrawer.vue'
+import Notificacion from './components/core/Notification.vue'
+import Avatar from './components/core/Avatar.vue'
+import { sessionStore } from '@/stores/modules/Core/sesion'
 
-//import DialogConfirmation from "@/components/core/dialogManager/DialogConfirmation.vue";
+import DialogConfirmation from '@/components/core/dialogManager/DialogConfirmation.vue'
 
-//import DialogInformation from "@/components/core/dialogManager/DialogInformation.vue";
+import DialogInformation from '@/components/core/dialogManager/DialogInformation.vue'
 
-//import { useDialogManagerStore } from "@/stores/modules/Core/dialog";
+import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 
 export default defineComponent({
   components: {
     NavigationDrawer,
     Notificacion,
     Avatar,
-    //DialogConfirmation,
-    //DialogInformation,
+    DialogConfirmation,
+    DialogInformation,
   },
 
   setup() {
-    //const dialogStore = useDialogManagerStore();
-    const session = sessionStore();
+    const dialogStore = useDialogManagerStore()
+    const session = sessionStore()
 
-    const theme = useTheme();
+    const sessionUsuario = computed(() => session.auth)
+
+    const theme = useTheme()
     const changePrimaryColor = (color: string) => {
-      theme.themes.value.light.colors.primary = color;
-    };
+      theme.themes.value.light.colors.primary = color
+    }
 
     const onChageTheme = () => {
-      theme.global.name.value = theme.global.current.value.dark ? "light" : "dark";
-    };
+      theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+    }
 
     const logoSrc = computed(() => {
       return theme.global.current.value.dark
-        ? "/src/assets/images/becma_logo.png"
-        : "/src/assets/images/becma_logo_color.png";
-    });
+        ? '/src/assets/images/becma_logo.png'
+        : '/src/assets/images/becma_logo_color.png'
+    })
 
     const logoSrcGape = computed(() => {
       return theme.global.current.value.dark
-        ? "https://static.wixstatic.com/media/b39cbd_eff5ff2e532f46a481354452f7c7e138~mv2.png/v1/fill/w_440,h_156,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/LOGO%20GAPE%20BLANCO%202024.png"
-        : "https://static.wixstatic.com/media/b39cbd_db1477d2cd87416fa6f7257894b5035f~mv2.png/v1/fill/w_269,h_88,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/GAPE%202024.png";
-    });
+        ? 'https://static.wixstatic.com/media/b39cbd_eff5ff2e532f46a481354452f7c7e138~mv2.png/v1/fill/w_440,h_156,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/LOGO%20GAPE%20BLANCO%202024.png'
+        : 'https://static.wixstatic.com/media/b39cbd_db1477d2cd87416fa6f7257894b5035f~mv2.png/v1/fill/w_269,h_88,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/GAPE%202024.png'
+    })
 
     const abrirSitio = () => {
-      window.open("https://solucionesbecma.com", "_blank");
-    };
+      window.open('https://solucionesbecma.com', '_blank')
+    }
 
     // NavigationDrawer
     const navigationDrawerProps = ref({
@@ -143,61 +145,63 @@ export default defineComponent({
       drawerHijo: true,
       drawerPadre: false,
       railHijo: false,
-    });
-    const iconMenuParent = ref("mdi-format-list-bulleted");
-    const iconChildren = ref("mdi-format-list-bulleted");
-    const clickCount = ref(0);
+    })
+    const iconMenuParent = ref('mdi-format-list-bulleted')
+    const iconChildren = ref('mdi-format-list-bulleted')
+    const clickCount = ref(0)
 
     const onClickDrawerParent = () => {
       if (navigationDrawerProps.value.drawerPadre) {
-        navigationDrawerProps.value.drawerPadre = false;
-        iconMenuParent.value = "mdi-menu";
+        navigationDrawerProps.value.drawerPadre = false
+        iconMenuParent.value = 'mdi-menu'
       } else {
-        navigationDrawerProps.value.drawerPadre = true;
-        iconMenuParent.value = "mdi-format-list-bulleted";
+        navigationDrawerProps.value.drawerPadre = true
+        iconMenuParent.value = 'mdi-format-list-bulleted'
       }
-    };
+    }
 
     const onClickDrawerChildren = () => {
-      clickCount.value = (clickCount.value + 1) % 3;
+      clickCount.value = (clickCount.value + 1) % 3
       switch (clickCount.value) {
         case 0:
           Object.assign(navigationDrawerProps.value, {
             borderHijo: true,
             drawerHijo: true,
             railHijo: true,
-          });
-          iconChildren.value = "mdi-format-list-bulleted";
+          })
+          iconChildren.value = 'mdi-format-list-bulleted'
 
-          navigationDrawerProps.value.borderHijo = true;
-          navigationDrawerProps.value.drawerHijo = true;
-          navigationDrawerProps.value.railHijo = true;
-          iconChildren.value = "mdi-format-list-bulleted";
-          break;
+          navigationDrawerProps.value.borderHijo = true
+          navigationDrawerProps.value.drawerHijo = true
+          navigationDrawerProps.value.railHijo = true
+          iconChildren.value = 'mdi-format-list-bulleted'
+          break
         case 1:
-          navigationDrawerProps.value.borderHijo = false;
-          navigationDrawerProps.value.drawerHijo = true;
-          navigationDrawerProps.value.railHijo = false;
-          iconChildren.value = "mdi-menu-open";
-          break;
+          navigationDrawerProps.value.borderHijo = false
+          navigationDrawerProps.value.drawerHijo = true
+          navigationDrawerProps.value.railHijo = false
+          iconChildren.value = 'mdi-menu-open'
+          break
         case 2:
-          navigationDrawerProps.value.borderHijo = false;
-          navigationDrawerProps.value.drawerHijo = false;
-          navigationDrawerProps.value.railHijo = true;
-          iconChildren.value = "mdi-menu";
-          break;
+          navigationDrawerProps.value.borderHijo = false
+          navigationDrawerProps.value.drawerHijo = false
+          navigationDrawerProps.value.railHijo = true
+          iconChildren.value = 'mdi-menu'
+          break
       }
-    };
+    }
 
-    /*const handleClickYesDialog = () => {
-      dialogStore.onConfirmDialog();
-    };*/
+    const handleClickYesDialog = () => {
+      dialogStore.onConfirmDialog()
+    }
 
-    const sessionUsuario = computed(() => session.auth);
+    onMounted(async () => {
+      await session.authUserInformation()
+    })
 
     return {
-      //dialogStore,
-      //handleClickYesDialog,
+      dialogStore,
+      handleClickYesDialog,
       abrirSitio,
       changePrimaryColor,
       iconChildren,
@@ -210,9 +214,9 @@ export default defineComponent({
       onClickDrawerChildren,
       onClickDrawerParent,
       sessionUsuario,
-    };
+    }
   },
-});
+})
 </script>
 <style>
 /*html,
