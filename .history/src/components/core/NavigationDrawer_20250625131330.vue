@@ -279,7 +279,7 @@ export default defineComponent({
             nombre: "empresa",
             descripcion: "Empresas",
             etiqueta: "Empresa",
-            ruta: "/nominas/gape/empresaList",
+            ruta: "/nominas/gape/empresaForm",
             icono: "mdi-file-sign",
             orden: 2,
           },

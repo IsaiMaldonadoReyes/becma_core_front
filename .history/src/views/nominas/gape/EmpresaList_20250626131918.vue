@@ -359,7 +359,6 @@
                 show-first-last-page
                 variant="tonal"
                 class="pt-1"
-                density="compact"
               />
             </template>
           </v-data-table>
@@ -667,7 +666,7 @@ export default defineComponent({
         calcularDimensiones();
       }
 
-      return `${tableHeight.value}px !important`;
+      return { height: `${tableHeight.value}px !important` };
     });
 
     const calcularDimensiones = () => {
@@ -678,7 +677,7 @@ export default defineComponent({
           vrowFiltrosRef.value.$el.clientHeight -
           112;
 
-        tableHeight.value = cardHeight.value;
+        tableHeight.value = cardHeight.value - 50;
       }
     };
 

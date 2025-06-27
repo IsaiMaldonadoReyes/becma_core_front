@@ -171,7 +171,6 @@
               v-bind="mergeProps(tooltip)"
               class="border-opacity-25"
               color="primary"
-              density="compact"
               divided
               variant="outlined"
             >
@@ -239,7 +238,7 @@
             sort-desc-icon="mdi-arrow-up-thin"
             fixed-header
             eager
-            :height="getTableHeight"
+            :height="getCardHeight"
           >
             <template
               v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }"
@@ -359,7 +358,6 @@
                 show-first-last-page
                 variant="tonal"
                 class="pt-1"
-                density="compact"
               />
             </template>
           </v-data-table>
@@ -631,7 +629,7 @@ export default defineComponent({
       }));*/
 
       vdtbPrincipalItems.value = sistema.object.data.flatMap((item: InterfaceItem) =>
-        Array.from({ length: 5 }, () => ({
+        Array.from({ length: 1 }, () => ({
           id: item.id,
           nombre: item.nombre,
           codigo: item.codigo,
@@ -667,7 +665,7 @@ export default defineComponent({
         calcularDimensiones();
       }
 
-      return `${tableHeight.value}px !important`;
+      return { height: `${tableHeight.value}px !important` };
     });
 
     const calcularDimensiones = () => {
@@ -678,7 +676,7 @@ export default defineComponent({
           vrowFiltrosRef.value.$el.clientHeight -
           112;
 
-        tableHeight.value = cardHeight.value;
+        tableHeight.value = cardHeight.value - 100;
       }
     };
 
