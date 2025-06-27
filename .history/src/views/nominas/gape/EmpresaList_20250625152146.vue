@@ -157,12 +157,30 @@
 
     <v-row ref="vrowFiltrosRef">
       <v-col cols="12" lg="10" class="d-flex align-center">
-        <bec-text-field
+        <v-text-field
           v-model="vdtbPrincipalBusqueda"
-          :placeholder="'Buscar'"
-          :prepend-icon="'mdi-magnify'"
-          :tooltip="'Se requiere reporte de ISN mensual.'"
-        />
+          clear-icon="mdi-close"
+          clearable
+          color="primary"
+          flat
+          hide-details
+          placeholder="Buscar"
+          prepend-inner-icon="mdi-magnify"
+          single-line
+          variant="outlined"
+        >
+          <template v-slot:prepend>
+            <v-tooltip interactive>
+              <template v-slot:activator="{ props: tooltip }">
+                <v-icon
+                  icon="mdi-information-slab-circle-outline"
+                  v-bind="mergeProps(tooltip)"
+                />
+              </template>
+              <span>Se requiere reporte de ISN mensual.</span>
+            </v-tooltip>
+          </template>
+        </v-text-field>
       </v-col>
       <v-col cols="12" lg="2" class="d-flex justify-end align-center">
         <v-tooltip interactive>
@@ -171,7 +189,6 @@
               v-bind="mergeProps(tooltip)"
               class="border-opacity-25"
               color="primary"
-              density="compact"
               divided
               variant="outlined"
             >
@@ -217,8 +234,6 @@
     <v-row>
       <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
     </v-row>
-
-    <!-- data-table -->
     <v-row>
       <v-col>
         <v-card color="transparent" elevation="0">
@@ -239,7 +254,8 @@
             sort-desc-icon="mdi-arrow-up-thin"
             fixed-header
             eager
-            :height="getTableHeight"
+            :height="getCardHeight"
+            :cell-props="rowProps"
           >
             <template
               v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }"
@@ -359,7 +375,6 @@
                 show-first-last-page
                 variant="tonal"
                 class="pt-1"
-                density="compact"
               />
             </template>
           </v-data-table>
@@ -406,7 +421,6 @@ import DialogConfirmation from "../../../components/core/dialogMessage/DialogCon
 import DialogInformation from "../../../components/core/dialogMessage/DialogInformation.vue";
 import DialogSistema from "../../../helpers/core/dialogForm/DialogSistema.vue";
 import { sistemaStore } from "../../../stores/modules/Core/sistema";
-import BecTextField from "@/components/core/becmaComponents/BecTextField.vue";
 
 export interface Elementos {
   id: number;
@@ -426,7 +440,7 @@ interface InterfaceItem {
 
 export default defineComponent({
   name: "EmpresaList",
-  components: { DialogInformation, DialogSistema, DialogConfirmation, BecTextField },
+  components: { DialogInformation, DialogSistema, DialogConfirmation },
 
   setup() {
     const sistema = sistemaStore();
@@ -631,7 +645,7 @@ export default defineComponent({
       }));*/
 
       vdtbPrincipalItems.value = sistema.object.data.flatMap((item: InterfaceItem) =>
-        Array.from({ length: 5 }, () => ({
+        Array.from({ length: 1 }, () => ({
           id: item.id,
           nombre: item.nombre,
           codigo: item.codigo,
@@ -667,7 +681,7 @@ export default defineComponent({
         calcularDimensiones();
       }
 
-      return `${tableHeight.value}px !important`;
+      return { height: `${tableHeight.value}px !important` };
     });
 
     const calcularDimensiones = () => {
@@ -678,7 +692,7 @@ export default defineComponent({
           vrowFiltrosRef.value.$el.clientHeight -
           112;
 
-        tableHeight.value = cardHeight.value;
+        tableHeight.value = cardHeight.value - 100;
       }
     };
 

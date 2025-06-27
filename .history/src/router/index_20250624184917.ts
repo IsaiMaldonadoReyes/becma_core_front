@@ -7,7 +7,6 @@ import VentasPorMarcasChart from '@/views/comercial/VentasPorMarcasChart.vue'
 import EmpleadoList from '@/views/nominas/EmpleadoList.vue'
 import EmpleadoForm from '@/views/nominas/EmpleadoForm.vue'
 import EmpresaForm from '@/views/nominas/gape/EmpresaForm.vue'
-import EmpresaList from '@/views/nominas/gape/EmpresaList.vue'
 import ParametrizacionForm from '@/views/nominas/gape/ParametrizacionForm.vue'
 import LayoutDispersion from '@/views/nominas/gape/LayoutDispersion.vue'
 import IncidenciasForm from '@/views/nominas/gape/IncidenciasForm.vue'
@@ -59,12 +58,6 @@ const router = createRouter({
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
     {
-      component: EmpresaList,
-      name: 'EmpresaList',
-      path: '/nominas/gape/empresaList',
-      meta: { requiresAuth: true, sistema: 'nominas' },
-    },
-    {
       component: ParametrizacionForm,
       name: 'ParametrizacionForm',
       path: '/nominas/gape/parametrizacionForm',
@@ -86,13 +79,12 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
+  /*
   const session = sessionStore()
 
-  if (!session.auth) {
-    await session.authUserInformation()
+  if (!session.authRoutes) {
+    await session.authDirectories()
   }
-
-  /*
 
   const isAuthenticated = session.authRoutes
   const userRoutes = session.userRoutes

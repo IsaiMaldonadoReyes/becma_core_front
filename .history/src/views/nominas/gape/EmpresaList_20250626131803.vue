@@ -239,7 +239,7 @@
             sort-desc-icon="mdi-arrow-up-thin"
             fixed-header
             eager
-            :height="getTableHeight"
+            :height="getCardHeight"
           >
             <template
               v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }"
@@ -359,7 +359,6 @@
                 show-first-last-page
                 variant="tonal"
                 class="pt-1"
-                density="compact"
               />
             </template>
           </v-data-table>
@@ -667,7 +666,7 @@ export default defineComponent({
         calcularDimensiones();
       }
 
-      return `${tableHeight.value}px !important`;
+      return { height: `${tableHeight.value}px !important` };
     });
 
     const calcularDimensiones = () => {
@@ -676,9 +675,9 @@ export default defineComponent({
           vconPrincipalRef.value.$el.clientHeight -
           vbrePrincipalRef.value.$el.clientHeight -
           vrowFiltrosRef.value.$el.clientHeight -
-          112;
+          130;
 
-        tableHeight.value = cardHeight.value;
+        tableHeight.value = cardHeight.value - 100;
       }
     };
 

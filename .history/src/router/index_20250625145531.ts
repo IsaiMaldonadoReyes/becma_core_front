@@ -86,13 +86,12 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
+  /*
   const session = sessionStore()
 
-  if (!session.auth) {
-    await session.authUserInformation()
+  if (!session.authRoutes) {
+    await session.authDirectories()
   }
-
-  /*
 
   const isAuthenticated = session.authRoutes
   const userRoutes = session.userRoutes
