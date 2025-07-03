@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import type { EmpresaModel } from '@/interfaces/nomina/default/nom10000'
 import { getDefaultEmpresa } from '@/utils/nomina/default/getDefaultEmpresa'
 
-export function useEmrpesa() {
+export function useEmpresa() {
   const dataModel = ref<EmpresaModel>(getDefaultEmpresa())
 
   const resetModel = () => {

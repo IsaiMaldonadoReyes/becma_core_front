@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { sessionStore } from '../stores/modules/Core/sesion'
 import Login from '../views/LoginView.vue'
-import SistemaForm from '../views/core/SistemaForm.vue'
+//import SistemaForm from '../views/core/SistemaForm.vue'
 import SistemaList from '../views/core/SistemaList.vue'
 import VentasPorMarcasChart from '@/views/comercial/VentasPorMarcasChart.vue'
 import EmpleadoList from '@/views/nominas/EmpleadoList.vue'
@@ -21,12 +21,12 @@ const router = createRouter({
       path: '/login',
       meta: { requiresAuth: false, sistema: '' },
     },
-    {
+    /*{
       component: SistemaForm,
       name: 'CoreSistemaForm',
       path: '/core/sistemaForm',
       meta: { requiresAuth: true, sistema: 'comercial' },
-    },
+    },*/
     {
       component: SistemaList,
       name: 'CoreSistemaList',

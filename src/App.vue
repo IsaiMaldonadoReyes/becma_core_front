@@ -16,7 +16,7 @@
         <v-img :src="logoSrcGape" contain height="40" />
       </v-toolbar-title>
 
-      <v-btn @click="changePrimaryColor('#FD720D')">Cambiar a Rojo</v-btn>
+      <!--v-btn @click="changePrimaryColor('#FD720D')">Cambiar a Rojo</v-btn-->
       <template v-slot:append>
         <v-switch
           color="primary"
@@ -85,7 +85,6 @@
 
 <script lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import router from './router'
 import { ref, getCurrentInstance, defineComponent, computed, mergeProps, onMounted } from 'vue'
 import { useTheme } from 'vuetify'
 import NavigationDrawer from './components/core/NavigationDrawer.vue'
