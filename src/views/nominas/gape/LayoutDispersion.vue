@@ -81,6 +81,30 @@
                   :tooltip="'Banco'"
                 />
               </v-col>
+              <v-col cols="12">
+                <bec-text-field
+                  v-model="dataModel.claveId"
+                  :disabled="claveIdDisabled"
+                  :label="'Clave de banco ID'"
+                  :multiple="false"
+                  :placeholder="'Ingrese la clave del banco'"
+                  :prepend-icon="'mdi-credit-card-lock'"
+                  :rules="[validationRules.required]"
+                  :tooltip="'Banorte'"
+                />
+              </v-col>
+              <v-col cols="12">
+                <bec-text-field
+                  v-model="dataModel.cuentaOrigen"
+                  :disabled="cuentaOrigenDisabled"
+                  :label="'Cuenta de origen'"
+                  :multiple="false"
+                  :placeholder="'Ingrese la cuenta ordenante'"
+                  :prepend-icon="'mdi-credit-card'"
+                  :rules="[validationRules.required]"
+                  :tooltip="'Cuenta odenante'"
+                />
+              </v-col>
             </v-row>
           </v-card-text>
           <v-card-actions>
@@ -156,7 +180,12 @@ export default defineComponent({
       id_tipo_periodo: null,
       id_periodo: null,
       banco: null,
+      claveId: null,
+      cuentaOrigen: null,
     })
+
+    const claveIdDisabled = ref(false)
+    const cuentaOrigenDisabled = ref(false)
 
     // 3. Composables (funciones reutilizables de Vuetify)
 
@@ -165,12 +194,12 @@ export default defineComponent({
     const vbrePrincipalItems = ref([
       {
         disabled: false,
-        href: 'breadcrumbs_dashboard',
+        href: '',
         title: 'Layout de Bancos',
       },
       {
         disabled: false,
-        href: 'breadcrumbs_link_1',
+        href: '',
         title: 'Formulario',
       },
     ])
@@ -200,8 +229,8 @@ export default defineComponent({
         try {
           dispersionStore.descargarArchivo(banco, {
             id: id_empresa,
-            claveId: '142335',
-            cuentaOrigen: '0102087623',
+            claveId: dataModel.value.claveId,
+            cuentaOrigen: dataModel.value.cuentaOrigen,
             idperiodo: id_periodo,
           })
         } catch (err) {
@@ -258,6 +287,37 @@ export default defineComponent({
       },
     )
 
+    watch(
+      () => dataModel.value.banco,
+      (banco) => {
+        if (typeof banco !== 'string') return
+
+
+        dataModel.value.claveId = null
+        dataModel.value.cuentaOrigen = null
+
+        switch (banco) {
+          case 'Fondeadora':
+            claveIdDisabled.value = true
+            cuentaOrigenDisabled.value = true
+            break
+          case 'AztecaInterbancario':
+          case 'AztecaBancario':
+            claveIdDisabled.value = true
+            cuentaOrigenDisabled.value = false
+            break
+          case 'BanorteTerceros':
+            claveIdDisabled.value = false
+            cuentaOrigenDisabled.value = false
+            break
+          default:
+            claveIdDisabled.value = false
+            cuentaOrigenDisabled.value = false
+        }
+      },
+      { immediate: true },
+    )
+
     return {
       mergeProps,
       vbrePrincipalItems,
@@ -269,6 +329,8 @@ export default defineComponent({
       itemsBancosDispersion,
       onDecision,
       validationRules,
+      claveIdDisabled,
+      cuentaOrigenDisabled,
     }
   },
 })

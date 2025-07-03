@@ -274,7 +274,7 @@ import {
 import { useDisplay } from 'vuetify'
 import { Chart, type ChartData, type ChartOptions } from 'chart.js/auto'
 
-import { sistemaStore } from '../../stores/modules/Core/sistema'
+import { useSistemaStore } from '../../stores/modules/Core/sistema'
 import { options } from 'node_modules/axios/index.cjs'
 
 import { rpt2VentasPorMarcas } from '../../stores/modules/Comercial/rpt2VentasPorMarcas'
@@ -699,7 +699,7 @@ export default defineComponent({
       }
     }
 
-    const exportStore = sistemaStore()
+    const exportStore = useSistemaStore()
     const reporte = rpt2VentasPorMarcas()
 
     const fetchChartData = async () => {
