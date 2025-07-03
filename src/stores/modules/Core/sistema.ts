@@ -1,59 +1,82 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import type { SistemaModel } from '@/interfaces/core/Sistema'
 
 axios.defaults.withCredentials = true
 axios.defaults.withXSRFToken = true
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL
 
 interface SistemaState {
-  object: any
+  sistema: SistemaModel[]
   responseMessage: string
-  type: string
 }
 
-interface SistemaData {
-  nombre?: string
-  codigo?: string
-  descripcion?: string
-}
-
-export const sistemaStore = defineStore({
+export const useSistemaStore = defineStore({
   id: 'sistema',
   state: (): SistemaState => ({
-    object: {},
+    sistema: [],
     responseMessage: '',
-    type: '',
   }),
   actions: {
-    async storeSistema(data: SistemaData) {
+    async storeSistema(data: SistemaModel) {
       try {
         const response = await axios.post('/api/storeSistema', data)
 
-        this.object = response.data
+        this.sistema = response.data
       } catch (error: any) {
-        console.log(error)
+        if (error.response) {
+          const status = error.response.status
 
-        this.responseMessage = error.message
-        //throw error
+          if (status === 422) {
+            // Error de validación
+            this.responseMessage = 'Error de validación'
+            throw {
+              type: 'validation',
+              errors: error.response.data.errors,
+              message: error.response.data.message,
+            }
+          }
+
+          this.responseMessage = error.response.data.message || 'Error en la petición'
+        } else {
+          this.responseMessage = error.message || 'Error desconocido'
+        }
+
+        throw error
       }
     },
-    async updateSistema(data: SistemaData, id: any) {
+    async updateSistema(data: SistemaModel, id: number) {
       try {
         const response = await axios.put(`/api/updateSistema/${id}`, data)
 
-        this.object = response.data
+        this.sistema = response.data
       } catch (error: any) {
-        console.log(error)
+        if (error.response) {
+          const status = error.response.status
 
-        this.responseMessage = error.message
-        //throw error
+          if (status === 422) {
+            // Error de validación
+            this.responseMessage = 'Error de validación'
+            throw {
+              type: 'validation',
+              errors: error.response.data.errors,
+              message: error.response.data.message,
+            }
+          }
+
+          this.responseMessage = error.response.data.message || 'Error en la petición'
+        } else {
+          this.responseMessage = error.message || 'Error desconocido'
+        }
+
+        throw error
       }
     },
     async indexSistema() {
       try {
         const response = await axios.get('/api/indexSistema')
 
-        this.object = response.data
+        this.sistema = response.data.data
       } catch (error: any) {
         console.log(error)
 
@@ -62,11 +85,11 @@ export const sistemaStore = defineStore({
       }
     },
 
-    async destroySistema(id: any) {
+    async destroySistema(id: number) {
       try {
         const response = await axios.delete(`/api/destroySistema/${id}`)
 
-        this.object = response.data
+        this.sistema = response.data
       } catch (error: any) {
         console.log(error)
 
@@ -78,7 +101,7 @@ export const sistemaStore = defineStore({
       try {
         const response = await axios.delete(`/api/destroySistemaByIds`, { data: { ids } })
 
-        this.object = response.data
+        this.sistema = response.data
       } catch (error: any) {
         console.log(error)
 
@@ -86,7 +109,7 @@ export const sistemaStore = defineStore({
         //throw error
       }
     },
-
+    /*
     async fetchExcel(data: any) {
       try {
         const now = new Date()
@@ -124,6 +147,6 @@ export const sistemaStore = defineStore({
       } catch (error) {
         console.error('Error al descargar el archivo:', error)
       }
-    },
+    },*/
   },
 })

@@ -100,7 +100,7 @@ export const sessionStore = defineStore({
         this.userInformation = response.data
       } catch (error: any) {
         // 4. Manejo de errores
-        console.error('Error en obtener información:', error)
+        //console.error('Error en obtener información:', error)
         //throw error
       }
     },

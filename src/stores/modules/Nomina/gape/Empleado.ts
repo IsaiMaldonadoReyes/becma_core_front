@@ -22,7 +22,7 @@ export const useEmpleadoStore = defineStore({
   actions: {
     async guardarEmpleado(empleado: EmpleadoModel) {
       try {
-        const response = await axios.post(`/api/nominaGuardarEmpleado`, empleado)
+        const response = await axios.post(`/api/storeEmpleado`, empleado)
         this.object = response.data
       } catch (error: any) {
         console.error('Error al obtener departamento:', error)

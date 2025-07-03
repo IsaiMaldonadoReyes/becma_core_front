@@ -477,8 +477,8 @@ import { useDisplay } from "vuetify";
 
 import DialogConfirmation from "../../components/core/dialogMessage/DialogConfirmation.vue";
 import DialogInformation from "../../components/core/dialogMessage/DialogInformation.vue";
-import DialogSistema from "../../helpers/core/dialogForm/DialogSistema.vue";
-import { sistemaStore } from "../../stores/modules/Core/sistema";
+//import DialogSistema from "../../helpers/core/dialogForm/DialogSistema.vue";
+import { useSistemaStore } from "../../stores/modules/Core/sistema";
 
 export interface Elementos {
   id: number;
@@ -498,10 +498,10 @@ interface InterfaceItem {
 
 export default defineComponent({
   name: "EmpleadoList",
-  components: { DialogInformation, DialogSistema, DialogConfirmation },
+  components: { DialogInformation, DialogConfirmation },
 
   setup() {
-    const sistema = sistemaStore();
+    const sistema = useSistemaStore();
 
     // breadcrumbs
     const vbrePrincipalItems = ref([
@@ -649,24 +649,7 @@ export default defineComponent({
       onDelete: async (items: Elementos) => {
         dialogConfirmation.value.dialog = false;
 
-        try {
-          await sistema.destroySistema(items.id);
-          onOpenDialogInformation(
-            "#438701",
-            sistema.object.message,
-            "correct",
-            "Registro eliminado",
-            1
-          );
-        } catch (error) {
-          onOpenDialogInformation(
-            "#438701",
-            sistema.responseMessage,
-            "incorrect",
-            "Ocurrió un error en el registro guardado",
-            1
-          );
-        }
+
         fnCargarListado();
       },
     };
@@ -702,16 +685,6 @@ export default defineComponent({
         estado: item.estado,
       }));*/
 
-      vdtbPrincipalItems.value = sistema.object.data.flatMap((item: InterfaceItem) =>
-        Array.from({ length: 1 }, () => ({
-          id: item.id,
-          nombre: item.nombre,
-          codigo: item.codigo,
-          descripcion: item.descripcion,
-          fecha: item.fecha_creacion,
-          estado: item.estado,
-        }))
-      );
     }
 
     onMounted(() => {

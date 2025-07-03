@@ -93,15 +93,9 @@
               <v-divider class="border-opacity-25" color="white" width="60%"></v-divider>
 
               <a href="https://solucionesbecma.com" target="_blank">
-                <v-img
-                  class="ml-1"
-                  src="/src/assets/images/becma_logo.png"
-                  width="50"
-                ></v-img>
+                <v-img class="ml-1" src="/src/assets/images/becma_logo.png" width="50"></v-img>
               </a>
-              <span class="text-body-2">
-                &nbsp;&#169; {{ new Date().getFullYear() }}
-              </span>
+              <span class="text-body-2"> &nbsp;&#169; {{ new Date().getFullYear() }} </span>
             </v-row>
           </v-card>
         </v-col>
@@ -119,79 +113,73 @@
   </v-container>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { Vue3Lottie } from "vue3-lottie";
-import { useRouter } from "vue-router";
-import { sessionStore } from "../stores/modules/Core/sesion";
-import DialogInformation from "../components/core/dialogMessage/DialogInformation.vue";
+import { defineComponent, ref } from 'vue'
+import { Vue3Lottie } from 'vue3-lottie'
+import { useRouter } from 'vue-router'
+import { sessionStore } from '../stores/modules/Core/sesion'
+import DialogInformation from '../components/core/dialogMessage/DialogInformation.vue'
 
 export default defineComponent({
-  name: "Login",
+  name: 'Login',
   components: { DialogInformation, Vue3Lottie },
   setup() {
-    const router = useRouter();
-    const session = sessionStore();
+    const router = useRouter()
+    const session = sessionStore()
 
     // DialogInformation
     const dialogInformation = ref({
-      color: "",
-      cuerpo: "",
+      color: '',
+      cuerpo: '',
       dialog: false,
-      icono: "",
-      titulo: "",
+      icono: '',
+      titulo: '',
       velocidad: 0,
-    });
+    })
 
     const datosForm = ref({
-      email: ref("isai@gmail.com"),
-      password: ref("123456"),
-    });
+      email: ref('isai@gmail.com'),
+      password: ref('123456'),
+    })
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
     const rules = {
-      required: (v: string) => !!v || "Este dato es requerido para continuar.",
-      email: (v: string) => emailRegex.test(v) || "Correo electrónico no válido",
-    };
+      required: (v: string) => !!v || 'Este dato es requerido para continuar.',
+      email: (v: string) => emailRegex.test(v) || 'Correo electrónico no válido',
+    }
 
-    const visiblePassword = ref(false);
-    const isValid = ref(false);
-    const form = ref();
+    const visiblePassword = ref(false)
+    const isValid = ref(false)
+    const form = ref()
 
     async function login() {
-      const isValidForm = await form.value?.validate();
+      const isValidForm = await form.value?.validate()
 
       if (isValidForm.valid) {
-        let data = new FormData();
-        data.append("email", datosForm.value.email);
-        data.append("password", datosForm.value.password);
+        let data = new FormData()
+        data.append('email', datosForm.value.email)
+        data.append('password', datosForm.value.password)
 
         try {
-          await session.login(data);
-          await form.value?.reset();
-          router.push({ name: "CoreSistemaList" });
+          await session.login(data)
+          await form.value?.reset()
+          router.push({ name: 'CoreSistemaList' })
         } catch (error) {
-          onOpenDialogInformation(
-            "#438701",
-            `Datos incorrectos`,
-            "incorrect",
-            "Login",
-            1
-          );
+          onOpenDialogInformation('#438701', `Datos incorrectos`, 'incorrect', 'Login', 1)
         }
       }
     }
 
     const onCloseDialogInformation = () => {
-      dialogInformation.value.dialog = false;
-    };
+      dialogInformation.value.dialog = false
+    }
 
     const onOpenDialogInformation = (
       color: string,
       cuerpo: string,
       icono: string,
       titulo: string,
-      velocidad: number
+      velocidad: number,
     ) => {
       dialogInformation.value = {
         color: color,
@@ -200,8 +188,8 @@ export default defineComponent({
         icono: icono,
         titulo: titulo,
         velocidad: velocidad,
-      };
-    };
+      }
+    }
 
     return {
       isValid,
@@ -213,13 +201,13 @@ export default defineComponent({
       login,
       onCloseDialogInformation,
       onOpenDialogInformation,
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped>
-@import "../styles/background.css";
+@import '../styles/background.css';
 .login-body {
   background-color: #f0f0f0 !important;
 }
@@ -241,7 +229,7 @@ export default defineComponent({
   padding: 5px;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     z-index: -2;
     left: -50%;
@@ -260,7 +248,7 @@ export default defineComponent({
   }
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     z-index: -1;
     left: 6px;
