@@ -3,7 +3,11 @@
   <v-container ref="vconPrincipalRef" fluid style="height: 95% !important">
     <v-row ref="vbrePrincipalRef" dense>
       <v-col cols="12" md="6" class="d-flex align-center">
-        <v-breadcrumbs :items="vbrePrincipalItems" divider="|" class="text-medium-emphasis">
+        <v-breadcrumbs
+          :items="vbrePrincipalItems"
+          divider="|"
+          class="text-medium-emphasis"
+        >
           <template v-slot:prepend>
             <v-icon icon="mdi-account-tie" color="primary" />
           </template>
@@ -26,7 +30,8 @@
             </v-btn>
           </template>
           <span>
-            <v-icon icon="mdi-microsoft-excel" /> Importar registros desde el formato Excel
+            <v-icon icon="mdi-microsoft-excel" /> Importar registros desde el formato
+            Excel
           </span>
         </v-tooltip>
 
@@ -96,7 +101,9 @@
               @click.stop="vbtnActivarModel = !vbtnActivarModel"
             >
               <v-icon size="24px" color="white">
-                {{ vbtnActivarModel ? 'mdi-checkbox-blank-outline' : 'mdi-checkbox-marked' }}
+                {{
+                  vbtnActivarModel ? "mdi-checkbox-blank-outline" : "mdi-checkbox-marked"
+                }}
               </v-icon>
             </v-btn>
           </template>
@@ -104,7 +111,7 @@
             Marque la casilla para
             <b>
               <i>
-                {{ vbtnActivarModel ? ' ACTIVAR ' : 'DESACTIVAR' }}
+                {{ vbtnActivarModel ? " ACTIVAR " : "DESACTIVAR" }}
               </i>
             </b>
             este registro
@@ -190,9 +197,14 @@
           <template v-slot:prepend>
             <v-tooltip interactive>
               <template v-slot:activator="{ props: tooltip }">
-                <v-icon icon="mdi-information-slab-circle-outline" v-bind="mergeProps(tooltip)" />
+                <v-icon
+                  icon="mdi-information-slab-circle-outline"
+                  v-bind="mergeProps(tooltip)"
+                />
               </template>
-              <span> Ruta del archivo de la base de datos de la empresa del cliente. </span>
+              <span>
+                Ruta del archivo de la base de datos de la empresa del cliente.
+              </span>
             </v-tooltip>
           </template>
         </v-autocomplete>
@@ -218,7 +230,10 @@
           <template v-slot:prepend>
             <v-tooltip interactive>
               <template v-slot:activator="{ props: tooltip }">
-                <v-icon icon="mdi-information-slab-circle-outline" v-bind="mergeProps(tooltip)" />
+                <v-icon
+                  icon="mdi-information-slab-circle-outline"
+                  v-bind="mergeProps(tooltip)"
+                />
               </template>
               <span>Se requiere reporte de ISN mensual.</span>
             </v-tooltip>
@@ -268,7 +283,8 @@
             </v-btn-group>
           </template>
           <span>
-            Escriba o seleccione la cantidad de registros que desea ver por página en la tabla.
+            Escriba o seleccione la cantidad de registros que desea ver por página en la
+            tabla.
           </span>
         </v-tooltip>
       </v-col>
@@ -299,7 +315,9 @@
             :height="getCardHeight"
             :cell-props="rowProps"
           >
-            <template v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }">
+            <template
+              v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }"
+            >
               <v-btn-group
                 class="border-opacity-25"
                 color="primary"
@@ -334,14 +352,19 @@
                     </v-tooltip>
                   </template>
                   <v-list>
-                    <v-list-item v-for="(item, index) in vdtbPrincipalOpcionesCheck" :key="index">
+                    <v-list-item
+                      v-for="(item, index) in vdtbPrincipalOpcionesCheck"
+                      :key="index"
+                    >
                       <v-list-item-title>{{ item.title }}</v-list-item-title>
                     </v-list-item>
                   </v-list>
                 </v-menu>
               </v-btn-group>
             </template>
-            <template v-slot:item.data-table-select="{ internalItem, isSelected, toggleSelect }">
+            <template
+              v-slot:item.data-table-select="{ internalItem, isSelected, toggleSelect }"
+            >
               <v-checkbox-btn
                 :model-value="isSelected(internalItem)"
                 color="primary"
@@ -367,7 +390,12 @@
                 color="primary"
                 @click="onOpenDialogSistema('onEdit', item, 'Editar sistema')"
               />
-              <v-divider class="mx-3 align-self-center" length="24" thickness="2" vertical />
+              <v-divider
+                class="mx-3 align-self-center"
+                length="24"
+                thickness="2"
+                vertical
+              />
               <v-icon
                 icon="mdi-delete"
                 size="small"
@@ -377,15 +405,22 @@
                     `Esta acción eliminará ${item.codigo} de forma definitiva. ¿Desea continuar?`,
                     'onDelete',
                     item,
-                    `Eliminar ${item.codigo}`,
+                    `Eliminar ${item.codigo}`
                   )
                 "
               />
             </template>
             <template v-slot:no-data>
-              <v-card border class="my-5 pa-10 text-center" color="transparent" elevation="0">
+              <v-card
+                border
+                class="my-5 pa-10 text-center"
+                color="transparent"
+                elevation="0"
+              >
                 <v-icon color="grey-lighten-1" size="60" icon="mdi-selection-search" />
-                <v-card-text class="text-grey-darken-1">No se encontraron registros.</v-card-text>
+                <v-card-text class="text-grey-darken-1"
+                  >No se encontraron registros.</v-card-text
+                >
               </v-card>
             </template>
             <template v-slot:bottom>
@@ -436,121 +471,124 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, toRaw, mergeProps, computed, onMounted } from 'vue'
+import { ref, defineComponent, toRaw, mergeProps, computed, onMounted } from "vue";
 
-import { useDisplay } from 'vuetify'
+import { useDisplay } from "vuetify";
 
 //import DialogConfirmation from "../../components/core/dialogMessage/DialogConfirmation.vue";
 //import DialogInformation from "../../components/core/dialogMessage/DialogInformation.vue";
 //import DialogSistema from "../../helpers/core/dialogForm/DialogSistema.vue";
-import { useSistemaStore } from '../../stores/modules/Core/sistema'
+import { useSistemaStore } from "../../stores/modules/Core/sistema";
 
 export interface Elementos {
-  id: number
-  codigo: string
-  descripcion: string
-  nombre: string
+  id: number;
+  codigo: string;
+  descripcion: string;
+  nombre: string;
 }
 
 interface InterfaceItem {
-  id: number
-  nombre: string
-  codigo: string
-  descripcion: string
-  fecha_creacion: string
-  estado: number
+  id: number;
+  nombre: string;
+  codigo: string;
+  descripcion: string;
+  fecha_creacion: string;
+  estado: number;
 }
 
 export default defineComponent({
-  name: 'EmpleadoList',
-  components: {},
+  name: "EmpleadoList",
+  components: { DialogInformation, DialogConfirmation },
 
   setup() {
-    const sistema = useSistemaStore()
+    const sistema = useSistemaStore();
 
     // breadcrumbs
     const vbrePrincipalItems = ref([
       {
         disabled: false,
-        href: 'breadcrumbs_dashboard',
-        title: 'Empleado',
+        href: "breadcrumbs_dashboard",
+        title: "Empleado",
       },
       {
         disabled: false,
-        href: 'breadcrumbs_link_1',
-        title: 'Listado',
+        href: "breadcrumbs_link_1",
+        title: "Listado",
       },
-    ])
+    ]);
 
-    const vbtnActivarModel = ref(true)
-    const vbtnMenuExportarModel = ref(false)
-    const vbtnMenuImportarModel = ref(false)
+    const vbtnActivarModel = ref(true);
+    const vbtnMenuExportarModel = ref(false);
+    const vbtnMenuImportarModel = ref(false);
 
     // Tabla
-    const vdtbPrincipalBusqueda = ref('')
+    const vdtbPrincipalBusqueda = ref("");
     const vdtbPrincipalEncabezados = ref<
       {
-        key: string
-        align?: 'start' | 'center' | 'end'
-        title: string
-        sortable?: boolean
+        key: string;
+        align?: "start" | "center" | "end";
+        title: string;
+        sortable?: boolean;
       }[]
     >([
-      { key: 'nombre', align: 'start', title: 'Nombre', sortable: true },
-      { key: 'codigo', align: 'center', title: 'Código', sortable: true },
-      { key: 'descripcion', align: 'start', title: 'Descripción', sortable: true },
-      { key: 'fecha', align: 'center', title: 'Fecha' },
-      { title: 'Actions', key: 'actions', sortable: false, align: 'end' },
-      { title: '', key: 'drag', sortable: false, align: 'end' },
-    ])
-    const vdtbPrincipalItems = ref<InterfaceItem[]>([])
+      { key: "nombre", align: "start", title: "Nombre", sortable: true },
+      { key: "codigo", align: "center", title: "Código", sortable: true },
+      { key: "descripcion", align: "start", title: "Descripción", sortable: true },
+      { key: "fecha", align: "center", title: "Fecha" },
+      { title: "Actions", key: "actions", sortable: false, align: "end" },
+      { title: "", key: "drag", sortable: false, align: "end" },
+    ]);
+    const vdtbPrincipalItems = ref<InterfaceItem[]>([]);
 
-    const vdtbPrincipalItemsPorPagina = ref(5)
-    const vdtbPrincipalItemsSeleccionados = ref([])
-    const vdtbPrincipalOpcionesCheck = ref([{ title: 'Eliminar' }, { title: 'Click Me2' }])
+    const vdtbPrincipalItemsPorPagina = ref(5);
+    const vdtbPrincipalItemsSeleccionados = ref([]);
+    const vdtbPrincipalOpcionesCheck = ref([
+      { title: "Eliminar" },
+      { title: "Click Me2" },
+    ]);
     const vdtbPrincipalOpcionesItemsPorPagina = ref([
-      { titulo: '5', valor: 5 },
-      { titulo: '10', valor: 10 },
-      { titulo: '15', valor: 15 },
-      { titulo: '20', valor: 20 },
-      { titulo: 'Ver todos', valor: 0 },
-    ])
-    const vdtbPrincipalPaginaActual = ref(1)
+      { titulo: "5", valor: 5 },
+      { titulo: "10", valor: 10 },
+      { titulo: "15", valor: 15 },
+      { titulo: "20", valor: 20 },
+      { titulo: "Ver todos", valor: 0 },
+    ]);
+    const vdtbPrincipalPaginaActual = ref(1);
 
     const getVdtPrincipalTotalPaginas = computed(() =>
-      Math.ceil(vdtbPrincipalItems.value.length / vdtbPrincipalItemsPorPagina.value),
-    )
+      Math.ceil(vdtbPrincipalItems.value.length / vdtbPrincipalItemsPorPagina.value)
+    );
 
     // Funcionalidad vuetify
-    const { smAndDown } = useDisplay()
+    const { smAndDown } = useDisplay();
 
     const dialogSistemaPropiedades = ref({
       dialog: false,
-      evento: '',
+      evento: "",
       items: {},
-      titulo: '',
-    })
+      titulo: "",
+    });
 
     // DialogInformation
     const dialogInformation = ref({
-      color: '',
-      cuerpo: '',
+      color: "",
+      cuerpo: "",
       dialog: false,
-      icono: '',
-      titulo: '',
+      icono: "",
+      titulo: "",
       velocidad: 0,
-    })
+    });
 
     const onCloseDialogInformation = () => {
-      dialogInformation.value.dialog = false
-    }
+      dialogInformation.value.dialog = false;
+    };
 
     const onOpenDialogInformation = (
       color: string,
       cuerpo: string,
       icono: string,
       titulo: string,
-      velocidad: number,
+      velocidad: number
     ) => {
       dialogInformation.value = {
         color: color,
@@ -559,61 +597,62 @@ export default defineComponent({
         icono: icono,
         titulo: titulo,
         velocidad: velocidad,
-      }
-    }
+      };
+    };
 
     // DialogConfirmation
     const dialogConfirmation = ref({
-      cuerpo: '',
+      cuerpo: "",
       dialog: false,
-      evento: '',
-      icono: '',
+      evento: "",
+      icono: "",
       items: {},
-      titulo: '',
-    })
+      titulo: "",
+    });
 
     const onOpenDialogConfirmation = (
       cuerpo: string,
       evento: string,
       items: object,
-      titulo: string,
+      titulo: string
     ) => {
       dialogConfirmation.value = {
         cuerpo: cuerpo,
         dialog: true,
         evento: evento,
-        icono: 'alert',
+        icono: "alert",
         items: items,
         titulo: titulo,
-      }
-    }
+      };
+    };
 
     const onCloseDialogConfirmation = () => {
-      dialogConfirmation.value.dialog = false
-    }
+      dialogConfirmation.value.dialog = false;
+    };
 
     const onClickYesDialogConfirmation = (evento: Eventos, items: object) => {
-      methods[evento](items)
-    }
+      methods[evento](items);
+    };
 
     // DialogSistema
-    type Eventos = 'onSave' | 'onEdit' | 'onDelete'
+    type Eventos = "onSave" | "onEdit" | "onDelete";
 
     const methods: Record<Eventos, (...args: any[]) => void> = {
       onSave: () => {
-        dialogSistemaPropiedades.value.dialog = false
-        fnCargarListado()
+        dialogSistemaPropiedades.value.dialog = false;
+        fnCargarListado();
       },
       onEdit: () => {
-        dialogSistemaPropiedades.value.dialog = false
-        fnCargarListado()
+        dialogSistemaPropiedades.value.dialog = false;
+        fnCargarListado();
       },
       onDelete: async (items: Elementos) => {
-        dialogConfirmation.value.dialog = false
+        dialogConfirmation.value.dialog = false;
 
-        fnCargarListado()
+
+        fnCargarListado();
       },
-    }
+    };
 
     const onOpenDialogSistema = (evento: string, items: object, titulo: string) => {
       dialogSistemaPropiedades.value = {
@@ -621,21 +660,21 @@ export default defineComponent({
         evento: evento,
         items: items,
         titulo: titulo,
-      }
-    }
+      };
+    };
 
     const onCloseDialogSistema = () => {
-      dialogSistemaPropiedades.value.dialog = false
-    }
+      dialogSistemaPropiedades.value.dialog = false;
+    };
 
     const onSaveDialogSistema = (evento: Eventos) => {
-      methods[evento]()
-    }
+      methods[evento]();
+    };
 
     async function fnCargarListado() {
-      vdtbPrincipalItems.value = []
+      vdtbPrincipalItems.value = [];
 
-      await sistema.indexSistema()
+      await sistema.indexSistema();
 
       /*vdtbPrincipalItems.value = sistema.object.data.map((item: InterfaceItem) => ({
         id: item.id,
@@ -645,36 +684,37 @@ export default defineComponent({
         fecha: item.fecha_creacion,
         estado: item.estado,
       }));*/
+
     }
 
     onMounted(() => {
-      fnCargarListado()
-    })
+      fnCargarListado();
+    });
 
     // Computed
 
-    const vbrePrincipalRef = ref()
-    const vconPrincipalRef = ref()
-    const vrowClienteRef = ref()
-    const vrowFiltrosRef = ref()
-    const cardHeight = ref(0)
-    const tableHeight = ref(0)
+    const vbrePrincipalRef = ref();
+    const vconPrincipalRef = ref();
+    const vrowClienteRef = ref();
+    const vrowFiltrosRef = ref();
+    const cardHeight = ref(0);
+    const tableHeight = ref(0);
 
     const getCardHeight = computed(() => {
       if (vconPrincipalRef.value) {
-        calcularDimensiones()
+        calcularDimensiones();
       }
 
-      return `${cardHeight.value}px`
-    })
+      return `${cardHeight.value}px`;
+    });
 
     const getTableHeight = computed(() => {
       if (vconPrincipalRef.value) {
-        calcularDimensiones()
+        calcularDimensiones();
       }
 
-      return { height: `${tableHeight.value}px !important` }
-    })
+      return { height: `${tableHeight.value}px !important` };
+    });
 
     const calcularDimensiones = () => {
       if (vconPrincipalRef.value) {
@@ -683,32 +723,34 @@ export default defineComponent({
           vbrePrincipalRef.value.$el.clientHeight -
           vrowClienteRef.value.$el.clientHeight -
           vrowFiltrosRef.value.$el.clientHeight -
-          112
+          112;
 
-        tableHeight.value = cardHeight.value - 100
+        tableHeight.value = cardHeight.value - 100;
       }
-    }
+    };
 
-    let dragIndex = -1
+    let dragIndex = -1;
 
     function onDragStart(index: number) {
-      dragIndex = index
+      dragIndex = index;
     }
 
     function onDrop(dropIndex: number) {
-      if (dragIndex === -1 || dragIndex === dropIndex) return
-      const moved = vdtbPrincipalItems.value.splice(dragIndex, 1)[0]
-      vdtbPrincipalItems.value.splice(dropIndex, 0, moved)
-      dragIndex = -1
+      if (dragIndex === -1 || dragIndex === dropIndex) return;
+      const moved = vdtbPrincipalItems.value.splice(dragIndex, 1)[0];
+      vdtbPrincipalItems.value.splice(dropIndex, 0, moved);
+      dragIndex = -1;
     }
 
     const rowProps = (item: any) => {
-      const isSelected = vdtbPrincipalItemsSeleccionados.value.some((i) => i === item.codigo)
+      const isSelected = vdtbPrincipalItemsSeleccionados.value.some(
+        (i) => i === item.codigo
+      );
 
       return {
-        class: isSelected ? '' : 'bg-blue-lighten-5',
-      }
-    }
+        class: isSelected ? "" : "bg-blue-lighten-5",
+      };
+    };
 
     return {
       rowProps,
@@ -747,7 +789,7 @@ export default defineComponent({
       vdtbPrincipalOpcionesCheck,
       vdtbPrincipalOpcionesItemsPorPagina,
       vdtbPrincipalPaginaActual,
-    }
+    };
   },
-})
+});
 </script>

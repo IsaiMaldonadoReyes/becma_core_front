@@ -402,7 +402,7 @@ export default defineComponent({
   components: { DialogInformation, DialogConfirmation, BecTextField },
 
   setup() {
-    const sistema = useSistemaStore()
+    const sistema = sistemaStore()
 
     // breadcrumbs
     const vbrePrincipalItems = ref([

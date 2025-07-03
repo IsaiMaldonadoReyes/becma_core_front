@@ -130,7 +130,7 @@
               height="48px"
               min-width="48px"
               width="48px"
-              
+              @click="onOpenDialogSistema('onSave', {}, 'Nuevo sistema')"
             >
               <v-icon color="white" icon="mdi-plus" size="24px" />
             </v-btn>
@@ -279,7 +279,7 @@
                   </v-btn>
                 </template>
                 <span>
-                  Editar <b></b>
+                  Editar <b>{{ item.nombre }}</b>
                 </span>
               </v-tooltip>
             </template>

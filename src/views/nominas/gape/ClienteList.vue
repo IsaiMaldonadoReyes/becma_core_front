@@ -130,7 +130,7 @@
               height="48px"
               min-width="48px"
               width="48px"
-              
+              @click="onOpenDialogSistema('onSave', {}, 'Nuevo sistema')"
             >
               <v-icon color="white" icon="mdi-plus" size="24px" />
             </v-btn>
@@ -205,7 +205,6 @@
       <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
     </v-row>
 
-    <!-- data-table -->
     <v-row>
       <v-col>
         <v-card color="transparent" elevation="0">
@@ -261,7 +260,6 @@
                 @update:model-value="toggleSelect(internalItem)"
               />
             </template>
-
             <template v-slot:item.acciones="{ item }">
               <v-tooltip interactive>
                 <template v-slot:activator="{ props: tooltipProps }">
@@ -272,14 +270,14 @@
                     height="36px"
                     min-width="36px"
                     width="36px"
-                    
+                    @click="onOpenDialogSistema('onEdit', item, 'Editar sistema')"
                     variant="elevated"
                   >
                     <v-icon size="small" color="white" icon="mdi-pencil" />
                   </v-btn>
                 </template>
                 <span>
-                  Editar <b></b>
+                  Editar <b>{{ item.nombre }}</b>
                 </span>
               </v-tooltip>
             </template>
@@ -315,6 +313,15 @@
         </v-card>
       </v-col>
     </v-row>
+    <sistema-modal-form
+      :dialog-event="dialogSistemaPropiedades.evento"
+      :dialog-items="dialogSistemaPropiedades.items"
+      :dialog-title="dialogSistemaPropiedades.titulo"
+      :dialog-view="dialogSistemaPropiedades.dialog"
+      @close="onCloseDialogSistema"
+      @cancel="onCloseDialogSistema"
+      @save="onSaveDialogSistema"
+    />
   </v-container>
 </template>
 
@@ -323,28 +330,22 @@ import { ref, defineComponent, mergeProps, computed, onMounted } from 'vue'
 
 import { useDisplay } from 'vuetify'
 
-import { useSistemaStore } from '../../../stores/modules/Core/sistema'
+// import interfaces
+import type { SistemaModel } from '@/interfaces/core/Sistema'
+
+// import stores
+import { useSistemaStore } from '@/stores/modules/Core/sistema'
+import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
+
+// import components
 import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
 
-export interface Elementos {
-  id: number
-  codigo: string
-  descripcion: string
-  nombre: string
-}
-
-interface InterfaceItem {
-  id: number
-  nombre: string
-  codigo: string
-  descripcion: string
-  fecha_creacion: string
-  estado: number
-}
+// import views
+import SistemaModalForm from '@/views/core/SistemaModalForm.vue'
 
 export default defineComponent({
-  name: 'EmpresaList',
-  components: { BecTextField },
+  name: 'ClienteList',
+  components: { SistemaModalForm, BecTextField },
 
   setup() {
     // 1. Imports
@@ -364,11 +365,15 @@ export default defineComponent({
 
     // 4. Reactive | vrowBarraDeAccionesRef
     const vrowBarraDeAccionesRef = ref()
+
+    const sistemaStore = useSistemaStore()
+    const dialogConfirmation = useDialogManagerStore()
+    // breadcrumbs
     const vbrePrincipalItems = ref([
       {
         disabled: false,
         href: '',
-        title: 'Empresa',
+        title: 'Sistema',
       },
       {
         disabled: false,
@@ -376,6 +381,7 @@ export default defineComponent({
         title: 'Listado',
       },
     ])
+
     const vbtnActivarRegistro = ref(true)
 
     // 4. Reactive | vrowFiltrosRef
@@ -421,21 +427,11 @@ export default defineComponent({
         sortable: false,
       },
     ])
-    const vdtbPrincipalItems = ref<
-      {
-        id: number
-        cliente: object
-        fiscal?: boolean
-        empresaBD: object
-        razonSocial: string
-        rfc: string
-        codigoInterno: string
-        correoNotificacion: string
-        esActiva?: boolean
-      }[]
-    >([])
+    const vdtbPrincipalItems = ref<SistemaModel[]>([])
+
     const vdtbPrincipalItemsPorPagina = ref(5)
-    const vdtbPrincipalItemsSeleccionados = ref([])
+    const vdtbPrincipalItemsSeleccionados = ref<string[]>([])
+
     const vdtbPrincipalOpcionesItemsPorPagina = ref([
       { titulo: '5', valor: 5 },
       { titulo: '10', valor: 10 },
@@ -445,9 +441,8 @@ export default defineComponent({
     ])
     const vdtbPrincipalPaginaActual = ref(1)
 
-    const sistema = useSistemaStore()
-
     // 5. Computed | vrowTableRef
+
     const getVdtPrincipalTotalPaginas = computed(() =>
       Math.ceil(vdtbPrincipalItems.value.length / vdtbPrincipalItemsPorPagina.value),
     )
@@ -479,44 +474,119 @@ export default defineComponent({
       return `${height.value}px !important`
     })
 
-    // 7. Lifecycle hooks
+    const dialogSistemaPropiedades = ref({
+      dialog: false,
+      evento: '',
+      items: {},
+      titulo: '',
+    })
+
+    // DialogSistema
+    type Eventos = 'onSave' | 'onEdit' | 'onDelete' | 'onDeleteIds'
+
+    const methods: Record<Eventos, (...args: any[]) => void> = {
+      onSave: () => {
+        dialogSistemaPropiedades.value.dialog = false
+        fnCargarListado()
+      },
+      onEdit: () => {
+        dialogSistemaPropiedades.value.dialog = false
+        fnCargarListado()
+      },
+      onDelete: async (items: SistemaModel | SistemaModel[]) => {
+        dialogConfirmation.onCloseDialogConfirmation()
+
+        const idsToDelete = Array.isArray(items) ? items.map((item) => item.id) : [items.id]
+
+        try {
+          // Llamar a la API para eliminar los registros por sus IDs
+          await sistemaStore.destroySistemasByIds(idsToDelete) // Asegúrate de que esta función exista en tu store
+
+          // Mostrar mensaje de éxito
+          dialogConfirmation.onOpenDialogInformation(
+            sistemaStore.responseMessage,
+            'Registros eliminados',
+            'correct',
+            '#438701',
+            1,
+          )
+          // Refrescar la lista
+          fnCargarListado()
+
+          // Limpiar la selección
+          vdtbPrincipalItemsSeleccionados.value = []
+        } catch (error) {
+          // Mostrar mensaje de error
+          dialogConfirmation.onOpenDialogInformation(
+            sistemaStore.responseMessage,
+            'Error al eliminar',
+            'incorrect',
+            '#FF0000',
+            1,
+          )
+        }
+      },
+      onDeleteIds: () => {
+        let titulo = 'Eliminar registro(s)'
+        let mensaje = 'Esta acción eliminará los sistemas seleccionados. ¿Desea continuar?'
+
+        const itemsSeleccionados = vdtbPrincipalItems.value.filter((item) =>
+          vdtbPrincipalItemsSeleccionados.value.includes(item.codigo),
+        )
+
+        dialogConfirmation.onOpenDialogConfirmation(
+          mensaje,
+          () => methods.onDelete(itemsSeleccionados), // << callback directo
+          itemsSeleccionados,
+          titulo,
+          'alert',
+        )
+      },
+    }
+
+    const onOpenDialogSistema = (evento: string, items: object, titulo: string) => {
+      dialogSistemaPropiedades.value = {
+        dialog: true,
+        evento: evento,
+        items: items,
+        titulo: titulo,
+      }
+    }
+
+    const onCloseDialogSistema = () => {
+      dialogSistemaPropiedades.value.dialog = false
+      fnCargarListado()
+    }
+
+    const onSaveDialogSistema = (evento: Eventos) => {
+      methods[evento]()
+    }
+
+    const onExecuteOpcionesCheck = (evento: Eventos) => {
+      methods[evento]()
+    }
+
+    async function fnCargarListado() {
+      vdtbPrincipalItems.value = []
+
+      await sistemaStore.indexSistema()
+      vdtbPrincipalItems.value = sistemaStore.sistema
+    }
+
     onMounted(() => {
       fnCargarListado()
     })
 
-    // 8. Functions (fetch, metodos, async) | vrowTableRef
-    async function fnCargarListado() {
-      vdtbPrincipalItems.value = []
-
-      await sistema.indexSistema()
-
-      /*vdtbPrincipalItems.value = sistema.object.data.map((item: InterfaceItem) => ({
-        id: item.id,
-        nombre: item.nombre,
-        codigo: item.codigo,
-        descripcion: item.descripcion,
-        fecha: item.fecha_creacion,
-        estado: item.estado,
-      }));*/
-      /*
-      vdtbPrincipalItems.value = sistema.object.data.flatMap((item: InterfaceItem) =>
-        Array.from({ length: 5 }, () => ({
-          id: item.id,
-          nombre: item.nombre,
-          codigo: item.codigo,
-          descripcion: item.descripcion,
-          fecha: item.fecha_creacion,
-          estado: item.estado,
-        })),
-      )
-      */
-    }
-
     return {
       getTableHeight,
       getTableNoDataHeight,
+      dialogConfirmation,
+      dialogSistemaPropiedades,
       getVdtPrincipalTotalPaginas,
       mergeProps,
+      onCloseDialogSistema,
+      onOpenDialogSistema,
+      onSaveDialogSistema,
       smAndDown,
       vbrePrincipalItems,
       vbtnActivarRegistro,

@@ -91,18 +91,6 @@ const router = createRouter({
       path: '/nominas/gape/incidenciasForm',
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
-    {
-      component: ClienteModalForm,
-      name: 'ClienteModalForm',
-      path: '/nominas/gape/clienteModalForm',
-      meta: { requiresAuth: true, sistema: 'nominas' },
-    },
-    {
-      component: ClienteList,
-      name: 'ClienteList',
-      path: '/nominas/gape/clienteList',
-      meta: { requiresAuth: true, sistema: 'nominas' },
-    },
   ],
 })
 

@@ -94,13 +94,13 @@ const router = createRouter({
     {
       component: ClienteModalForm,
       name: 'ClienteModalForm',
-      path: '/nominas/gape/clienteModalForm',
+      path: '/nominas/gape/ClienteModalForm',
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
     {
       component: ClienteList,
       name: 'ClienteList',
-      path: '/nominas/gape/clienteList',
+      path: '/nominas/gape/ClienteList',
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
   ],

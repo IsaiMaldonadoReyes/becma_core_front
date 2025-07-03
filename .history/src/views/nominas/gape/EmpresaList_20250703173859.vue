@@ -279,7 +279,7 @@
                   </v-btn>
                 </template>
                 <span>
-                  Editar <b></b>
+                  Editar <b>{{ item.nombre }}</b>
                 </span>
               </v-tooltip>
             </template>

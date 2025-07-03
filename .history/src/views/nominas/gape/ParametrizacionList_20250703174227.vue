@@ -399,10 +399,10 @@ interface InterfaceItem {
 
 export default defineComponent({
   name: 'ParametrizacionList',
-  components: { DialogInformation, DialogConfirmation, BecTextField },
+  components: { DialogInformation, DialogSistema, DialogConfirmation, BecTextField },
 
   setup() {
-    const sistema = useSistemaStore()
+    const sistema = sistemaStore()
 
     // breadcrumbs
     const vbrePrincipalItems = ref([

@@ -1,15 +1,11 @@
 <template>
+  <pre>{{ vdtbPrincipalItemsSeleccionados }}</pre>
   <v-container ref="vconPrincipalRef" fluid style="height: 95% !important">
-    <!--breadcrumbs -->
     <v-row ref="vbrePrincipalRef" dense>
       <v-col cols="12" md="6" class="d-flex align-center">
-        <v-breadcrumbs
-          :items="vbrePrincipalItems"
-          divider="|"
-          class="text-medium-emphasis text-subtitle-1"
-        >
+        <v-breadcrumbs :items="vbrePrincipalItems" divider="|" class="text-medium-emphasis">
           <template v-slot:prepend>
-            <v-icon icon="mdi-briefcase-account" color="primary" />
+            <v-icon icon="mdi-account-tie" color="primary" />
           </template>
         </v-breadcrumbs>
       </v-col>
@@ -123,7 +119,7 @@
               width="48px"
               height="48px"
               v-bind="props"
-              :to="'/nominas/gape/parametrizacionForm'"
+              @click="onOpenDialogSistema('onSave', {}, 'Nuevo sistema')"
             >
               <v-icon size="24px" color="white">mdi-plus</v-icon>
             </v-btn>
@@ -151,15 +147,83 @@
     <v-row>
       <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
     </v-row>
+    <v-row ref="vrowClienteRef">
+      <v-col cols="12">
+        <v-autocomplete
+          :disabled="false"
+          auto-select-first
+          chips
+          clear-icon="mdi-close"
+          clear-on-select
+          clearable
+          closable-chips
+          color="primary"
+          filter-mode="every"
+          hide-details="auto"
+          item-color="primary"
+          item-props
+          item-title="nombre"
+          item-value="id"
+          label="Cliente"
+          no-data-text="No hay información disponible"
+          placeholder="Buscar"
+          prepend-inner-icon="mdi-briefcase-account"
+          variant="outlined"
+        >
+          <!--template v-slot:chip="{ props, item }">
+                          <v-chip
+                            v-bind="props"
+                            :text="item.raw.nombre_empresa"
+                            color="primary"
+                            variant="flat"
+                          />
+                        </template-->
 
+          <!--template v-slot:item="{ props, item }">
+                          <v-list-item
+                            v-bind="props"
+                            :subtitle="item.raw.nombre_base"
+                            :title="item.raw.nombre_empresa"
+                          />
+                        </template-->
+
+          <template v-slot:prepend>
+            <v-tooltip interactive>
+              <template v-slot:activator="{ props: tooltip }">
+                <v-icon icon="mdi-information-slab-circle-outline" v-bind="mergeProps(tooltip)" />
+              </template>
+              <span> Ruta del archivo de la base de datos de la empresa del cliente. </span>
+            </v-tooltip>
+          </template>
+        </v-autocomplete>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
+    </v-row>
     <v-row ref="vrowFiltrosRef">
       <v-col cols="12" lg="10" class="d-flex align-center">
-        <bec-text-field
+        <v-text-field
           v-model="vdtbPrincipalBusqueda"
-          :placeholder="'Buscar'"
-          :prepend-icon="'mdi-magnify'"
-          :tooltip="'Puede buscar registros ingresando cualquier coincidencia con los datos de la tabla.'"
-        />
+          clear-icon="mdi-close"
+          clearable
+          color="primary"
+          flat
+          hide-details
+          placeholder="Buscar"
+          prepend-inner-icon="mdi-magnify"
+          single-line
+          variant="outlined"
+        >
+          <template v-slot:prepend>
+            <v-tooltip interactive>
+              <template v-slot:activator="{ props: tooltip }">
+                <v-icon icon="mdi-information-slab-circle-outline" v-bind="mergeProps(tooltip)" />
+              </template>
+              <span>Se requiere reporte de ISN mensual.</span>
+            </v-tooltip>
+          </template>
+        </v-text-field>
       </v-col>
       <v-col cols="12" lg="2" class="d-flex justify-end align-center">
         <v-tooltip interactive>
@@ -168,7 +232,6 @@
               v-bind="mergeProps(tooltip)"
               class="border-opacity-25"
               color="primary"
-              density="comfortable"
               divided
               variant="outlined"
             >
@@ -180,6 +243,7 @@
                   hide-details
                   max="15"
                   min="1"
+                  rounded="xl"
                   type="number"
                   variant="plain"
                   width="50"
@@ -212,127 +276,128 @@
     <v-row>
       <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
     </v-row>
-
-    <!-- data-table -->
     <v-row>
       <v-col>
         <v-card color="transparent" elevation="0">
           <v-data-table
+            v-model:page="vdtbPrincipalPaginaActual"
             v-model:search="vdtbPrincipalBusqueda"
+            v-model="vdtbPrincipalItemsSeleccionados"
             :headers="vdtbPrincipalEncabezados"
             :hover="true"
+            :items-per-page="vdtbPrincipalItemsPorPagina"
             :items="vdtbPrincipalItems"
             :mobile="smAndDown"
             :multi-sort="true"
-            hide-default-footer
-            item-value="title"
-            show-expand
+            :sticky="true"
+            item-value="codigo"
+            show-select
             sort-asc-icon="mdi-arrow-down-thin"
             sort-desc-icon="mdi-arrow-up-thin"
+            fixed-header
+            eager
+            :height="getCardHeight"
+            :cell-props="rowProps"
           >
-            <template v-slot:item.data-table-expand="{ internalItem, isExpanded, toggleExpand }">
-              <v-tooltip interactive>
-                <template v-slot:activator="{ props: tooltipProps }">
-                  <v-btn
-                    v-bind="mergeProps(tooltipProps)"
-                    class="mr-1"
-                    color="primary"
-                    height="36px"
-                    min-width="36px"
-                    variant="elevated"
-                    width="36px"
-                    @click="toggleExpand(internalItem)"
-                  >
-                    <v-icon
-                      color="white"
-                      :icon="isExpanded(internalItem) ? 'mdi-chevron-up' : 'mdi-chevron-down'"
-                    />
-                  </v-btn>
-                </template>
-                <span>Mostrar conceptos alternativos de pago</span>
-              </v-tooltip>
-            </template>
-
-            <template v-slot:expanded-row="{ columns, item }">
-              <tr>
-                <td :colspan="columns.length" class="py-2">
-                  <v-data-table
-                    hide-default-footer
-                    v-model="itemsSeleccionados"
-                    :headers="headers"
-                    :hover="true"
-                    :items="items"
-                    :mobile="smAndDown"
-                    eager
-                    item-value="concepto"
-                    :show-select="false"
-                    color="transparent"
-                  >
-                    <template v-slot:item.seleccionado="{ item }">
-                      <v-chip
-                        :color="
-                          itemsSeleccionados.some((i) => i === item.concepto) ? 'green' : 'red'
-                        "
-                        size="small"
-                        label
-                        variant="flat"
-                      >
-                        {{ itemsSeleccionados.some((i) => i === item.concepto) ? 'Sí' : 'No' }}
-                      </v-chip>
-                    </template>
-                  </v-data-table>
-                </td>
-              </tr>
-            </template>
-
-            <template v-slot:item.acciones="{ item }">
-              <v-tooltip interactive>
-                <template v-slot:activator="{ props: tooltipProps }">
-                  <v-btn
-                    v-bind="mergeProps(tooltipProps)"
-                    class="mr-1"
-                    color="primary"
-                    height="36px"
-                    min-width="36px"
-                    variant="elevated"
-                    width="36px"
-                    @click="onOpenDialogSistema('onEdit', item, 'Editar sistema')"
-                  >
-                    <v-icon color="white" icon="mdi-pencil" />
-                  </v-btn>
-                </template>
-                <span>
-                  Editar <b>{{ item.nombre }}</b>
-                </span>
-              </v-tooltip>
-            </template>
-
-            <template v-slot:no-data>
-              <v-card
-                border
-                class="ma-5 d-flex align-center justify-center"
-                color="transparent"
-                elevation="0"
-                :height="getTableNoDataHeight"
+            <template v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }">
+              <v-btn-group
+                class="border-opacity-25"
+                color="primary"
+                density="compact"
+                divided
+                variant="outlined"
               >
-                <v-card-text class="text-grey-darken-1">
-                  <v-icon color="grey-lighten-1" size="60" icon="mdi-selection-search" />
-                  <span>No se encontraron registros.</span>
-                </v-card-text>
+                <v-btn density="compact" stacked class="pa-2" style="min-width: auto">
+                  <v-tooltip>
+                    <template v-slot:activator="{ props: tooltip }">
+                      <v-checkbox-btn
+                        v-bind="mergeProps(tooltip)"
+                        :indeterminate="someSelected && !allSelected"
+                        :model-value="allSelected"
+                        density="compact"
+                        true-icon="mdi-checkbox-multiple-marked"
+                        @update:model-value="selectAll(!allSelected)"
+                        class="pa-0"
+                      />
+                    </template>
+                    <span>Seleccionar todo</span>
+                  </v-tooltip>
+                </v-btn>
+
+                <v-menu>
+                  <template v-slot:activator="{ props: menu }">
+                    <v-tooltip>
+                      <template v-slot:activator="{ props: tooltip }">
+                        <v-btn icon="mdi-menu-down" v-bind="mergeProps(menu, tooltip)" />
+                      </template>
+                      <span>Acciones</span>
+                    </v-tooltip>
+                  </template>
+                  <v-list>
+                    <v-list-item v-for="(item, index) in vdtbPrincipalOpcionesCheck" :key="index">
+                      <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-btn-group>
+            </template>
+            <template v-slot:item.data-table-select="{ internalItem, isSelected, toggleSelect }">
+              <v-checkbox-btn
+                :model-value="isSelected(internalItem)"
+                color="primary"
+                @update:model-value="toggleSelect(internalItem)"
+              />
+            </template>
+            <!-- sobrescribes la columna 'drag' -->
+            <template v-slot:item.drag="{ index }">
+              <v-icon
+                icon="mdi-drag"
+                class="draggable-row"
+                draggable="true"
+                @dragstart="onDragStart(index)"
+                @dragover.prevent
+                @drop="onDrop(index)"
+              />
+            </template>
+            <template v-slot:item.actions="{ item }">
+              <v-icon
+                class="me-2"
+                icon="mdi-pencil"
+                size="small"
+                color="primary"
+                @click="onOpenDialogSistema('onEdit', item, 'Editar sistema')"
+              />
+              <v-divider class="mx-3 align-self-center" length="24" thickness="2" vertical />
+              <v-icon
+                icon="mdi-delete"
+                size="small"
+                color="primary"
+                @click="
+                  onOpenDialogConfirmation(
+                    `Esta acción eliminará ${item.codigo} de forma definitiva. ¿Desea continuar?`,
+                    'onDelete',
+                    item,
+                    `Eliminar ${item.codigo}`,
+                  )
+                "
+              />
+            </template>
+            <template v-slot:no-data>
+              <v-card border class="my-5 pa-10 text-center" color="transparent" elevation="0">
+                <v-icon color="grey-lighten-1" size="60" icon="mdi-selection-search" />
+                <v-card-text class="text-grey-darken-1">No se encontraron registros.</v-card-text>
               </v-card>
             </template>
             <template v-slot:bottom>
-              <v-divider class="border-opacity-25 ma-0 pa-0" />
               <v-pagination
                 v-model="vdtbPrincipalPaginaActual"
                 :length="getVdtPrincipalTotalPaginas"
-                :total-visible="smAndDown ? 3 : 20"
+                :total-visible="5"
                 active-color="primary"
-                class="pt-2"
                 color="primary"
-                density="comfortable"
                 show-first-last-page
-                variant="elevated"
+                variant="tonal"
+                class="pt-1"
               />
             </template>
           </v-data-table>
@@ -375,11 +440,10 @@ import { ref, defineComponent, toRaw, mergeProps, computed, onMounted } from 'vu
 
 import { useDisplay } from 'vuetify'
 
-import DialogConfirmation from '../../../components/core/dialogMessage/DialogConfirmation.vue'
-import DialogInformation from '../../../components/core/dialogMessage/DialogInformation.vue'
-
-import { useSistemaStore } from '../../../stores/modules/Core/sistema'
-import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
+//import DialogConfirmation from "../../components/core/dialogMessage/DialogConfirmation.vue";
+//import DialogInformation from "../../components/core/dialogMessage/DialogInformation.vue";
+//import DialogSistema from "../../helpers/core/dialogForm/DialogSistema.vue";
+import { useSistemaStore } from '../../stores/modules/Core/sistema'
 
 export interface Elementos {
   id: number
@@ -398,8 +462,8 @@ interface InterfaceItem {
 }
 
 export default defineComponent({
-  name: 'ParametrizacionList',
-  components: { DialogInformation, DialogConfirmation, BecTextField },
+  name: 'EmpleadoList',
+  components: { DialogInformation, DialogConfirmation },
 
   setup() {
     const sistema = useSistemaStore()
@@ -409,7 +473,7 @@ export default defineComponent({
       {
         disabled: false,
         href: 'breadcrumbs_dashboard',
-        title: 'Parametrización',
+        title: 'Empleado',
       },
       {
         disabled: false,
@@ -424,6 +488,22 @@ export default defineComponent({
 
     // Tabla
     const vdtbPrincipalBusqueda = ref('')
+    const vdtbPrincipalEncabezados = ref<
+      {
+        key: string
+        align?: 'start' | 'center' | 'end'
+        title: string
+        sortable?: boolean
+      }[]
+    >([
+      { key: 'nombre', align: 'start', title: 'Nombre', sortable: true },
+      { key: 'codigo', align: 'center', title: 'Código', sortable: true },
+      { key: 'descripcion', align: 'start', title: 'Descripción', sortable: true },
+      { key: 'fecha', align: 'center', title: 'Fecha' },
+      { title: 'Actions', key: 'actions', sortable: false, align: 'end' },
+      { title: '', key: 'drag', sortable: false, align: 'end' },
+    ])
+    const vdtbPrincipalItems = ref<InterfaceItem[]>([])
 
     const vdtbPrincipalItemsPorPagina = ref(5)
     const vdtbPrincipalItemsSeleccionados = ref([])
@@ -531,24 +611,6 @@ export default defineComponent({
       onDelete: async (items: Elementos) => {
         dialogConfirmation.value.dialog = false
 
-        try {
-          await sistema.destroySistema(items.id)
-          onOpenDialogInformation(
-            '#438701',
-            sistema.object.message,
-            'correct',
-            'Registro eliminado',
-            1,
-          )
-        } catch (error) {
-          onOpenDialogInformation(
-            '#438701',
-            sistema.responseMessage,
-            'incorrect',
-            'Ocurrió un error en el registro guardado',
-            1,
-          )
-        }
         fnCargarListado()
       },
     }
@@ -583,27 +645,17 @@ export default defineComponent({
         fecha: item.fecha_creacion,
         estado: item.estado,
       }));*/
-
-      vdtbPrincipalItems.value = sistema.object.data.flatMap((item: InterfaceItem) =>
-        Array.from({ length: 5 }, () => ({
-          id: item.id,
-          nombre: item.nombre,
-          codigo: item.codigo,
-          descripcion: item.descripcion,
-          fecha: item.fecha_creacion,
-          estado: item.estado,
-        })),
-      )
     }
 
     onMounted(() => {
-      //fnCargarListado()
+      fnCargarListado()
     })
 
     // Computed
 
     const vbrePrincipalRef = ref()
     const vconPrincipalRef = ref()
+    const vrowClienteRef = ref()
     const vrowFiltrosRef = ref()
     const cardHeight = ref(0)
     const tableHeight = ref(0)
@@ -621,15 +673,7 @@ export default defineComponent({
         calcularDimensiones()
       }
 
-      return `${tableHeight.value}px !important`
-    })
-
-    const getTableNoDataHeight = computed(() => {
-      if (vconPrincipalRef.value) {
-        calcularDimensiones()
-      }
-
-      return `${tableHeight.value - 100}px !important`
+      return { height: `${tableHeight.value}px !important` }
     })
 
     const calcularDimensiones = () => {
@@ -637,11 +681,25 @@ export default defineComponent({
         cardHeight.value =
           vconPrincipalRef.value.$el.clientHeight -
           vbrePrincipalRef.value.$el.clientHeight -
+          vrowClienteRef.value.$el.clientHeight -
           vrowFiltrosRef.value.$el.clientHeight -
-          85
+          112
 
-        tableHeight.value = cardHeight.value
+        tableHeight.value = cardHeight.value - 100
       }
+    }
+
+    let dragIndex = -1
+
+    function onDragStart(index: number) {
+      dragIndex = index
+    }
+
+    function onDrop(dropIndex: number) {
+      if (dragIndex === -1 || dragIndex === dropIndex) return
+      const moved = vdtbPrincipalItems.value.splice(dragIndex, 1)[0]
+      vdtbPrincipalItems.value.splice(dropIndex, 0, moved)
+      dragIndex = -1
     }
 
     const rowProps = (item: any) => {
@@ -652,175 +710,11 @@ export default defineComponent({
       }
     }
 
-    // DataTable
-    const groupBy = ref([
-      {
-        key: 'cliente',
-        order: 'asc' as const,
-      },
-    ])
-    const itemsSeleccionados = ref(['Sueldo IMSS'])
-    let dragIndex = -1
-
-    function onDragStart(index: number) {
-      dragIndex = index
-    }
-
-    function onDrop(dropIndex: number) {
-      if (dragIndex === -1 || dragIndex === dropIndex) return
-      const moved = items.value.splice(dragIndex, 1)[0]
-      items.value.splice(dropIndex, 0, moved)
-      dragIndex = -1
-    }
-
-    const headers = ref<
-      {
-        key: string
-        align?: 'start' | 'center' | 'end'
-        title: string
-        sortable?: boolean
-        width?: string
-      }[]
-    >([
-      { title: '', key: 'seleccionado', width: '5%', sortable: false },
-      { title: 'Concepto', key: 'concepto', sortable: false },
-      { title: 'Tope', key: 'tope', sortable: false },
-      { title: '', key: 'drag', sortable: false, align: 'center' },
-    ])
-
-    const items = ref([
-      { concepto: 'Sueldo IMSS', tope: '5000' },
-      { concepto: 'Prev. Soc.', tope: '2000' },
-      { concepto: 'Fondos Sind.', tope: '' },
-      { concepto: 'Tarjeta Fácil', tope: '' },
-      { concepto: 'Hon. Asimilados', tope: '' },
-      { concepto: 'Gastos por comprobar', tope: '' },
-    ])
-
-    const vdtbPrincipalEncabezados = ref<
-      {
-        key: string
-        align?: 'start' | 'center' | 'end'
-        title: string
-        sortable?: boolean
-        width?: string
-      }[]
-    >([
-      {
-        title: 'Cliente',
-        key: 'cliente',
-        align: 'start',
-        sortable: false,
-        width: '10%',
-      },
-      {
-        title: 'Perioricidad',
-        key: 'perioricidad',
-        align: 'center',
-        sortable: false,
-        width: '10%',
-      },
-      {
-        title: 'Clase de Prima de riesgo',
-        key: 'clasePrimaRiesgo',
-        align: 'center',
-        sortable: false,
-        width: '15%',
-      },
-      {
-        title: 'Valor de Prima de Riesgo',
-        key: 'valorPrimaRiesgo',
-        align: 'center',
-        sortable: false,
-        width: '10%',
-      },
-      { title: 'FEE', key: 'fee', align: 'center', sortable: false, width: '10%' },
-      {
-        title: 'BASE FEE',
-        key: 'baseFee',
-        align: 'center',
-        sortable: false,
-        width: '15%',
-      },
-      {
-        title: 'Provisiones',
-        key: 'provisiones',
-        align: 'center',
-        sortable: false,
-        width: '10%',
-      },
-      {
-        title: 'ISN',
-        key: 'isn',
-        align: 'center',
-        sortable: false,
-        width: '10%',
-      },
-      {
-        title: 'Cuota sindical',
-        key: 'cuotaSindical',
-        align: 'center',
-        sortable: false,
-        width: '10%',
-      },
-      { title: '', key: 'acciones', sortable: false, align: 'end' },
-    ])
-
-    const vdtbPrincipalItems = ref([
-      {
-        cliente: 'Fintopia',
-        perioricidad: 'Quincenal',
-        clasePrimaRiesgo: 0,
-        director: 'Frank Darabont',
-        year: 1994,
-        runtime: 142,
-        details: {
-          synopsis:
-            'Two imprisoned men bond over years, finding solace and redemption through acts of decency.',
-          cast: ['Tim Robbins', 'Morgan Freeman'],
-          rating: 3.5,
-        },
-      },
-      {
-        cliente: 'Fintopia',
-        perioricidad: 'Semanal',
-        clasePrimaRiesgo: 0,
-        director: 'Christopher Nolan',
-        genre: 'Sci-Fi',
-        year: 2010,
-        runtime: 148,
-        details: {
-          synopsis:
-            'A thief with the ability to enter dreams is tasked with stealing a secret from the subconscious.',
-          cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt'],
-          rating: 5,
-        },
-      },
-      {
-        cliente: 'Fintopia',
-        perioricidad: 'Catorcenal',
-        clasePrimaRiesgo: 0,
-        director: 'Francis Ford Coppola',
-        genre: 'Crime',
-        year: 1972,
-        runtime: 175,
-        details: {
-          synopsis:
-            'The aging patriarch of a crime dynasty transfers control to his reluctant son.',
-          cast: ['Marlon Brando', 'Al Pacino'],
-          rating: 4.5,
-        },
-      },
-    ])
-
     return {
-      groupBy,
-      itemsSeleccionados,
-      headers,
-      items,
+      rowProps,
       onDragStart,
       onDrop,
-      rowProps,
+      vrowClienteRef,
       vrowFiltrosRef,
       vbtnMenuExportarModel,
       vbtnMenuImportarModel,
@@ -829,7 +723,6 @@ export default defineComponent({
       vconPrincipalRef,
       getCardHeight,
       getTableHeight,
-      getTableNoDataHeight,
       dialogConfirmation,
       dialogInformation,
       dialogSistemaPropiedades,
