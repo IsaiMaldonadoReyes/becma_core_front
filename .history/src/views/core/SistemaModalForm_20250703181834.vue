@@ -83,7 +83,7 @@
               />
             </v-col>
             <v-col cols="12" md="12">
-              <bec-text-area
+              <bec-text-field
                 v-model="dialogPropiedades.elementos.descripcion"
                 :label="'Descripción *'"
                 :placeholder="'Descripción del sistema *'"

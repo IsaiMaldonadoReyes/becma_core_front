@@ -60,7 +60,7 @@
           </v-row>
         </v-card-title>
 
-        <v-card-text class="dialog-content px-5" :style="getDialogContentPaddingTop">
+        <v-card-text class="dialog-content px-5" >
           <v-row>
             <v-col cols="12" md="6">
               <bec-text-field

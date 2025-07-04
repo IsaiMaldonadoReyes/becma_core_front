@@ -82,7 +82,7 @@
                 :tooltip="'Código asignado al sistema'"
               />
             </v-col>
-            <v-col cols="12" md="12">
+            <v-col cols="12" sm="6">
               <bec-text-area
                 v-model="dialogPropiedades.elementos.descripcion"
                 :label="'Descripción *'"

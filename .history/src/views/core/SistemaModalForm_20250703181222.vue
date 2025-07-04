@@ -83,7 +83,7 @@
               />
             </v-col>
             <v-col cols="12" md="12">
-              <bec-text-area
+              <bec-text-field
                 v-model="dialogPropiedades.elementos.descripcion"
                 :label="'Descripción *'"
                 :placeholder="'Descripción del sistema *'"
@@ -115,11 +115,11 @@ import { validationRules } from '@/utils/validationRules'
 import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
 import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
 import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
-import BecTextArea from '@/components/core/becmaComponents/BecTextArea.vue'
+import BecTextArea from '@/components/core/becmaComponents/BecTextField.vue'
 
 export default defineComponent({
   name: 'SistemaModalForm',
-  components: { BecSelect, BecAutocomplete, BecTextField, BecTextArea },
+  components: { BecSelect, BecAutocomplete, BecTextField },
   props: {
     dialogEvent: String,
     dialogItems: {

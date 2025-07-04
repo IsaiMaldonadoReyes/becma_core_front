@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogPropiedades.dialog" width="auto" persistent>
+  <v-dialog v-model="dialogPropiedades.dialog"  persistent>
     <v-card>
       <v-form ref="formRef">
         <v-card-title

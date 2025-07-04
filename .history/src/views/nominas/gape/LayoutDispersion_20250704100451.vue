@@ -14,7 +14,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <v-card elevation="10" class="pa-3 pa-lg-4">
+        <v-card elevation="10" class="pa-3 pa-lg-6">
           <v-card-text>
             <v-row>
               <v-col cols="12">
