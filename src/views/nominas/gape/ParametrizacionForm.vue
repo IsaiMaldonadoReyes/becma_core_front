@@ -23,11 +23,7 @@
           <v-icon icon="mdi-account-circle" size="14" />
           <span style="font-size: 10px"> Última edición por: Administrador 2</span>
         </v-tooltip>
-        <v-breadcrumbs
-          :items="vbrePrincipalItems"
-          divider="|"
-          class="text-medium-emphasis"
-        >
+        <v-breadcrumbs :items="vbrePrincipalItems" divider="|" class="text-medium-emphasis">
           <template v-slot:prepend>
             <v-icon icon="mdi-list-box" color="primary" />
           </template>
@@ -133,9 +129,7 @@
               @click.stop="vbtnActivarModel = !vbtnActivarModel"
             >
               <v-icon size="24px" color="white">
-                {{
-                  vbtnActivarModel ? "mdi-checkbox-blank-outline" : "mdi-checkbox-marked"
-                }}
+                {{ vbtnActivarModel ? 'mdi-checkbox-blank-outline' : 'mdi-checkbox-marked' }}
               </v-icon>
             </v-btn>
           </template>
@@ -143,7 +137,7 @@
             Marque la casilla para
             <b>
               <i>
-                {{ vbtnActivarModel ? " ACTIVAR " : "DESACTIVAR" }}
+                {{ vbtnActivarModel ? ' ACTIVAR ' : 'DESACTIVAR' }}
               </i>
             </b>
             este registro
@@ -152,13 +146,7 @@
 
         <v-tooltip bottom color="primary">
           <template v-slot:activator="{ props }">
-            <v-btn
-              color="primary"
-              min-width="48px"
-              width="48px"
-              height="48px"
-              v-bind="props"
-            >
+            <v-btn color="primary" min-width="48px" width="48px" height="48px" v-bind="props">
               <v-icon size="24px" color="white">mdi-plus</v-icon>
             </v-btn>
           </template>
@@ -208,12 +196,7 @@
     </v-row>
     <v-row ref="vtabMenuRef">
       <v-col class="my-0 py-0">
-        <v-tabs
-          v-model="vtabMenuModel"
-          center-active
-          class="text-medium-emphasis"
-          color="primary"
-        >
+        <v-tabs v-model="vtabMenuModel" center-active class="text-medium-emphasis" color="primary">
           <v-tab
             v-for="tab in vtabMenuItems"
             :key="tab.value"
@@ -258,11 +241,7 @@
                         color="transparent"
                       >
                         <template
-                          v-slot:header.data-table-select="{
-                            allSelected,
-                            selectAll,
-                            someSelected,
-                          }"
+                          v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }"
                         >
                           <v-btn-group
                             class="border-opacity-25"
@@ -271,12 +250,7 @@
                             divided
                             variant="outlined"
                           >
-                            <v-btn
-                              density="compact"
-                              stacked
-                              class="pa-2"
-                              style="min-width: auto"
-                            >
+                            <v-btn density="compact" stacked class="pa-2" style="min-width: auto">
                               <v-tooltip>
                                 <template v-slot:activator="{ props: tooltip }">
                                   <v-checkbox-btn
@@ -295,11 +269,7 @@
                           </v-btn-group>
                         </template>
                         <template
-                          v-slot:item.data-table-select="{
-                            internalItem,
-                            isSelected,
-                            toggleSelect,
-                          }"
+                          v-slot:item.data-table-select="{ internalItem, isSelected, toggleSelect }"
                         >
                           <v-checkbox-btn
                             :model-value="isSelected(internalItem)"
@@ -318,11 +288,7 @@
                             label
                             variant="flat"
                           >
-                            {{
-                              itemsSeleccionados.some((i) => i === item.concepto)
-                                ? "Sí"
-                                : "No"
-                            }}
+                            {{ itemsSeleccionados.some((i) => i === item.concepto) ? 'Sí' : 'No' }}
                           </v-chip>
                         </template>
                         <!-- solo sobrescribes la columna 'nombre' -->
@@ -356,9 +322,7 @@
                       </v-data-table>
                     </v-col>
                     <v-col cols="12" lg="6">
-                      <v-card-title class="text-medium-emphasis">
-                        Parametrización
-                      </v-card-title>
+                      <v-card-title class="text-medium-emphasis"> Parametrización </v-card-title>
                       <v-divider class="border-opacity-25 ma-0 pa-0" />
                       <v-row class="mt-3">
                         <v-col cols="12">
@@ -452,24 +416,111 @@
                         hide-default-footer
                         show-expand
                         :mobile="smAndDown"
+                        :hover="true"
+                        show-select
                       >
                         <template v-slot:item.clasePrimaRiesgo="{ item }">
                           <div @mousedown.stop>
-                            <bec-select
-                              v-model="modelSueldoIMSS"
-                              :items="itemsClasePrimaRiesgo"
-                              :multiple="false"
-                              :variant="'underlined'"
+                            <v-text-field
+                              v-model="item.cuenta"
+                              variant="underlined"
+                              clearable
+                              clear-icon="mdi-close"
+                              density="compact"
+                              hide-details
+                              :placeholder="'0.00'"
+                              class="text-end"
+                              color="primary"
                             />
                           </div>
                         </template>
                         <template v-slot:item.valorPrimaRiesgo="{ item }">
-                          <bec-text-field
-                            v-model="item.valorPrimaRiesgo"
-                            :placeholder="'0.00'"
-                            :prefix="'%'"
-                            :variant="'underlined'"
-                          />
+                          <v-data-table
+                            hide-default-footer
+                            v-model="itemsSeleccionados"
+                            :headers="encabezadoCuentaOrigen"
+                            :hover="true"
+                            :items="itemsCuentaOrigen"
+                            :mobile="smAndDown"
+                            eager
+                            item-value="concepto"
+                            show-select
+                            color="transparent"
+                          >
+                            <template v-slot:header.eliminar>
+                              <v-btn
+                                class="mr-1"
+                                color="primary"
+                                height="36px"
+                                min-width="36px"
+                                width="36px"
+                                variant="elevated"
+                              >
+                                <v-icon size="small" color="white" icon="mdi-plus" />
+                              </v-btn>
+                            </template>
+                            <template
+                              v-slot:item.data-table-select="{
+                                internalItem,
+                                isSelected,
+                                toggleSelect,
+                              }"
+                            >
+                              <v-checkbox-btn
+                                :model-value="isSelected(internalItem)"
+                                color="primary"
+                                @update:model-value="toggleSelect(internalItem)"
+                              />
+                            </template>
+                            <template v-slot:item.seleccionado="{ item }">
+                              <v-chip
+                                :color="
+                                  itemsSeleccionados.some((i) => i === item.concepto)
+                                    ? 'green'
+                                    : 'red'
+                                "
+                                size="small"
+                                label
+                                variant="flat"
+                              >
+                                {{
+                                  itemsSeleccionados.some((i) => i === item.concepto) ? 'Sí' : 'No'
+                                }}
+                              </v-chip>
+                            </template>
+                            <!-- solo sobrescribes la columna 'nombre' -->
+                            <template v-slot:item.cuenta="{ item }">
+                              <v-text-field
+                                v-model="item.cuenta"
+                                variant="underlined"
+                                clearable
+                                clear-icon="mdi-close"
+                                density="compact"
+                                hide-details
+                                :placeholder="'0.00'"
+                                class="text-end"
+                                color="primary"
+                              />
+                            </template>
+                            <template v-slot:item.eliminar="{ item }">
+                              <v-tooltip interactive>
+                                <template v-slot:activator="{ props: tooltipProps }">
+                                  <v-btn
+                                    v-bind="mergeProps(tooltipProps)"
+                                    class="mr-1"
+                                    color="primary"
+                                    height="36px"
+                                    min-width="36px"
+                                    width="36px"
+                                    variant="elevated"
+                                  >
+                                    <v-icon size="small" color="white" icon="mdi-delete" />
+                                  </v-btn>
+                                </template>
+                                <span> Eliminar </span>
+                              </v-tooltip>
+                            </template>
+                          </v-data-table>
                         </template>
                         <template v-slot:item.fee="{ item }">
                           <bec-text-field
@@ -513,23 +564,13 @@
                         </template>
 
                         <template
-                          v-slot:item.data-table-expand="{
-                            internalItem,
-                            isExpanded,
-                            toggleExpand,
-                          }"
+                          v-slot:item.data-table-expand="{ internalItem, isExpanded, toggleExpand }"
                         >
                           <v-btn
                             :append-icon="
-                              isExpanded(internalItem)
-                                ? 'mdi-chevron-up'
-                                : 'mdi-chevron-down'
+                              isExpanded(internalItem) ? 'mdi-chevron-up' : 'mdi-chevron-down'
                             "
-                            :text="
-                              isExpanded(internalItem)
-                                ? 'Ocultar conceptos'
-                                : 'Ver conceptos'
-                            "
+                            :text="isExpanded(internalItem) ? 'Ocultar conceptos' : 'Ver conceptos'"
                             class="text-none"
                             color="medium-emphasis"
                             size="small"
@@ -581,8 +622,8 @@
                                   >
                                     {{
                                       itemsSeleccionados.some((i) => i === item.concepto)
-                                        ? "Sí"
-                                        : "No"
+                                        ? 'Sí'
+                                        : 'No'
                                     }}
                                   </v-chip>
                                 </template>
@@ -655,23 +696,23 @@ import {
   onMounted,
   nextTick,
   onBeforeUnmount,
-} from "vue";
+} from 'vue'
 
-import BecSelect from "@/components/core/becmaComponents/BecSelect.vue";
-import BecAutocomplete from "@/components/core/becmaComponents/BecAutocomplete.vue";
-import BecTextField from "@/components/core/becmaComponents/BecTextField.vue";
+import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
+import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
+import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
 
-import { useDisplay } from "vuetify";
-import { rpt2VentasPorMarcas } from "../../../stores/modules/Comercial/rpt2VentasPorMarcas";
+import { useDisplay } from 'vuetify'
+import { rpt2VentasPorMarcas } from '../../../stores/modules/Comercial/rpt2VentasPorMarcas'
 
 interface Empresa {
-  id: number;
-  nombre_empresa: string;
-  nombre_base: string;
+  id: number
+  nombre_empresa: string
+  nombre_base: string
 }
 
 export default defineComponent({
-  name: "ParametrizacionForm",
+  name: 'ParametrizacionForm',
   components: { BecSelect, BecAutocomplete, BecTextField },
 
   setup() {
@@ -685,140 +726,140 @@ export default defineComponent({
     // 8. Functions (fetch, metodos, async)
 
     // 3. Composables (funciones reutilizables de Vuetify)
-    const { name, mobile, smAndDown } = useDisplay();
+    const { name, mobile, smAndDown } = useDisplay()
 
     // 4. Reactive
-    const vbrePrincipalRef = ref();
+    const vbrePrincipalRef = ref()
     const vbrePrincipalItems = ref([
       {
         disabled: false,
-        href: "/nominas/gape/parametrizacionList",
-        title: "Parametrización",
+        href: '/nominas/gape/parametrizacionList',
+        title: 'Parametrización',
       },
       {
         disabled: false,
-        href: "breadcrumbs_link_1",
-        title: "Fintopia",
+        href: 'breadcrumbs_link_1',
+        title: 'Fintopia',
       },
-    ]);
+    ])
 
-    const vconPrincipalRef = ref();
-    const vrowClienteRef = ref();
+    const vconPrincipalRef = ref()
+    const vrowClienteRef = ref()
 
-    const vtabMenuRef = ref();
-    const vtabMenuModel = ref<any>("tab01");
+    const vtabMenuRef = ref()
+    const vtabMenuModel = ref<any>('tab01')
     const vtabMenuItems = ref([
       {
-        icon: "mdi-badge-account-horizontal",
-        title: "Quincenal",
-        value: "tab01",
+        icon: 'mdi-badge-account-horizontal',
+        title: 'Quincenal',
+        value: 'tab01',
       },
       {
-        icon: "mdi-chart-line",
-        title: "Semanal",
-        value: "tab02",
+        icon: 'mdi-chart-line',
+        title: 'Semanal',
+        value: 'tab02',
       },
-    ]);
+    ])
 
-    const vbtnActivarModel = ref(true);
-    const vbtnMenuExportarModel = ref(false);
-    const cardHeight = ref(0);
-    const rfc = ref<string>("");
+    const vbtnActivarModel = ref(true)
+    const vbtnMenuExportarModel = ref(false)
+    const cardHeight = ref(0)
+    const rfc = ref<string>('')
 
-    const modelEmpresa = ref<Object>();
-    const itemsEmpresas = ref<Object[]>([]);
+    const modelEmpresa = ref<Object>()
+    const itemsEmpresas = ref<Object[]>([])
 
-    const modelSueldoIMSS = ref<number | null>(null);
-    const modelProvSoc = ref<number | null>(null);
-    const modelTarjetaFacil = ref<number | null>(null);
-    const modelHonAsimilados = ref<number | null>(null);
-    const modelGastosPorComprobar = ref<number | null>(null);
-    const modelClasePrimaRiesgo = ref<number | null>(null);
-    const modelPerioricidad = ref<number | null>(null);
+    const modelSueldoIMSS = ref<number | null>(null)
+    const modelProvSoc = ref<number | null>(null)
+    const modelTarjetaFacil = ref<number | null>(null)
+    const modelHonAsimilados = ref<number | null>(null)
+    const modelGastosPorComprobar = ref<number | null>(null)
+    const modelClasePrimaRiesgo = ref<number | null>(null)
+    const modelPerioricidad = ref<number | null>(null)
 
     const itemsComprobacion = ref([
-      { title: "Si", value: 0 },
-      { title: "No", value: 1 },
-    ]);
+      { title: 'Si', value: 0 },
+      { title: 'No', value: 1 },
+    ])
 
     const itemsClasePrimaRiesgo = ref([
-      { title: "Media", value: 0 },
-      { title: "Actualizada", value: 1 },
-    ]);
+      { title: 'Media', value: 0 },
+      { title: 'Actualizada', value: 1 },
+    ])
 
     const itemsBaseFEE = ref([
-      { title: "Percepciones brutas", value: 0 },
-      { title: "Percepciones brutas más carca", value: 21 },
-      { title: "Neto", value: 2 },
-      { title: "Neto más carga social", value: 3 },
-      { title: "FEE Neto + Bruto + CS", value: 4 },
-    ]);
+      { title: 'Percepciones brutas', value: 0 },
+      { title: 'Percepciones brutas más carca', value: 21 },
+      { title: 'Neto', value: 2 },
+      { title: 'Neto más carga social', value: 3 },
+      { title: 'FEE Neto + Bruto + CS', value: 4 },
+    ])
 
     // Este se obtiene de la base de datos campo dependiente
     const itemsPerioricidad = ref([
-      { title: "Quicenal", value: 0 },
-      { title: "Semanal", value: 1 },
-    ]);
+      { title: 'Quicenal', value: 0 },
+      { title: 'Semanal', value: 1 },
+    ])
 
-    const vforFiltrosRef = ref();
+    const vforFiltrosRef = ref()
     const vforFiltrosRule = {
-      required: (v: string) => !!v || "Este dato es requerido para continuar.",
-      required2: (v: any) => (v != null && String(v).length > 0) || "Selecciona",
-    };
+      required: (v: string) => !!v || 'Este dato es requerido para continuar.',
+      required2: (v: any) => (v != null && String(v).length > 0) || 'Selecciona',
+    }
 
-    const itemsEmpresas2 = ref<Empresa[]>([]);
-    const modelEmpresa2 = ref<Empresa>();
+    const itemsEmpresas2 = ref<Empresa[]>([])
+    const modelEmpresa2 = ref<Empresa>()
 
     const headers = ref<
       {
-        key: string;
-        align?: "start" | "center" | "end";
-        title: string;
-        sortable?: boolean;
-        width?: string;
+        key: string
+        align?: 'start' | 'center' | 'end'
+        title: string
+        sortable?: boolean
+        width?: string
       }[]
     >([
-      { title: "", key: "seleccionado", width: "5%", sortable: false },
-      { title: "Concepto", key: "concepto", sortable: false },
-      { title: "Tope", key: "tope", sortable: false },
-      { title: "", key: "drag", sortable: false, align: "center" },
-    ]);
+      { title: '', key: 'seleccionado', width: '5%', sortable: false },
+      { title: 'Concepto', key: 'concepto', sortable: false },
+      { title: 'Tope', key: 'tope', sortable: false },
+      { title: '', key: 'drag', sortable: false, align: 'center' },
+    ])
 
     const items = ref([
-      { concepto: "Sueldo IMSS", tope: "5000" },
-      { concepto: "Prev. Soc.", tope: "2000" },
-      { concepto: "Fondos Sind.", tope: "" },
-      { concepto: "Tarjeta Fácil", tope: "" },
-      { concepto: "Hon. Asimilados", tope: "" },
-      { concepto: "Gastos por comprobar", tope: "" },
-    ]);
+      { concepto: 'Sueldo IMSS', tope: '5000' },
+      { concepto: 'Prev. Soc.', tope: '2000' },
+      { concepto: 'Fondos Sind.', tope: '' },
+      { concepto: 'Tarjeta Fácil', tope: '' },
+      { concepto: 'Hon. Asimilados', tope: '' },
+      { concepto: 'Gastos por comprobar', tope: '' },
+    ])
 
-    const itemsSeleccionados = ref(["Sueldo IMSS"]);
+    const itemsSeleccionados = ref(['Sueldo IMSS'])
 
     // 5. Computed properties
     const getCardHeight = computed(() => {
       if (vconPrincipalRef.value) {
-        calcularDimensiones();
+        calcularDimensiones()
       }
-      return { height: `${cardHeight.value}px !important` };
-    });
+      return { height: `${cardHeight.value}px !important` }
+    })
 
     // 7. Lifecycle hooks (onMounted, mounted)
     onMounted(() => {
       nextTick(() => {
-        window.addEventListener("resize", calcularDimensiones);
-        fetchEmpresas();
-      });
-    });
+        window.addEventListener('resize', calcularDimensiones)
+        fetchEmpresas()
+      })
+    })
 
     onBeforeUnmount(() => {
-      window.removeEventListener("resize", calcularDimensiones);
-    });
+      window.removeEventListener('resize', calcularDimensiones)
+    })
 
     // 8. Functions (fetch, metodos, async)
     const validarFiltros = async () => {
-      await vforFiltrosRef.value?.validate();
-    };
+      await vforFiltrosRef.value?.validate()
+    }
 
     const calcularDimensiones = () => {
       if (vconPrincipalRef.value) {
@@ -826,156 +867,174 @@ export default defineComponent({
           vconPrincipalRef.value.$el.clientHeight -
           vbrePrincipalRef.value.$el.clientHeight -
           vtabMenuRef.value.$el.clientHeight -
-          vrowClienteRef.value.$el.clientHeight;
+          vrowClienteRef.value.$el.clientHeight
       }
-    };
+    }
 
     const validateRfc = (value: string): true | string => {
-      if (!value) return "El RFC es requerido";
+      if (!value) return 'El RFC es requerido'
 
-      const rfcRegex = /^([A-ZÑ&]{3,4})(\d{2})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[A-Z\d]{2}([A\d])$/;
+      const rfcRegex =
+        /^([A-ZÑ&]{3,4})(\d{2})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[A-Z\d]{2}([A\d])$/
 
-      return rfcRegex.test(value.toUpperCase()) ? true : "RFC no válido";
-    };
+      return rfcRegex.test(value.toUpperCase()) ? true : 'RFC no válido'
+    }
 
     const myCustomUpdate = (nuevoValor: any) => {
       //alert(nuevoValor);
       //alert(modelSueldoIMSS.value); //✅ ya está actualizado gracias al emit
-    };
+    }
 
-    const reporte = rpt2VentasPorMarcas();
+    const reporte = rpt2VentasPorMarcas()
 
     const fetchEmpresas = async () => {
       try {
-        await reporte.rptEmpresas();
+        await reporte.rptEmpresas()
 
-        itemsEmpresas2.value = reporte.empresas.data;
+        itemsEmpresas2.value = reporte.empresas.data
 
-        console.log(itemsEmpresas2.value);
+        console.log(itemsEmpresas2.value)
       } catch (error) {
       } finally {
       }
-    };
+    }
 
-    let dragIndex = -1;
+    let dragIndex = -1
 
     function onDragStart(index: number) {
-      dragIndex = index;
+      dragIndex = index
     }
 
     function onDrop(dropIndex: number) {
-      if (dragIndex === -1 || dragIndex === dropIndex) return;
-      const moved = items.value.splice(dragIndex, 1)[0];
-      items.value.splice(dropIndex, 0, moved);
-      dragIndex = -1;
+      if (dragIndex === -1 || dragIndex === dropIndex) return
+      const moved = items.value.splice(dragIndex, 1)[0]
+      items.value.splice(dropIndex, 0, moved)
+      dragIndex = -1
     }
 
     const headers2 = ref<
       {
-        key: string;
-        align?: "start" | "center" | "end";
-        title: string;
-        sortable?: boolean;
-        width?: string;
+        key: string
+        align?: 'start' | 'center' | 'end'
+        title: string
+        sortable?: boolean
+        width?: string
       }[]
     >([
       {
-        title: "Perioricidad",
-        key: "perioricidad",
-        align: "center",
+        title: 'Perioricidad',
+        key: 'perioricidad',
+        align: 'center',
         sortable: false,
-        width: "10%",
+        width: '10%',
       },
       {
-        title: "Clase de Prima de riesgo",
-        key: "clasePrimaRiesgo",
-        align: "center",
+        title: 'Clase de Prima de riesgo',
+        key: 'clasePrimaRiesgo',
+        align: 'center',
         sortable: false,
-        width: "15%",
+        width: '15%',
       },
       {
-        title: "Valor de Prima de Riesgo",
-        key: "valorPrimaRiesgo",
-        align: "center",
+        title: 'Valor de Prima de Riesgo',
+        key: 'valorPrimaRiesgo',
+        align: 'center',
         sortable: false,
-        width: "10%",
+        width: '15%',
       },
-      { title: "FEE", key: "fee", align: "center", sortable: false, width: "10%" },
+      { title: 'FEE', key: 'fee', align: 'center', sortable: false, width: '10%' },
       {
-        title: "BASE FEE",
-        key: "baseFee",
-        align: "center",
+        title: 'BASE FEE',
+        key: 'baseFee',
+        align: 'center',
         sortable: false,
-        width: "15%",
-      },
-      {
-        title: "Provisiones",
-        key: "provisiones",
-        align: "center",
-        sortable: false,
-        width: "10%",
+        width: '15%',
       },
       {
-        title: "ISN",
-        key: "isn",
-        align: "center",
+        title: 'Provisiones',
+        key: 'provisiones',
+        align: 'center',
         sortable: false,
-        width: "10%",
+        width: '10%',
       },
       {
-        title: "Cuota sindical",
-        key: "cuotaSindical",
-        align: "center",
+        title: 'ISN',
+        key: 'isn',
+        align: 'center',
         sortable: false,
-        width: "10%",
+        width: '10%',
       },
-    ]);
+      {
+        title: 'Cuota sindical',
+        key: 'cuotaSindical',
+        align: 'center',
+        sortable: false,
+        width: '10%',
+      },
+    ])
 
     const movies = [
       {
-        perioricidad: "Quincenal",
+        perioricidad: 'Quincenal',
         clasePrimaRiesgo: 0,
-        director: "Frank Darabont",
+        director: 'Frank Darabont',
         year: 1994,
         runtime: 142,
         details: {
           synopsis:
-            "Two imprisoned men bond over years, finding solace and redemption through acts of decency.",
-          cast: ["Tim Robbins", "Morgan Freeman"],
+            'Two imprisoned men bond over years, finding solace and redemption through acts of decency.',
+          cast: ['Tim Robbins', 'Morgan Freeman'],
           rating: 3.5,
         },
       },
       {
-        perioricidad: "Semanal",
+        perioricidad: 'Semanal',
         clasePrimaRiesgo: 0,
-        director: "Christopher Nolan",
-        genre: "Sci-Fi",
+        director: 'Christopher Nolan',
+        genre: 'Sci-Fi',
         year: 2010,
         runtime: 148,
         details: {
           synopsis:
-            "A thief with the ability to enter dreams is tasked with stealing a secret from the subconscious.",
-          cast: ["Leonardo DiCaprio", "Joseph Gordon-Levitt"],
+            'A thief with the ability to enter dreams is tasked with stealing a secret from the subconscious.',
+          cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt'],
           rating: 5,
         },
       },
       {
-        perioricidad: "Catorcenal",
+        perioricidad: 'Catorcenal',
         clasePrimaRiesgo: 0,
-        director: "Francis Ford Coppola",
-        genre: "Crime",
+        director: 'Francis Ford Coppola',
+        genre: 'Crime',
         year: 1972,
         runtime: 175,
         details: {
           synopsis:
-            "The aging patriarch of a crime dynasty transfers control to his reluctant son.",
-          cast: ["Marlon Brando", "Al Pacino"],
+            'The aging patriarch of a crime dynasty transfers control to his reluctant son.',
+          cast: ['Marlon Brando', 'Al Pacino'],
           rating: 4.5,
         },
       },
-    ];
+    ]
+
+    const encabezadoCuentaOrigen = ref<
+      {
+        key: string
+        align?: 'start' | 'center' | 'end'
+        title: string
+        sortable?: boolean
+        width?: string
+      }[]
+    >([
+      { title: 'Cuenta origen', key: 'cuenta', sortable: false },
+      { title: '', key: 'eliminar', sortable: false, align: 'end' },
+    ])
+
+    const itemsCuentaOrigen = ref([{ cuenta: '001850255586' }, { cuenta: '001850255586' }])
 
     return {
+      encabezadoCuentaOrigen,
+      itemsCuentaOrigen,
       modelGastosPorComprobar,
       headers2,
       movies,
@@ -1013,9 +1072,9 @@ export default defineComponent({
       vtabMenuItems,
       vtabMenuModel,
       vtabMenuRef,
-    };
+    }
   },
-});
+})
 </script>
 <style scoped>
 .draggable-row {
