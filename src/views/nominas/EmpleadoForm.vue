@@ -1459,6 +1459,8 @@ export default defineComponent({
       if (form.valid) {
         try {
           loading.value = true
+
+          dataModel.value.ExtranjeroSinCURP = dataModel.value.ExtranjeroSinCURP
           await empleadoStore.guardarEmpleado(dataModel.value)
 
           await form.value?.reset()
