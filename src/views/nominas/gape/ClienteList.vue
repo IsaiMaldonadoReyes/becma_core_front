@@ -130,7 +130,7 @@
               height="48px"
               min-width="48px"
               width="48px"
-              @click="onOpenDialogSistema('onSave', {}, 'Nuevo sistema')"
+              @click="onOpenDialogCliente('onSave', {}, 'Nuevo cliente')"
             >
               <v-icon color="white" icon="mdi-plus" size="24px" />
             </v-btn>
@@ -270,7 +270,7 @@
                     height="36px"
                     min-width="36px"
                     width="36px"
-                    @click="onOpenDialogSistema('onEdit', item, 'Editar sistema')"
+                    @click="onOpenDialogCliente('onEdit', item, 'Editar cliente')"
                     variant="elevated"
                   >
                     <v-icon size="small" color="white" icon="mdi-pencil" />
@@ -313,14 +313,14 @@
         </v-card>
       </v-col>
     </v-row>
-    <sistema-modal-form
-      :dialog-event="dialogSistemaPropiedades.evento"
-      :dialog-items="dialogSistemaPropiedades.items"
-      :dialog-title="dialogSistemaPropiedades.titulo"
-      :dialog-view="dialogSistemaPropiedades.dialog"
-      @close="onCloseDialogSistema"
-      @cancel="onCloseDialogSistema"
-      @save="onSaveDialogSistema"
+    <cliente-modal-form
+      :dialog-event="dialogClientePropiedades.evento"
+      :dialog-items="dialogClientePropiedades.items"
+      :dialog-title="dialogClientePropiedades.titulo"
+      :dialog-view="dialogClientePropiedades.dialog"
+      @close="onCloseDialogCliente"
+      @cancel="onCloseDialogCliente"
+      @save="onSaveDialogCliente"
     />
   </v-container>
 </template>
@@ -331,21 +331,21 @@ import { ref, defineComponent, mergeProps, computed, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
 
 // import interfaces
-import type { SistemaModel } from '@/interfaces/core/Sistema'
+import type { ClienteModel } from '@/interfaces/nomina/gape/ClienteModel'
 
 // import stores
-import { useSistemaStore } from '@/stores/modules/Core/sistema'
+import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 
 // import components
 import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
 
 // import views
-import SistemaModalForm from '@/views/core/SistemaModalForm.vue'
+import ClienteModalForm from '@/views/nominas/gape/ClienteModalForm.vue'
 
 export default defineComponent({
   name: 'ClienteList',
-  components: { SistemaModalForm, BecTextField },
+  components: { ClienteModalForm, BecTextField },
 
   setup() {
     // 1. Imports
@@ -366,14 +366,14 @@ export default defineComponent({
     // 4. Reactive | vrowBarraDeAccionesRef
     const vrowBarraDeAccionesRef = ref()
 
-    const sistemaStore = useSistemaStore()
+    const clienteStore = useClienteStore()
     const dialogConfirmation = useDialogManagerStore()
     // breadcrumbs
     const vbrePrincipalItems = ref([
       {
         disabled: false,
         href: '',
-        title: 'Sistema',
+        title: 'Cliente',
       },
       {
         disabled: false,
@@ -410,10 +410,10 @@ export default defineComponent({
         title: 'Código',
       },
       {
-        key: 'descripcion',
+        key: 'telefono',
         align: 'start',
         sortable: true,
-        title: 'Descripción',
+        title: 'Teléfono',
       },
       {
         key: 'fecha',
@@ -427,7 +427,7 @@ export default defineComponent({
         sortable: false,
       },
     ])
-    const vdtbPrincipalItems = ref<SistemaModel[]>([])
+    const vdtbPrincipalItems = ref<ClienteModel[]>([])
 
     const vdtbPrincipalItemsPorPagina = ref(5)
     const vdtbPrincipalItemsSeleccionados = ref<string[]>([])
@@ -474,37 +474,37 @@ export default defineComponent({
       return `${height.value}px !important`
     })
 
-    const dialogSistemaPropiedades = ref({
+    const dialogClientePropiedades = ref({
       dialog: false,
       evento: '',
       items: {},
       titulo: '',
     })
 
-    // DialogSistema
+    // DialogClienteSistema
     type Eventos = 'onSave' | 'onEdit' | 'onDelete' | 'onDeleteIds'
 
     const methods: Record<Eventos, (...args: any[]) => void> = {
       onSave: () => {
-        dialogSistemaPropiedades.value.dialog = false
+        dialogClientePropiedades.value.dialog = false
         fnCargarListado()
       },
       onEdit: () => {
-        dialogSistemaPropiedades.value.dialog = false
+        dialogClientePropiedades.value.dialog = false
         fnCargarListado()
       },
-      onDelete: async (items: SistemaModel | SistemaModel[]) => {
+      onDelete: async (items: ClienteModel | ClienteModel[]) => {
         dialogConfirmation.onCloseDialogConfirmation()
 
         const idsToDelete = Array.isArray(items) ? items.map((item) => item.id) : [items.id]
 
         try {
           // Llamar a la API para eliminar los registros por sus IDs
-          await sistemaStore.destroySistemasByIds(idsToDelete) // Asegúrate de que esta función exista en tu store
+          await clienteStore.destroyClientesByIds(idsToDelete) // Asegúrate de que esta función exista en tu store
 
           // Mostrar mensaje de éxito
           dialogConfirmation.onOpenDialogInformation(
-            sistemaStore.responseMessage,
+            clienteStore.responseMessage,
             'Registros eliminados',
             'correct',
             '#438701',
@@ -518,7 +518,7 @@ export default defineComponent({
         } catch (error) {
           // Mostrar mensaje de error
           dialogConfirmation.onOpenDialogInformation(
-            sistemaStore.responseMessage,
+            clienteStore.responseMessage,
             'Error al eliminar',
             'incorrect',
             '#FF0000',
@@ -528,7 +528,7 @@ export default defineComponent({
       },
       onDeleteIds: () => {
         let titulo = 'Eliminar registro(s)'
-        let mensaje = 'Esta acción eliminará los sistemas seleccionados. ¿Desea continuar?'
+        let mensaje = 'Esta acción eliminará los clientes seleccionados. ¿Desea continuar?'
 
         const itemsSeleccionados = vdtbPrincipalItems.value.filter((item) =>
           vdtbPrincipalItemsSeleccionados.value.includes(item.codigo),
@@ -544,8 +544,8 @@ export default defineComponent({
       },
     }
 
-    const onOpenDialogSistema = (evento: string, items: object, titulo: string) => {
-      dialogSistemaPropiedades.value = {
+    const onOpenDialogCliente = (evento: string, items: object, titulo: string) => {
+      dialogClientePropiedades.value = {
         dialog: true,
         evento: evento,
         items: items,
@@ -553,12 +553,12 @@ export default defineComponent({
       }
     }
 
-    const onCloseDialogSistema = () => {
-      dialogSistemaPropiedades.value.dialog = false
+    const onCloseDialogCliente = () => {
+      dialogClientePropiedades.value.dialog = false
       fnCargarListado()
     }
 
-    const onSaveDialogSistema = (evento: Eventos) => {
+    const onSaveDialogCliente = (evento: Eventos) => {
       methods[evento]()
     }
 
@@ -569,8 +569,8 @@ export default defineComponent({
     async function fnCargarListado() {
       vdtbPrincipalItems.value = []
 
-      await sistemaStore.indexSistema()
-      vdtbPrincipalItems.value = sistemaStore.sistema
+      await clienteStore.indexClientes()
+      vdtbPrincipalItems.value = clienteStore.clientes
     }
 
     onMounted(() => {
@@ -581,12 +581,12 @@ export default defineComponent({
       getTableHeight,
       getTableNoDataHeight,
       dialogConfirmation,
-      dialogSistemaPropiedades,
+      dialogClientePropiedades,
       getVdtPrincipalTotalPaginas,
       mergeProps,
-      onCloseDialogSistema,
-      onOpenDialogSistema,
-      onSaveDialogSistema,
+      onCloseDialogCliente,
+      onOpenDialogCliente,
+      onSaveDialogCliente,
       smAndDown,
       vbrePrincipalItems,
       vbtnActivarRegistro,

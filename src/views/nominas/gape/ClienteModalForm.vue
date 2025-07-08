@@ -67,29 +67,29 @@
               <bec-text-field
                 v-model="dialogPropiedades.elementos.nombre"
                 :label="'Nombre *'"
-                :placeholder="'Nombre del sistema *'"
+                :placeholder="'Nombre del cliente *'"
                 :prepend-icon="'mdi-barcode'"
                 :rules="[validationRules.required]"
-                :tooltip="'Nombre asignado al sistema'"
+                :tooltip="'Nombre asignado al cliente'"
               />
             </v-col>
             <v-col cols="12" md="6">
               <bec-text-field
                 v-model="dialogPropiedades.elementos.codigo"
                 :label="'Código *'"
-                :placeholder="'Código del sistema *'"
+                :placeholder="'Código del cliente *'"
                 :prepend-icon="'mdi-barcode'"
                 :rules="[validationRules.required]"
-                :tooltip="'Código asignado al sistema'"
+                :tooltip="'Código asignado al cliente'"
               />
             </v-col>
             <v-col cols="12" md="6">
               <bec-text-field
-                v-model="dialogPropiedades.elementos.descripcion"
-                :label="'Descripción *'"
-                :placeholder="'Descripción del sistema *'"
+                v-model="dialogPropiedades.elementos.telefono"
+                :label="'Teléfono *'"
+                :placeholder="'Teléfono del cliente *'"
                 :prepend-icon="'mdi-text'"
-                :tooltip="'Descripción asignada al sistema'"
+                :tooltip="'Teléfono del cliente'"
               />
             </v-col>
             <v-col cols="12" md="6"> </v-col>
@@ -104,13 +104,13 @@ import { ref, computed, defineComponent, mergeProps, onMounted, onUnmounted, wat
 
 //import interface
 
-import type { SistemaModel } from '@/interfaces/core/Sistema'
+import type { ClienteModel } from '@/interfaces/nomina/gape/ClienteModel'
 
 //import composable
-import { useSistemaModel } from '@/composables/core/useSistema'
+import { useClienteModel } from '@/composables/nomina/gape/useCliente'
 
 // import stores
-import { useSistemaStore } from '@/stores/modules/Core/sistema'
+import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 import { validationRules } from '@/utils/validationRules'
 
@@ -125,7 +125,7 @@ export default defineComponent({
   props: {
     dialogEvent: String,
     dialogItems: {
-      type: Object as () => Partial<SistemaModel>,
+      type: Object as () => Partial<ClienteModel>,
       required: true,
     },
     dialogTitle: String,
@@ -134,9 +134,9 @@ export default defineComponent({
   setup(props, { emit }) {
     // Estado reactivo
 
-    const { dataModel, setSistema, resetModel } = useSistemaModel()
+    const { dataModel, setCliente, resetModel } = useClienteModel()
 
-    const sistemaStore = useSistemaStore()
+    const clienteStore = useClienteStore()
     const dialogConfirmation = useDialogManagerStore()
 
     const formRef = ref()
@@ -169,7 +169,7 @@ export default defineComponent({
         mensaje = `¿Está seguro de que desea actualizar el registro "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Los cambios realizados serán guardados de forma permanente.`
       } else {
         titulo = 'Registro de datos'
-        mensaje = `¿Está seguro de que desea registrar el nuevo sistema "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Esta acción no se puede deshacer.`
+        mensaje = `¿Está seguro de que desea registrar el nuevo cliente "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Esta acción no se puede deshacer.`
       }
 
       dialogConfirmation.onOpenDialogConfirmation(
@@ -192,15 +192,15 @@ export default defineComponent({
         try {
           loading.value = true
 
-          setSistema({
+          setCliente({
             ...dialogPropiedades.value.elementos,
             estado: dialogPropiedades.value.elementos.estado ? true : false,
           })
 
           if (dialogPropiedades.value.elementos.id) {
-            await sistemaStore.updateSistema(dataModel.value, dialogPropiedades.value.elementos.id)
+            await clienteStore.updateCliente(dataModel.value, dialogPropiedades.value.elementos.id)
           } else {
-            await sistemaStore.storeSistema(dataModel.value)
+            await clienteStore.storeCliente(dataModel.value)
           }
 
           await form.value?.reset()
