@@ -295,7 +295,6 @@
                         :items="item.cuentasDeOrigen"
                         eager
                         color="transparent"
-                        no-data-text="Sin cuentas de origen"
                       >
                         <template v-slot:header.eliminar>
                           <v-btn

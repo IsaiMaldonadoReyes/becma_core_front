@@ -130,7 +130,7 @@
               height="48px"
               min-width="48px"
               width="48px"
-              :to="'/nominas/gape/empresaForm'"
+              :to="/nominas/gape/empresaForm"
             >
               <v-icon color="white" icon="mdi-plus" size="24px" />
             </v-btn>

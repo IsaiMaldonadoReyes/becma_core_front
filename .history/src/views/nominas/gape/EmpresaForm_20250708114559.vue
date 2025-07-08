@@ -289,13 +289,13 @@
                       <v-data-table
                         hide-default-footer
                         v-model="item.cuentasDeOrigen"
-                        item-value="cuenta"
+                        item-value="concepto"
                         :headers="encabezadoCuentaOrigen"
                         :hover="true"
                         :items="item.cuentasDeOrigen"
                         eager
+                        item-value="concepto"
                         color="transparent"
-                        no-data-text="Sin cuentas de origen"
                       >
                         <template v-slot:header.eliminar>
                           <v-btn

@@ -288,14 +288,13 @@
                     <template v-slot:item.valorPrimaRiesgo="{ item }">
                       <v-data-table
                         hide-default-footer
-                        v-model="item.cuentasDeOrigen"
-                        item-value="cuenta"
+                        v-model="itemsSeleccionados"
                         :headers="encabezadoCuentaOrigen"
                         :hover="true"
-                        :items="item.cuentasDeOrigen"
+                        :items="itemsCuentaOrigen"
                         eager
+                        item-value="concepto"
                         color="transparent"
-                        no-data-text="Sin cuentas de origen"
                       >
                         <template v-slot:header.eliminar>
                           <v-btn
@@ -306,7 +305,7 @@
                             width="24px"
                             size="x-small"
                             variant="elevated"
-                            @click="agregarFila(item)"
+                            @click="itemsCuentaOrigen.push()"
                           >
                             <v-icon color="white" icon="mdi-plus" />
                           </v-btn>
@@ -696,24 +695,20 @@ export default defineComponent({
       },
     ])
 
-    const movies = ref([
+    const movies = [
       {
         perioricidad: 'Fondeadora',
-        cuentasDeOrigen: [{ cuenta: '1000000000' }, { cuenta: '2020202020' }],
       },
       {
         perioricidad: 'Azteca Interbancario',
-        cuentasDeOrigen: [],
       },
       {
         perioricidad: 'Azteca bancario',
-        cuentasDeOrigen: [],
       },
       {
         perioricidad: 'Banorte de terceros',
-        cuentasDeOrigen: [],
       },
-    ])
+    ]
 
     const vswiFiscal = ref(true)
     watch(
@@ -737,11 +732,10 @@ export default defineComponent({
     ])
 
     const itemsCuentaOrigen = ref([{ cuenta: '001850255586' }, { cuenta: '001850255586' }])
-    const agregarFila = (item: any) => {
-      if (!Array.isArray(item.cuentasDeOrigen)) {
-        item.cuentasDeOrigen = []
-      }
-      item.cuentasDeOrigen.push({ cuenta: '' })
+    const agregarFila = () => {
+      itemsCuentaOrigen.push({
+        cuenta: '',
+      })
     }
 
     return {

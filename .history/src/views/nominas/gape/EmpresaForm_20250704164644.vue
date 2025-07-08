@@ -288,14 +288,13 @@
                     <template v-slot:item.valorPrimaRiesgo="{ item }">
                       <v-data-table
                         hide-default-footer
-                        v-model="item.cuentasDeOrigen"
-                        item-value="cuenta"
+                        v-model="itemsSeleccionados"
                         :headers="encabezadoCuentaOrigen"
                         :hover="true"
-                        :items="item.cuentasDeOrigen"
+                        :items="itemsCuentaOrigen"
                         eager
+                        item-value="concepto"
                         color="transparent"
-                        no-data-text="Sin cuentas de origen"
                       >
                         <template v-slot:header.eliminar>
                           <v-btn
@@ -306,7 +305,7 @@
                             width="24px"
                             size="x-small"
                             variant="elevated"
-                            @click="agregarFila(item)"
+                            @click="itemsCuentaOrigen.push()"
                           >
                             <v-icon color="white" icon="mdi-plus" />
                           </v-btn>
@@ -696,24 +695,49 @@ export default defineComponent({
       },
     ])
 
-    const movies = ref([
+    const movies = [
       {
         perioricidad: 'Fondeadora',
-        cuentasDeOrigen: [{ cuenta: '1000000000' }, { cuenta: '2020202020' }],
+        clasePrimaRiesgo: 0,
+        director: 'Frank Darabont',
+        year: 1994,
+        runtime: 142,
+        details: {
+          synopsis:
+            'Two imprisoned men bond over years, finding solace and redemption through acts of decency.',
+          cast: ['Tim Robbins', 'Morgan Freeman'],
+          rating: 3.5,
+        },
       },
       {
-        perioricidad: 'Azteca Interbancario',
-        cuentasDeOrigen: [],
+        perioricidad: 'Semanal',
+        clasePrimaRiesgo: 0,
+        director: 'Christopher Nolan',
+        genre: 'Sci-Fi',
+        year: 2010,
+        runtime: 148,
+        details: {
+          synopsis:
+            'A thief with the ability to enter dreams is tasked with stealing a secret from the subconscious.',
+          cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt'],
+          rating: 5,
+        },
       },
       {
-        perioricidad: 'Azteca bancario',
-        cuentasDeOrigen: [],
+        perioricidad: 'Catorcenal',
+        clasePrimaRiesgo: 0,
+        director: 'Francis Ford Coppola',
+        genre: 'Crime',
+        year: 1972,
+        runtime: 175,
+        details: {
+          synopsis:
+            'The aging patriarch of a crime dynasty transfers control to his reluctant son.',
+          cast: ['Marlon Brando', 'Al Pacino'],
+          rating: 4.5,
+        },
       },
-      {
-        perioricidad: 'Banorte de terceros',
-        cuentasDeOrigen: [],
-      },
-    ])
+    ]
 
     const vswiFiscal = ref(true)
     watch(
@@ -732,20 +756,13 @@ export default defineComponent({
         width?: string
       }[]
     >([
-      { title: 'Cuenta origen', key: 'cuenta', sortable: false, align: 'center', width: '90%' },
+      { title: 'Cuenta origen', key: 'cuenta', sortable: false, align: 'center', width:'90%' },
       { title: '', key: 'eliminar', sortable: false, align: 'end' },
     ])
 
     const itemsCuentaOrigen = ref([{ cuenta: '001850255586' }, { cuenta: '001850255586' }])
-    const agregarFila = (item: any) => {
-      if (!Array.isArray(item.cuentasDeOrigen)) {
-        item.cuentasDeOrigen = []
-      }
-      item.cuentasDeOrigen.push({ cuenta: '' })
-    }
 
     return {
-      agregarFila,
       encabezadoCuentaOrigen,
       itemsCuentaOrigen,
       vswiFiscal,

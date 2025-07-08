@@ -7,7 +7,6 @@
     :prepend-inner-icon="prependIcon"
     :rules="rules"
     :variant="variant"
-    clear-icon="mdi-close"
     clearable
     color="primary"
     density="compact"
@@ -29,15 +28,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, mergeProps } from "vue";
-import type { PropType } from "vue";
+import { defineComponent, computed, mergeProps } from 'vue'
+import type { PropType } from 'vue'
 
 export default defineComponent({
-  name: "BecTextField",
+  name: 'BecTextField',
   props: {
     modelValue: {
-      type: [String, Number, Object, Array] as PropType<any>,
-      required: true,
+      type: [String, Number, Object, Array, null] as PropType<any>,
+      default: null,
     },
     label: String,
     placeholder: String,
@@ -51,48 +50,34 @@ export default defineComponent({
     onModelUpdate: Function as PropType<(val: any) => void>,
     variant: {
       type: String as PropType<
-        | "outlined"
-        | "filled"
-        | "plain"
-        | "underlined"
-        | "solo"
-        | "solo-inverted"
-        | "solo-filled"
+        'outlined' | 'filled' | 'plain' | 'underlined' | 'solo' | 'solo-inverted' | 'solo-filled'
       >,
-      default: "outlined",
+      default: 'outlined',
     },
   },
-  emits: ["update:modelValue"],
+  emits: ['update:modelValue'],
   setup(props, { emit }) {
     const model = computed({
       get: () => props.modelValue,
       set: (val) => {
-        emit("update:modelValue", val); // 🔧 actualiza el v-model en el padre
+        emit('update:modelValue', val) // 🔧 actualiza el v-model en el padre
         if (props.onModelUpdate) {
-          props.onModelUpdate(val); // 🔧 llama  función personalizada desde el Padre
+          props.onModelUpdate(val) // 🔧 llama  función personalizada desde el Padre
         }
       },
-    });
-
-    const label = computed(() => props.label);
-    const placeholder = computed(() => props.placeholder);
-    const prefix = computed(() => props.prefix);
-    const prependIcon = computed(() => props.prependIcon);
-    const rules = computed(() => props.rules);
-    const tooltip = computed(() => props.tooltip);
-    const variant = computed(() => props.variant);
+    })
 
     return {
-      label,
+      label: computed(() => props.label),
       mergeProps,
       model,
-      placeholder,
-      prefix,
-      prependIcon,
-      rules,
-      tooltip,
-      variant,
-    };
+      placeholder: computed(() => props.placeholder),
+      prefix: computed(() => props.prefix),
+      prependIcon: computed(() => props.prependIcon),
+      rules: computed(() => props.rules),
+      tooltip: computed(() => props.tooltip),
+      variant: computed(() => props.variant),
+    }
   },
-});
+})
 </script>

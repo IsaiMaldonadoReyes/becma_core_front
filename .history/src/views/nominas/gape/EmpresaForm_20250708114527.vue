@@ -289,13 +289,12 @@
                       <v-data-table
                         hide-default-footer
                         v-model="item.cuentasDeOrigen"
-                        item-value="cuenta"
                         :headers="encabezadoCuentaOrigen"
                         :hover="true"
                         :items="item.cuentasDeOrigen"
                         eager
+                        item-value="concepto"
                         color="transparent"
-                        no-data-text="Sin cuentas de origen"
                       >
                         <template v-slot:header.eliminar>
                           <v-btn
@@ -741,7 +740,7 @@ export default defineComponent({
       if (!Array.isArray(item.cuentasDeOrigen)) {
         item.cuentasDeOrigen = []
       }
-      item.cuentasDeOrigen.push({ cuenta: '' })
+      item.cuentasDeOrigen.push('')
     }
 
     return {

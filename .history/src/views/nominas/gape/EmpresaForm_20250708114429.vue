@@ -289,13 +289,12 @@
                       <v-data-table
                         hide-default-footer
                         v-model="item.cuentasDeOrigen"
-                        item-value="cuenta"
                         :headers="encabezadoCuentaOrigen"
                         :hover="true"
                         :items="item.cuentasDeOrigen"
                         eager
+                        item-value="concepto"
                         color="transparent"
-                        no-data-text="Sin cuentas de origen"
                       >
                         <template v-slot:header.eliminar>
                           <v-btn
@@ -696,24 +695,21 @@ export default defineComponent({
       },
     ])
 
-    const movies = ref([
+    const movies = [
       {
         perioricidad: 'Fondeadora',
-        cuentasDeOrigen: [{ cuenta: '1000000000' }, { cuenta: '2020202020' }],
+        cuentasDeOrigen: ['1000000000', '2020202020'],
       },
       {
         perioricidad: 'Azteca Interbancario',
-        cuentasDeOrigen: [],
       },
       {
         perioricidad: 'Azteca bancario',
-        cuentasDeOrigen: [],
       },
       {
         perioricidad: 'Banorte de terceros',
-        cuentasDeOrigen: [],
       },
-    ])
+    ]
 
     const vswiFiscal = ref(true)
     watch(
@@ -741,7 +737,7 @@ export default defineComponent({
       if (!Array.isArray(item.cuentasDeOrigen)) {
         item.cuentasDeOrigen = []
       }
-      item.cuentasDeOrigen.push({ cuenta: '' })
+      item.cuentasDeOrigen.push('')
     }
 
     return {

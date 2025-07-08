@@ -202,154 +202,176 @@
         <v-card elevation="0" color="transparent">
           <v-tabs-window v-model="vtabMenuModel">
             <v-tabs-window-item value="tab01" eager>
-              <v-row class="mt-1">
-                <v-col cols="12">
-                  <bec-autocomplete
-                    v-model="modelEmpresa"
-                    :item-title="'nombre_empresa'"
-                    :item-value="'id'"
-                    :items="itemsEmpresas"
-                    :label="'Empresa CONTAPQi Nóminas'"
-                    :multiple="false"
-                    :prepend-icon="'mdi-briefcase-account'"
-                    :return-object="false"
-                    :rules="[vforFiltrosRule.required]"
-                    :tooltip="'Ruta del archivo de la base de datos de la empresa del cliente.'"
-                  />
-                </v-col>
-                <v-col cols="12">
-                  <bec-text-field
-                    v-model="modelSueldoIMSS"
-                    :label="'Razón Social'"
-                    :prepend-icon="'mdi-briefcase-account'"
-                    :rules="[(v) => !!v || 'Este campo es requerido']"
-                    :tooltip="'Porcentaje de comisión que se le cobrará al cliente'"
-                  />
-                </v-col>
-                <v-col cols="12">
-                  <bec-text-field
-                    v-model="modelSueldoIMSS"
-                    :label="'RFC'"
-                    :prepend-icon="'mdi-briefcase-account'"
-                    :rules="[(v) => !!v || 'Este campo es requerido']"
-                    :tooltip="'Porcentaje de comisión que se le cobrará al cliente'"
-                  />
-                </v-col>
-                <v-col cols="12" lg="6" md="12">
-                  <bec-text-field
-                    v-model="modelSueldoIMSS"
-                    :label="'Correo asignado para notificaciones'"
-                    :prepend-icon="'mdi-email'"
-                    :rules="[(v) => !!v || 'Este campo es requerido']"
-                    :tooltip="'Porcentaje de comisión que se le cobrará al cliente'"
-                  />
-                </v-col>
-                <v-col cols="12" lg="6" md="12">
-                  <bec-text-field
-                    v-model="modelSueldoIMSS"
-                    :label="'Código interno'"
-                    :prepend-icon="'mdi-barcode'"
-                    :rules="[(v) => !!v || 'Este campo es requerido']"
-                    :tooltip="'Porcentaje de comisión que se le cobrará al cliente'"
-                  />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col class="my-0 py-0">
-                  <v-divider class="border-opacity-25 ma-0 pa-0" />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col>
-                  <v-data-table
-                    :headers="headers2"
-                    :items="movies"
-                    item-value="title"
-                    hide-default-footer
-                    :mobile="smAndDown"
-                    :hover="true"
-                    show-select
-                  >
-                    <template v-slot:item.clasePrimaRiesgo="{ item }">
-                      <div @mousedown.stop>
-                        <v-text-field
-                          v-model="item.cuenta"
-                          variant="underlined"
-                          clearable
-                          clear-icon="mdi-close"
-                          density="compact"
-                          hide-details
-                          :placeholder="'0.00'"
-                          class="text-end"
-                          color="primary"
-                        />
-                      </div>
-                    </template>
-                    <template v-slot:item.valorPrimaRiesgo="{ item }">
+              <v-card color="transparent">
+                <v-card-text>
+                  <v-row>
+                    <v-col cols="12">
+                      <bec-autocomplete
+                        v-model="modelEmpresa"
+                        :item-title="'nombre_empresa'"
+                        :item-value="'id'"
+                        :items="itemsEmpresas"
+                        :label="'Empresa CONTAPQi Nóminas'"
+                        :multiple="false"
+                        :prepend-icon="'mdi-briefcase-account'"
+                        :return-object="false"
+                        :rules="[vforFiltrosRule.required]"
+                        :tooltip="'Ruta del archivo de la base de datos de la empresa del cliente.'"
+                      />
+                    </v-col>
+                    <v-col cols="12">
+                      <bec-text-field
+                        v-model="modelSueldoIMSS"
+                        :label="'Razón Social'"
+                        :prepend-icon="'mdi-briefcase-account'"
+                        :rules="[(v) => !!v || 'Este campo es requerido']"
+                        :tooltip="'Porcentaje de comisión que se le cobrará al cliente'"
+                      />
+                    </v-col>
+                    <v-col cols="12">
+                      <bec-text-field
+                        v-model="modelSueldoIMSS"
+                        :label="'RFC'"
+                        :prepend-icon="'mdi-briefcase-account'"
+                        :rules="[(v) => !!v || 'Este campo es requerido']"
+                        :tooltip="'Porcentaje de comisión que se le cobrará al cliente'"
+                      />
+                    </v-col>
+                    <v-col cols="12">
+                      <bec-text-field
+                        v-model="modelSueldoIMSS"
+                        :label="'Correo asignado para notificaciones'"
+                        :prepend-icon="'mdi-email'"
+                        :rules="[(v) => !!v || 'Este campo es requerido']"
+                        :tooltip="'Porcentaje de comisión que se le cobrará al cliente'"
+                      />
+                    </v-col>
+                    <v-col cols="12">
+                      <bec-text-field
+                        v-model="modelSueldoIMSS"
+                        :label="'Código interno'"
+                        :prepend-icon="'mdi-barcode'"
+                        :rules="[(v) => !!v || 'Este campo es requerido']"
+                        :tooltip="'Porcentaje de comisión que se le cobrará al cliente'"
+                      />
+                    </v-col>
+                    <v-col>
                       <v-data-table
+                        :headers="headers2"
+                        :items="movies"
+                        item-value="title"
                         hide-default-footer
-                        v-model="item.cuentasDeOrigen"
-                        item-value="cuenta"
-                        :headers="encabezadoCuentaOrigen"
+                        :mobile="smAndDown"
                         :hover="true"
-                        :items="item.cuentasDeOrigen"
-                        eager
-                        color="transparent"
-                        no-data-text="Sin cuentas de origen"
+                        show-select
                       >
-                        <template v-slot:header.eliminar>
-                          <v-btn
-                            class="mr-1"
-                            color="primary"
-                            height="24px"
-                            min-width="24px"
-                            width="24px"
-                            size="x-small"
-                            variant="elevated"
-                            @click="agregarFila(item)"
+                        <template v-slot:item.clasePrimaRiesgo="{ item }">
+                          <div @mousedown.stop>
+                            <v-text-field
+                              v-model="item.cuenta"
+                              variant="underlined"
+                              clearable
+                              clear-icon="mdi-close"
+                              density="compact"
+                              hide-details
+                              :placeholder="'0.00'"
+                              class="text-end"
+                              color="primary"
+                            />
+                          </div>
+                        </template>
+                        <template v-slot:item.valorPrimaRiesgo="{ item }">
+                          <v-data-table
+                            hide-default-footer
+                            v-model="itemsSeleccionados"
+                            :headers="encabezadoCuentaOrigen"
+                            :hover="true"
+                            :items="itemsCuentaOrigen"
+                            :mobile="smAndDown"
+                            eager
+                            item-value="concepto"
+                            color="transparent"
                           >
-                            <v-icon color="white" icon="mdi-plus" />
-                          </v-btn>
-                        </template>
-                        <template v-slot:header.cuenta> Cuenta </template>
-                        <!-- solo sobrescribes la columna 'nombre' -->
-                        <template v-slot:item.cuenta="{ item }">
-                          <v-text-field
-                            v-model="item.cuenta"
-                            variant="underlined"
-                            clearable
-                            clear-icon="mdi-close"
-                            density="compact"
-                            hide-details
-                            :placeholder="'0.00'"
-                            class="text-end"
-                            color="primary"
-                          />
-                        </template>
-                        <template v-slot:item.eliminar="{ item }">
-                          <v-tooltip interactive>
-                            <template v-slot:activator="{ props: tooltipProps }">
+                            <template v-slot:header.eliminar>
                               <v-btn
-                                v-bind="mergeProps(tooltipProps)"
                                 class="mr-1"
                                 color="primary"
-                                height="24px"
-                                min-width="24px"
-                                width="24px"
-                                size="x-small"
+                                height="32px"
+                                min-width="32px"
+                                width="32px"
                                 variant="elevated"
                               >
-                                <v-icon color="white" icon="mdi-delete" />
+                                <v-icon color="white" icon="mdi-plus" />
                               </v-btn>
                             </template>
-                            <span> Eliminar </span>
-                          </v-tooltip>
+                            <template
+                              v-slot:item.data-table-select="{
+                                internalItem,
+                                isSelected,
+                                toggleSelect,
+                              }"
+                            >
+                              <v-checkbox-btn
+                                :model-value="isSelected(internalItem)"
+                                color="primary"
+                                @update:model-value="toggleSelect(internalItem)"
+                              />
+                            </template>
+                            <template v-slot:item.seleccionado="{ item }">
+                              <v-chip
+                                :color="
+                                  itemsSeleccionados.some((i) => i === item.concepto)
+                                    ? 'green'
+                                    : 'red'
+                                "
+                                size="small"
+                                label
+                                variant="flat"
+                              >
+                                {{
+                                  itemsSeleccionados.some((i) => i === item.concepto) ? 'Sí' : 'No'
+                                }}
+                              </v-chip>
+                            </template>
+                            <!-- solo sobrescribes la columna 'nombre' -->
+                            <template v-slot:item.cuenta="{ item }">
+                              <v-text-field
+                                v-model="item.cuenta"
+                                variant="underlined"
+                                clearable
+                                clear-icon="mdi-close"
+                                density="compact"
+                                hide-details
+                                :placeholder="'0.00'"
+                                class="text-end"
+                                color="primary"
+                              />
+                            </template>
+                            <template v-slot:item.eliminar="{ item }">
+                              <v-tooltip interactive>
+                                <template v-slot:activator="{ props: tooltipProps }">
+                                  <v-btn
+                                    v-bind="mergeProps(tooltipProps)"
+                                    class="mr-1"
+                                    color="primary"
+                                    height="32px"
+                                    min-width="32px"
+                                    width="32px"
+                                    variant="elevated"
+                                  >
+                                    <v-icon color="white" icon="mdi-delete" />
+                                  </v-btn>
+                                </template>
+                                <span> Eliminar </span>
+                              </v-tooltip>
+                            </template>
+                          </v-data-table>
                         </template>
                       </v-data-table>
-                    </template>
-                  </v-data-table>
-                </v-col>
-              </v-row>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
             </v-tabs-window-item>
             <v-tabs-window-item value="tab02" eager>
               <v-card color="transparent">
@@ -696,24 +718,49 @@ export default defineComponent({
       },
     ])
 
-    const movies = ref([
+    const movies = [
       {
         perioricidad: 'Fondeadora',
-        cuentasDeOrigen: [{ cuenta: '1000000000' }, { cuenta: '2020202020' }],
+        clasePrimaRiesgo: 0,
+        director: 'Frank Darabont',
+        year: 1994,
+        runtime: 142,
+        details: {
+          synopsis:
+            'Two imprisoned men bond over years, finding solace and redemption through acts of decency.',
+          cast: ['Tim Robbins', 'Morgan Freeman'],
+          rating: 3.5,
+        },
       },
       {
-        perioricidad: 'Azteca Interbancario',
-        cuentasDeOrigen: [],
+        perioricidad: 'Semanal',
+        clasePrimaRiesgo: 0,
+        director: 'Christopher Nolan',
+        genre: 'Sci-Fi',
+        year: 2010,
+        runtime: 148,
+        details: {
+          synopsis:
+            'A thief with the ability to enter dreams is tasked with stealing a secret from the subconscious.',
+          cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt'],
+          rating: 5,
+        },
       },
       {
-        perioricidad: 'Azteca bancario',
-        cuentasDeOrigen: [],
+        perioricidad: 'Catorcenal',
+        clasePrimaRiesgo: 0,
+        director: 'Francis Ford Coppola',
+        genre: 'Crime',
+        year: 1972,
+        runtime: 175,
+        details: {
+          synopsis:
+            'The aging patriarch of a crime dynasty transfers control to his reluctant son.',
+          cast: ['Marlon Brando', 'Al Pacino'],
+          rating: 4.5,
+        },
       },
-      {
-        perioricidad: 'Banorte de terceros',
-        cuentasDeOrigen: [],
-      },
-    ])
+    ]
 
     const vswiFiscal = ref(true)
     watch(
@@ -732,20 +779,13 @@ export default defineComponent({
         width?: string
       }[]
     >([
-      { title: 'Cuenta origen', key: 'cuenta', sortable: false, align: 'center', width: '90%' },
+      { title: 'Cuenta origen', key: 'cuenta', sortable: false, align: 'start' },
       { title: '', key: 'eliminar', sortable: false, align: 'end' },
     ])
 
     const itemsCuentaOrigen = ref([{ cuenta: '001850255586' }, { cuenta: '001850255586' }])
-    const agregarFila = (item: any) => {
-      if (!Array.isArray(item.cuentasDeOrigen)) {
-        item.cuentasDeOrigen = []
-      }
-      item.cuentasDeOrigen.push({ cuenta: '' })
-    }
 
     return {
-      agregarFila,
       encabezadoCuentaOrigen,
       itemsCuentaOrigen,
       vswiFiscal,
