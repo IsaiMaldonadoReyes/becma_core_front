@@ -28,6 +28,16 @@ export const useClienteStore = defineStore({
       }
     },
 
+    async sincronizarEmpresas() {
+      try {
+        const response = await axios.post('/api/sincronizarEmpresas')
+        this.responseMessage = response.data
+      } catch (error: any) {
+        this._handleError(error)
+        throw error
+      }
+    },
+
     async storeCliente(data: ClienteModel) {
       try {
         const response = await axios.post('/api/storeCliente', data)

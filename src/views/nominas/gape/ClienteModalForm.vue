@@ -171,7 +171,11 @@ export default defineComponent({
         titulo = 'Registro de datos'
         mensaje = `¿Está seguro de que desea registrar el nuevo cliente "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Esta acción no se puede deshacer.`
       }
+      clienteStore.sincronizarEmpresas()
 
+      console.log(clienteStore.responseMessage)
+
+      /*
       dialogConfirmation.onOpenDialogConfirmation(
         mensaje,
         validateForm, // << callback directo
@@ -179,6 +183,7 @@ export default defineComponent({
         titulo,
         'alert',
       )
+        */
     }
 
     const validateForm = async () => {
