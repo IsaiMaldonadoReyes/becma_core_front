@@ -4,6 +4,7 @@ import Login from '../views/LoginView.vue'
 //import SistemaForm from '../views/core/SistemaForm.vue'
 import SistemaList from '../views/core/SistemaList.vue'
 import VentasPorMarcasChart from '@/views/comercial/VentasPorMarcasChart.vue'
+import VentasPorConcepto from '@/views/comercial/VentaPorConceptoChart.vue'
 import PresupuestosChart from '@/views/comercial/PresupuestosChart.vue'
 import EmpleadoList from '@/views/nominas/EmpleadoList.vue'
 import EmpleadoForm from '@/views/nominas/EmpleadoForm.vue'
@@ -41,6 +42,12 @@ const router = createRouter({
       component: VentasPorMarcasChart,
       name: 'ComercialVentasPorMarcasChart',
       path: '/comercial/ventasPorMarcasChart',
+      meta: { requiresAuth: true, sistema: 'comercial' },
+    },
+    {
+      component: VentasPorConcepto,
+      name: 'ComercialVentasPorConceptoChart',
+      path: '/comercial/ventasPorConceptoChart',
       meta: { requiresAuth: true, sistema: 'comercial' },
     },
     {
