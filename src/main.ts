@@ -3,6 +3,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createVuetify } from 'vuetify'
+import { es } from 'vuetify/locale'
 import * as labsComponents from 'vuetify/labs/components'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
@@ -21,11 +22,15 @@ const vuetify = createVuetify({
     ...labsComponents,
   },
   directives,
+  locale: {
+    locale: 'es-MX',
+    fallback: 'es',
+    messages: { es, 'es-MX': es },
+  },
 })
 
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)
-
 
 app.mount('#app')

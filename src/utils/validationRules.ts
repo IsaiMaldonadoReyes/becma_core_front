@@ -128,6 +128,31 @@ export const validationRules = {
 
     return true
   },
+  validateAlphanumericFieldWithSpaces: (
+    value: string,
+    {
+      required = false,
+      min,
+      max,
+    }: {
+      required?: boolean
+      min?: number
+      max?: number
+    } = {},
+  ): true | string => {
+    // 👇 Acepta letras, números y espacios (sin espacios al inicio o fin)
+    const regex = /^[a-zA-Z0-9\s]+$/
+
+    if (required && !value) return 'Este campo es obligatorio'
+
+    if (value) {
+      if (!regex.test(value)) return 'Solo se permiten letras, números y espacios'
+      if (min && value.length < min) return `Debe tener al menos ${min} caracteres`
+      if (max && value.length > max) return `Debe tener máximo ${max} caracteres`
+    }
+
+    return true
+  },
 
   emailIfNotEmpty: (v: string) => {
     if (!v) return true

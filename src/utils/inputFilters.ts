@@ -56,7 +56,30 @@ export const inputFilters = {
     if (!/[A-Z0-9]/.test(e.key.toUpperCase())) e.preventDefault()
   },
   onlyRFC: (e: KeyboardEvent) => {
-    if (!/[A-Z0-9&]/.test(e.key.toUpperCase())) e.preventDefault()
+    const char = e.key
+
+    // Permitir solo A-Z, 0-9 y &
+    if (!/^[a-zA-Z0-9&]$/.test(char)) {
+      e.preventDefault()
+      return
+    }
+
+    // Convertir a mayúscula si es una letra válida
+    if (char.length === 1 && /[a-zA-Z]/.test(char)) {
+      e.preventDefault()
+      const upper = char.toUpperCase()
+
+      const target = e.target as HTMLInputElement
+      const start = target.selectionStart ?? 0
+      const end = target.selectionEnd ?? 0
+      const value = target.value
+
+      target.value = value.slice(0, start) + upper + value.slice(end)
+      target.setSelectionRange(start + 1, start + 1)
+
+      const event = new Event('input', { bubbles: true })
+      target.dispatchEvent(event)
+    }
   },
   onlyPhone: (e: KeyboardEvent) => {
     if (!/^\d$/.test(e.key)) e.preventDefault()
@@ -69,5 +92,31 @@ export const inputFilters = {
     if (key === '.' && !val.includes('.')) return
 
     e.preventDefault()
+  },
+  onlyAlphanumericWithSpaces: (e: KeyboardEvent) => {
+    const char = e.key
+
+    // Permitir letras, números y espacios
+    if (!/^[a-zA-Z0-9\s]$/.test(char)) {
+      e.preventDefault()
+      return
+    }
+
+    // Convertir letras a mayúsculas
+    if (char.match(/[a-zA-Z]/)) {
+      e.preventDefault()
+      const upper = char.toUpperCase()
+
+      const target = e.target as HTMLInputElement
+      const start = target.selectionStart ?? 0
+      const end = target.selectionEnd ?? 0
+      const value = target.value
+
+      target.value = value.slice(0, start) + upper + value.slice(end)
+      target.setSelectionRange(start + 1, start + 1)
+
+      const event = new Event('input', { bubbles: true })
+      target.dispatchEvent(event)
+    }
   },
 }
