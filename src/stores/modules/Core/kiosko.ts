@@ -9,10 +9,16 @@ interface KioskoState {
   dataset: any[]
   label: any
   responseMessage: string
-  resultAgentes: any
-  resultEjercicios: any
+  resultTicket: any
+  resultUpdateTicket: any
+  resultEstatusTicket: any
   resultEmpresas: any
-  resultMarcas: any
+  resultCodigosPostales: any
+  resultDireccion: any
+  resultAsentamientos: any
+  resultUsoCfdi: any
+  resultRegimenFiscal: any
+  resultCliente: any
   type: string
 }
 
@@ -22,16 +28,97 @@ export const kiosko = defineStore({
     dataset: [],
     label: {},
     responseMessage: '',
-    resultAgentes: {},
-    resultEjercicios: {},
+    resultTicket: {},
+    resultUpdateTicket: {},
+    resultEstatusTicket: {},
     resultEmpresas: {},
-    resultMarcas: {},
+    resultCodigosPostales: {},
+    resultDireccion: {},
+    resultAsentamientos: {},
+    resultUsoCfdi: {},
+    resultRegimenFiscal: {},
+    resultCliente: {},
     type: '',
   }),
   actions: {
+    async storeGuardarFactura(data: any) {
+      try {
+        const response = await axios.post('/api/upsetTicket', data)
+
+        this.resultUpdateTicket = response.data
+      } catch (error: any) {
+        console.log(error)
+        this.responseMessage = error.message
+        //throw error
+      }
+    },
+
+    async storeValidarTicket(data: any) {
+      try {
+        const response = await axios.post('/api/validarTicket', data)
+
+        this.resultTicket = response.data
+      } catch (error: any) {
+        console.log(error)
+        this.responseMessage = error.message
+        //throw error
+      }
+    },
+
+    async storeEstatusTicket(data: any) {
+      try {
+        const response = await axios.post('/api/estatusTicket', { idReciboEncabezado: data })
+
+        this.resultEstatusTicket = response.data
+      } catch (error: any) {
+        console.log(error)
+        this.responseMessage = error.message
+        //throw error
+      }
+    },
+
+    async storeEliminarTicket(data: any) {
+      try {
+        const response = await axios.post('/api/estatusTicket', data)
+
+        this.resultEstatusTicket = response.data
+      } catch (error: any) {
+        console.log(error)
+        this.responseMessage = error.message
+        //throw error
+      }
+    },
+
+    /**Catalogos*/
+
+    async storeDireccion(codigo: string) {
+      try {
+        const response = await axios.post('/api/direccion', { codigopostal: codigo })
+
+        this.resultDireccion = response.data.direccion
+        this.resultAsentamientos = response.data.asentamientos || []
+      } catch (error: any) {
+        console.log(error)
+        this.responseMessage = error.message
+        //throw error
+      }
+    },
+
+    async storeBuscarCliente(data: any) {
+      try {
+        const response = await axios.post('/api/cliente', data)
+
+        this.resultCliente = response.data
+      } catch (error: any) {
+        console.log(error)
+        this.responseMessage = error.message
+        //throw error
+      }
+    },
+
     async storeEmpresas() {
       try {
-        const response = await axios.post('/api/rptEmpresas')
+        const response = await axios.post('/api/empresas')
 
         this.resultEmpresas = response.data
       } catch (error: any) {
@@ -41,11 +128,12 @@ export const kiosko = defineStore({
       }
     },
 
-    async storeEjercicios(data: any) {
+    async storeCatalogos() {
       try {
-        const response = await axios.post('/api/ejerciciosRpt5', data)
+        const response = await axios.post('/api/catalogos')
 
-        this.resultEjercicios = response.data
+        this.resultUsoCfdi = response.data.uso_cfdi || []
+        this.resultRegimenFiscal = response.data.regimen || []
       } catch (error: any) {
         console.log(error)
         this.responseMessage = error.message
@@ -53,11 +141,11 @@ export const kiosko = defineStore({
       }
     },
 
-    async storeMarcas(data: any) {
+    async storeCodigosPostales(codigo: string) {
       try {
-        const response = await axios.post('/api/marcasRpt5', data)
+        const response = await axios.post('/api/listaCodigoPostal', { codigopostal: codigo })
 
-        this.resultMarcas = response.data
+        this.resultCodigosPostales = response.data
       } catch (error: any) {
         console.log(error)
         this.responseMessage = error.message
@@ -65,11 +153,13 @@ export const kiosko = defineStore({
       }
     },
 
-    async storeAgentes(data: any) {
-      try {
-        const response = await axios.post('/api/agentesRpt5', data)
+    //** Descarga de archivos  / */
 
-        this.resultAgentes = response.data
+    async storeDescargarPdf(data: any) {
+      try {
+        const response = await axios.post('/api/descargarPdf', data)
+
+        this.resultEstatusTicket = response.data
       } catch (error: any) {
         console.log(error)
         this.responseMessage = error.message
@@ -77,65 +167,15 @@ export const kiosko = defineStore({
       }
     },
 
-    async storeData(data: any) {
+    async storeDescargarXml(data: any) {
       try {
-        const response = await axios.post('/api/dataRpt5', data)
+        const response = await axios.post('/api/descargarXml', data)
 
-        this.dataset = response.data.data
+        this.resultEstatusTicket = response.data
       } catch (error: any) {
         console.log(error)
         this.responseMessage = error.message
         //throw error
-      }
-    },
-
-     async storeDataPresupuesto(data: any) {
-      try {
-        const response = await axios.post('/api/dataRpt5Individual', data)
-
-        this.dataset = response.data.data
-      } catch (error: any) {
-        console.log(error)
-        this.responseMessage = error.message
-        //throw error
-      }
-    },
-
-    
-
-    async downloadExcel() {
-      try {
-        const now = new Date()
-        const day = String(now.getDate()).padStart(2, '0')
-        const month = String(now.getMonth() + 1).padStart(2, '0') // Los meses van de 0 a 11
-        const year = now.getFullYear()
-        const hours = String(now.getHours()).padStart(2, '0')
-        const minutes = String(now.getMinutes()).padStart(2, '0')
-        const seconds = String(now.getSeconds()).padStart(2, '0')
-
-        const response = await axios({
-          url: '/api/exportExcel',
-          method: 'GET',
-          responseType: 'blob',
-        })
-
-        if (response.data.size === 0) {
-          throw new Error('El archivo recibido está vacío.')
-        }
-
-        const url = window.URL.createObjectURL(response.data)
-        const link = document.createElement('a')
-        link.href = url
-        link.setAttribute(
-          'download',
-          `reporte${day}_${month}_${year}_${hours}_${minutes}_${seconds}.xlsx`,
-        )
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        window.URL.revokeObjectURL(url)
-      } catch (error) {
-        console.error('Error al descargar el archivo:', error)
       }
     },
   },

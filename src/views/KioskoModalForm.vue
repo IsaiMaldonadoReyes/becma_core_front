@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogPropiedades.dialog" width="auto" height="auto" persistent>
+  <v-dialog v-model="dialogPropiedades.dialog" :width="smAndDown ? '95vw' : '40vw'" persistent>
     <v-card class="rounded-lg">
       <v-form ref="formRef">
         <v-card-title
@@ -39,38 +39,92 @@
           <v-row>
             <v-col cols="12" md="12">
               <bec-text-field
-                v-model="modelFolio"
+                v-model="dataModel.folio"
+                :color="'#722B81'"
                 :label="'Folio *'"
                 :placeholder="'Ingrese el folio del recibo'"
                 :prepend-icon="'mdi-invoice-list'"
                 :rules="[validationRules.required]"
-                :tooltip="'Folio del recibo de compra'"
-              />
+                @keypress="inputFilters.onlyAlphanumeric"
+              >
+                <template #tooltip>
+                  <v-card color="transparent" elevation="0" class="pa-3">
+                    <v-row>
+                      <v-col cols="1" class="d-flex align-center justify-center">
+                        <v-icon class="mr-1" color="white" icon="mdi-invoice-list" />
+                      </v-col>
+                      <v-col cols="11">
+                        Ingrese el folio de su recibo tal como aparece en el comprobante de pago.
+                        Este dato permite identificar y validar correctamente la operación antes de
+                        generar la factura.
+                      </v-col>
+                    </v-row>
+                    <v-divider class="border-opacity-50 my-2 mx-4" />
+                    <v-row>
+                      <v-col cols="1" class="d-flex align-center justify-center">
+                        <v-icon class="mr-1" color="white" icon="mdi-alert" />
+                      </v-col>
+                      <v-col cols="11">
+                        <span style="font-weight: bold">Nota:</span>
+                        los campos marcados con (*) son obligatorios para continuar con el proceso
+                        de facturación.
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </template>
+              </bec-text-field>
             </v-col>
             <v-col cols="12" md="12">
               <bec-text-field
-                v-model="modelImporte"
+                v-model="dataModel.importe"
+                :color="'#722B81'"
                 :label="'Importe *'"
                 :placeholder="'Ingrese el monto total del recibo compra *'"
                 :prepend-icon="'mdi-cash'"
                 :rules="[validationRules.required]"
-                :tooltip="'Importe total del recibo'"
-              />
+                @keypress="(e: any) => inputFilters.onlyDecimal(e, dataModel.importe)"
+              >
+                <template #tooltip>
+                  <v-card color="transparent" elevation="0" class="pa-3">
+                    <v-row>
+                      <v-col cols="1" class="d-flex align-center justify-center">
+                        <v-icon class="mr-1" color="white" icon="mdi-cash" />
+                      </v-col>
+                      <v-col cols="11">
+                        Ingrese el importe total de su recibo de compra tal como aparece en el
+                        comprobante. Este dato se utiliza para validar la operación y garantizar que
+                        la factura coincida con el monto pagado.
+                      </v-col>
+                    </v-row>
+                    <v-divider class="border-opacity-50 my-2 mx-4" />
+                    <v-row>
+                      <v-col cols="1" class="d-flex align-center justify-center">
+                        <v-icon class="mr-1" color="white" icon="mdi-alert" />
+                      </v-col>
+                      <v-col cols="11">
+                        <span style="font-weight: bold">Nota:</span>
+                        los campos marcados con (*) son obligatorios para continuar con el proceso
+                        de facturación.
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </template>
+              </bec-text-field>
             </v-col>
             <v-col cols="12" md="12">
               <v-locale-provider locale="es-MX">
                 <v-date-input
-                  v-model="modelFecha"
+                  v-model="dataModel.fecha"
+                  :color="'#722B81'"
                   :mobile="smAndDown"
                   :rules="[validationRules.required]"
                   clear-icon="mdi-close"
-                  color="primary"
                   density="compact"
                   hide-details="auto"
                   label="Fecha *"
                   prepend-icon=""
                   prepend-inner-icon="mdi-invoice-text-clock"
-                  title="Rango de fechas"
+                  title="Fecha del ticket"
                   type="chip"
                   variant="outlined"
                 >
@@ -83,7 +137,29 @@
                           size="20"
                         />
                       </template>
-                      <span>Fecha en la que fue emitida el recibo de compra</span>
+                      <v-card color="transparent" elevation="0" class="pa-3">
+                        <v-row>
+                          <v-col cols="1" class="d-flex align-center justify-center">
+                            <v-icon class="mr-1" color="white" icon="mdi-invoice-text-clock" />
+                          </v-col>
+                          <v-col cols="11">
+                            Ingrese la fecha de su recibo de compra tal como aparece en el
+                            comprobante. Este dato permite validar que el recibo sea reciente y
+                            coincida con el registro de su pago.
+                          </v-col>
+                        </v-row>
+                        <v-divider class="border-opacity-50 my-2 mx-4" />
+                        <v-row>
+                          <v-col cols="1" class="d-flex align-center justify-center">
+                            <v-icon class="mr-1" color="white" icon="mdi-alert" />
+                          </v-col>
+                          <v-col cols="11">
+                            <span style="font-weight: bold">Nota:</span>
+                            los campos marcados con (*) son obligatorios para continuar con el
+                            proceso de facturación.
+                          </v-col>
+                        </v-row>
+                      </v-card>
                     </v-tooltip>
                   </template>
                 </v-date-input>
@@ -102,6 +178,7 @@
                 height="40px"
                 variant="text"
                 width="120px"
+                @click="onClose"
               >
                 Cancelar
               </v-btn>
@@ -111,9 +188,9 @@
                 height="40px"
                 variant="flat"
                 width="120px"
+                :loading="loading"
                 @click="onSave"
               >
-                <!--@click="onDecision"-->
                 Guardar
               </v-btn>
             </v-col>
@@ -125,25 +202,26 @@
 </template>
 <script lang="ts">
 import { ref, computed, defineComponent, mergeProps, onMounted, onUnmounted, watch } from 'vue'
+import type { PropType } from 'vue'
 
 import { useDisplay } from 'vuetify'
 
 //import interface
-import type { Recibo } from './LoginView.vue'
 
 //import composable
-import { useSistemaModel } from '@/composables/core/useSistema'
 
 // import stores
 import { kiosko } from '@/stores/modules/Core/kiosko'
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 import { validationRules } from '@/utils/validationRules'
+import { inputFilters } from '@/utils/inputFilters'
 
 // import components
 import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
 import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
 import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
 import BecTextArea from '@/components/core/becmaComponents/BecTextArea.vue'
+import { id } from 'vuetify/locale'
 
 export default defineComponent({
   name: 'KioskoModalForm',
@@ -151,6 +229,10 @@ export default defineComponent({
   props: {
     dialogTitle: String,
     dialogView: Boolean,
+    idSucursal: {
+      type: Number as PropType<number | null>,
+      default: null,
+    },
   },
   setup(props, { emit }) {
     // 1. Imports
@@ -166,30 +248,12 @@ export default defineComponent({
     const dialogPropiedades = ref({
       dialog: ref(props.dialogView),
       titulo: ref(props.dialogTitle),
+      idSucursal: ref(props.idSucursal),
     })
 
     // 2. Emits
     const onClose = () => {
       emit('close')
-    }
-
-    const onSave = () => {
-      const fechaInicio = new Date(modelFecha.value)
-
-      const fechaFormateada = fechaInicio
-        ? `${String(fechaInicio.getDate()).padStart(2, '0')}/${String(
-            fechaInicio.getMonth() + 1,
-          ).padStart(2, '0')}/${fechaInicio.getFullYear()}`
-        : ''
-
-      const reciboObj: Recibo = {
-        id: 4,
-        folio: modelFolio.value,
-        importe: modelImporte.value ?? 0,
-        fecha: fechaFormateada,
-      }
-
-      emit('save', reciboObj)
     }
 
     // 3. Composables | Vuetify
@@ -201,11 +265,16 @@ export default defineComponent({
     const dialogConfirmation = useDialogManagerStore()
 
     // 4. Reactive | recibo
-    const modelFecha = ref()
-    const modelFolio = ref()
-    const modelImporte = ref()
 
-    const modelRecibo = ref<Recibo>()
+    const dataModel = ref({
+      id: dialogPropiedades.value.idSucursal,
+      folio: '',
+      importe: 0,
+      fecha: '',
+      fechaFormato: '',
+      codigo: 0,
+      idReciboEncabezado: 0,
+    })
 
     const formRef = ref()
     const loading = ref(false)
@@ -236,6 +305,7 @@ export default defineComponent({
         dialogPropiedades.value = {
           dialog: newDialogView,
           titulo: props.dialogTitle,
+          idSucursal: props.idSucursal,
         }
       },
     )
@@ -250,30 +320,17 @@ export default defineComponent({
 
     // 8. Functions (fetch, metodos, async)
 
-    /*
-    const onDecision = () => {
-      let mensaje = "";
-      let titulo = "";
+    const onSave = async () => {
+      const fechaInicio = new Date(dataModel.value.fecha)
 
-      if (dialogPropiedades.value.elementos.id) {
-        titulo = "Actualización de datos";
-        mensaje = `¿Está seguro de que desea actualizar el registro "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Los cambios realizados serán guardados de forma permanente.`;
-      } else {
-        titulo = "Registro de datos";
-        mensaje = `¿Está seguro de que desea registrar el nuevo sistema "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Esta acción no se puede deshacer.`;
-      }
+      const fechaFormateada = fechaInicio
+        ? `${String(fechaInicio.getDate()).padStart(2, '0')}/${String(
+            fechaInicio.getMonth() + 1,
+          ).padStart(2, '0')}/${fechaInicio.getFullYear()}`
+        : ''
+      dataModel.value.fechaFormato = fechaFormateada
 
-      dialogConfirmation.onOpenDialogConfirmation(
-        mensaje,
-        validateForm, // << callback directo
-        [],
-        titulo,
-        "alert"
-      );
-    };*/
-
-    const validateForm = async () => {
-      dialogConfirmation.onCloseDialogConfirmation()
+      dataModel.value.id = dialogPropiedades.value.idSucursal
 
       const form = await formRef.value?.validate()
 
@@ -283,25 +340,65 @@ export default defineComponent({
         try {
           loading.value = true
 
-          // No guardar, solo buscar y regresar el item
-          // Si ya lo facturo antes no dejar agregarlo
-          // si es el primer ticket que va a meter lo manda directo a pdf y xml
-          //
-          await sistemaStore.storeSistema(dataModel.value)
+          await storeKiosko.storeValidarTicket(dataModel.value)
 
           await form.value?.reset()
 
-          dialogConfirmation.onOpenDialogInformation(
-            'Recibo encontrado.',
-            'Registro encontrado',
-            'correct',
-            '#438701',
-            2,
-          )
+          let codigoPeticion = storeKiosko.resultTicket.data.codigo
+          let idReciboEncabezado = storeKiosko.resultTicket.data.idReciboEncabezado
 
-          onClose()
+          dataModel.value.codigo = codigoPeticion
+          dataModel.value.idReciboEncabezado = idReciboEncabezado
 
-          // Snackbar o confirmación aquí
+          switch (codigoPeticion) {
+            case 1:
+              // el ticket se encuentra facturado y se procede a mostrar el pdf
+
+              emit('save', dataModel.value)
+              limpiarFormulario()
+              break
+            case 2:
+              dialogConfirmation.onOpenDialogInformation(
+                'El número de ticket ingresado no se encuentra registrado. Verifique los datos e intente nuevamente.',
+                'Ticket no encontrado',
+                'incorrect',
+                '#B00000',
+                2,
+              )
+              break
+            case 3:
+              // ticket valido
+              emit('save', dataModel.value)
+              limpiarFormulario()
+              break
+            case 4:
+              dialogConfirmation.onOpenDialogInformation(
+                'El ticket ingresado ya fue utilizado para una factura o se encuentra en proceso de timbrado. No es posible continuar con la operación.',
+                'Ticket en uso',
+                'incorrect',
+                '#B00000',
+                2,
+              )
+              break
+            case 6:
+              dialogConfirmation.onOpenDialogInformation(
+                'El ticket pertenece a un mes anterior al actual. Solo se pueden facturar tickets emitidos dentro del mes vigente.',
+                'Ticket fuera del periodo permitido',
+                'incorrect',
+                '#B00000',
+                2,
+              )
+              break
+            default:
+              dialogConfirmation.onOpenDialogInformation(
+                'Ocurrió un error inesperado al guardar.',
+                'Error',
+                'incorrect',
+                '#B00000',
+                2,
+              )
+              break
+          }
         } catch (error: any) {
           if (error.type === 'validation') {
             const errores = Object.values(error.errors).flat().join('\n')
@@ -317,13 +414,25 @@ export default defineComponent({
               'Ocurrió un error inesperado al guardar.',
               'Error',
               'incorrect',
-              '#FF0000',
+              '#B00000',
               2,
             )
           }
         } finally {
           loading.value = false
         }
+      }
+    }
+
+    const limpiarFormulario = () => {
+      dataModel.value = {
+        id: 0,
+        folio: '',
+        importe: 0,
+        fecha: '',
+        fechaFormato: '',
+        codigo: 0,
+        idReciboEncabezado: 0,
       }
     }
 
@@ -335,14 +444,12 @@ export default defineComponent({
       getDialogContentPaddingTop,
       loading,
       mergeProps,
-      modelFecha,
-      modelFolio,
-      modelImporte,
-      modelRecibo,
       onClose,
       onSave,
       smAndDown,
       validationRules,
+      inputFilters,
+      dataModel,
     }
   },
 })

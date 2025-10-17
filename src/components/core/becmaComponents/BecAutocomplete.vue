@@ -3,6 +3,7 @@
     v-model="model"
     :chips="multiple || showChips"
     :closable-chips="multiple"
+    :color="color"
     :disabled="disabled"
     :hide-selected="hideSelected"
     :item-title="itemTitle"
@@ -19,7 +20,6 @@
     clear-icon="mdi-close"
     clear-on-select
     clearable
-    color="primary"
     density="compact"
     filter-mode="every"
     hide-details="auto"
@@ -47,7 +47,7 @@
       <v-chip
         v-bind="props"
         :text="typeof item.raw === 'object' ? item.raw[itemTitle] : item.raw"
-        color="primary"
+        :color="color"
         label
         variant="flat"
       />
@@ -56,6 +56,7 @@
     <!-- ITEM DINÁMICO -->
     <template v-slot:item="{ props, item }">
       <v-list-item
+        :color="color"
         v-bind="props"
         :title="
           itemTitleDinamic
@@ -81,8 +82,8 @@
       </v-list-item>
     </template>
 
-    <!-- TOOLTIP -->
-    <template v-if="tooltip" v-slot:prepend>
+    !-- TOOLTIP SIMPLE -->
+    <template v-if="tooltip && !$slots.tooltip" v-slot:prepend>
       <v-tooltip interactive>
         <template v-slot:activator="{ props: tooltipProps }">
           <v-icon
@@ -92,6 +93,20 @@
           />
         </template>
         <span v-html="tooltip"></span>
+      </v-tooltip>
+    </template>
+
+    <!-- TOOLTIP SLOT -->
+    <template v-if="$slots.tooltip" v-slot:prepend>
+      <v-tooltip interactive>
+        <template #activator="{ props: tooltipProps }">
+          <v-icon
+            v-bind="mergeProps(tooltipProps)"
+            icon="mdi-information-slab-circle-outline"
+            size="20"
+          />
+        </template>
+        <slot name="tooltip" />
       </v-tooltip>
     </template>
   </v-autocomplete>
@@ -107,6 +122,10 @@ export default defineComponent({
     modelValue: {
       type: [String, Number, Object, Array, null] as PropType<any>,
       default: null,
+    },
+    color: {
+      type: String,
+      default: 'primary',
     },
     disabled: {
       type: Boolean,
@@ -180,6 +199,7 @@ export default defineComponent({
     })
 
     return {
+      color: computed(() => props.color),
       disabled: computed(() => props.disabled),
       hideSelected: computed(() => props.hideSelected),
       itemSubtitle: computed(() => props.itemSubtitle),
