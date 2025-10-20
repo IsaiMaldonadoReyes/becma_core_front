@@ -70,7 +70,7 @@ export const useClienteStore = defineStore({
 
     async destroyClientesByIds(ids: number[]) {
       try {
-        const response = await axios.delete(`/api/destroyClientesByIds`, {
+        const response = await axios.delete(`/api/destroyClienteByIds`, {
           data: { ids },
         })
         this.clientes = response.data

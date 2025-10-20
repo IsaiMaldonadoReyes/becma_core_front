@@ -51,8 +51,9 @@ export default defineComponent({
   name: 'BecTextField',
   props: {
     modelValue: {
-      type: [String, Number, Object, Array] as PropType<any>,
+      type: [String, Number, Object, Array, null] as PropType<any>,
       required: true,
+      default: '',
     },
     label: String,
     placeholder: String,

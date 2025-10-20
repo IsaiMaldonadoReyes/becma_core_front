@@ -180,4 +180,11 @@ export const validationRules = {
 
     return true
   },
+  validatePhoneIfNotEmpty: (v: string): true | string => {
+    if (!v) return true // No es obligatorio, si está vacío pasa
+
+    const phoneRegex = /^\d{10}$/ // Solo números y exactamente 10 dígitos
+
+    return phoneRegex.test(v) ? true : 'Debe contener exactamente 10 dígitos numéricos.'
+  },
 }
