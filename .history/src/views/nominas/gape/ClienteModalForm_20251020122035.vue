@@ -114,7 +114,7 @@
                   <v-card color="transparent" elevation="0" class="py-3">
                     <v-row>
                       <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon class="mr-1" color="white" icon="mdi-barcode" />
+                        <v-icon class="mr-1" color="white" icon="mdi-account-credit-card" />
                       </v-col>
                       <v-col cols="11">Introduzca el código que identifique al cliente.</v-col>
                     </v-row>
@@ -145,7 +145,7 @@
                   <v-card color="transparent" elevation="0" class="py-3">
                     <v-row>
                       <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon class="mr-1" color="white" icon="mdi-phone" />
+                        <v-icon class="mr-1" color="white" icon="mdi-account-credit-card" />
                       </v-col>
                       <v-col cols="11">Ingrese el télefono del cliente.</v-col>
                     </v-row>

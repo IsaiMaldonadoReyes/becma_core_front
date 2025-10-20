@@ -9,12 +9,12 @@
           divider="|"
         >
           <template v-slot:prepend>
-            <v-icon icon="mdi-briefcase-account" color="primary" />
+            <v-icon icon="mdi-account-box" color="primary" />
           </template>
         </v-breadcrumbs>
       </v-col>
       <v-col cols="12" md="6" class="d-flex align-center justify-end overflow-auto">
-        <v-divider class="mr-5 border-opacity-25" vertical />
+        <v-divider class="mr-5 my-2 border-opacity-25" vertical />
 
         <!-- vbtnCargar -->
         <v-tooltip bottom color="primary" interactive>
@@ -23,9 +23,9 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
               :disabled="btnDisabled.importarRegistros"
             >
               <v-icon color="white" icon="mdi-upload" size="24px" />
@@ -44,9 +44,9 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
               :disabled="btnDisabled.descargarFormato"
             >
               <v-icon color="white" icon="mdi-download" size="24px" />
@@ -65,9 +65,9 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
               :disabled="btnDisabled.eliminarRegistros"
               @click="onExecuteOpcionesCheck('onDeleteIds')"
             >
@@ -84,9 +84,9 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
               :disabled="btnDisabled.guardarCambios"
             >
               <v-icon icon="mdi-floppy" color="white" size="24px" />
@@ -102,9 +102,9 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
               :disabled="btnDisabled.activarRegistro"
               @click.stop="vbtnActivarRegistro = !vbtnActivarRegistro"
             >
@@ -130,9 +130,9 @@
             <v-btn
               v-bind="mergeProps(tooltipProps)"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
               :disabled="btnDisabled.crearRegistro"
               @click="onOpenDialogCliente('onSave', {}, 'Nuevo cliente')"
             >

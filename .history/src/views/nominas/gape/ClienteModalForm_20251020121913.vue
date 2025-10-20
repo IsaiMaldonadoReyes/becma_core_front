@@ -26,6 +26,7 @@
                         v-model="dialogPropiedades.elementos.estado"
                         v-bind="mergeProps(tooltip)"
                         color="primary"
+                        true-icon="mdi-checkbox-marked-outline"
                       />
                     </template>
                     <span>Marque la casilla para activar este registro.</span>
@@ -114,7 +115,7 @@
                   <v-card color="transparent" elevation="0" class="py-3">
                     <v-row>
                       <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon class="mr-1" color="white" icon="mdi-barcode" />
+                        <v-icon class="mr-1" color="white" icon="mdi-account-credit-card" />
                       </v-col>
                       <v-col cols="11">Introduzca el código que identifique al cliente.</v-col>
                     </v-row>
@@ -137,7 +138,7 @@
                 v-model="dialogPropiedades.elementos.telefono"
                 :label="'Teléfono '"
                 :placeholder="'Teléfono del cliente *'"
-                :prepend-icon="'mdi-phone'"
+                :prepend-icon="'mdi-text'"
                 :rules="[validationRules.validatePhoneIfNotEmpty, validationRules.required]"
                 @keypress="inputFilters.onlyPhone"
               >
@@ -145,9 +146,9 @@
                   <v-card color="transparent" elevation="0" class="py-3">
                     <v-row>
                       <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon class="mr-1" color="white" icon="mdi-phone" />
+                        <v-icon class="mr-1" color="white" icon="mdi-account-credit-card" />
                       </v-col>
-                      <v-col cols="11">Ingrese el télefono del cliente.</v-col>
+                      <v-col cols="11"> Ingrese el télefono del cliente. </v-col>
                     </v-row>
                     <v-divider class="border-opacity-50 my-2 mx-4" />
                     <v-row>

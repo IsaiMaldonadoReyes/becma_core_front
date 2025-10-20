@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogPropiedades.dialog" width="auto" persistent>
+  <v-dialog v-model="dialogPropiedades.dialog" :width="smAndDown ? '95vw' : '30vw'" persistent>
     <v-card>
       <v-form ref="formRef">
         <v-card-title
@@ -8,7 +8,7 @@
         >
           <v-row>
             <v-col cols="12" md="6" class="d-flex align-center">
-              <v-icon color="primary" icon="mdi-laptop" />
+              <v-icon color="primary" icon="mdi-account-box" />
               <v-divider
                 class="ml-3 mr-2 align-self-center border-opacity-25"
                 length="20"
@@ -63,34 +63,104 @@
 
         <v-card-text class="dialog-content px-5" :style="getDialogContentPaddingTop">
           <v-row>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="12">
               <bec-text-field
                 v-model="dialogPropiedades.elementos.nombre"
                 :label="'Nombre *'"
-                :placeholder="'Nombre del sistema *'"
-                :prepend-icon="'mdi-barcode'"
-                :rules="[validationRules.required]"
-                :tooltip="'Nombre asignado al sistema'"
-              />
+                :placeholder="'Nombre del cliente *'"
+                :prepend-icon="'mdi-account-box'"
+                :rules="[
+                  (v: any) =>
+                    validationRules.validateAlphanumericFieldWithSpaces(v, {
+                      required: true,
+                      max: 80,
+                    }),
+                ]"
+                @keypress="inputFilters.onlyAlphanumericWithSpaces"
+              >
+                <template #tooltip>
+                  <v-card color="transparent" elevation="0" class="py-3">
+                    <v-row>
+                      <v-col cols="1" class="d-flex align-center justify-center">
+                        <v-icon class="mr-1" color="white" icon="mdi-account-box" />
+                      </v-col>
+                      <v-col cols="11">Ingrese el nombre del cliente.</v-col>
+                    </v-row>
+                    <v-divider class="border-opacity-50 my-2 mx-4" />
+                    <v-row>
+                      <v-col cols="1" class="d-flex align-center justify-center">
+                        <v-icon class="mr-1" color="white" icon="mdi-alert" />
+                      </v-col>
+                      <v-col cols="11">
+                        <span style="font-weight: bold">Nota:</span>
+                        los campos marcados con (*) son obligatorios para continuar con el proceso.
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </template>
+              </bec-text-field>
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="12">
               <bec-text-field
                 v-model="dialogPropiedades.elementos.codigo"
                 :label="'Código *'"
-                :placeholder="'Código del sistema *'"
+                :placeholder="'Código del cliente *'"
                 :prepend-icon="'mdi-barcode'"
                 :rules="[validationRules.required]"
-                :tooltip="'Código asignado al sistema'"
-              />
+                @keypress="inputFilters.onlyAlphanumeric"
+              >
+                <template #tooltip>
+                  <v-card color="transparent" elevation="0" class="py-3">
+                    <v-row>
+                      <v-col cols="1" class="d-flex align-center justify-center">
+                        <v-icon class="mr-1" color="white" icon="mdi-account-credit-card" />
+                      </v-col>
+                      <v-col cols="11"> Ingrese el código del cliente. </v-col>
+                    </v-row>
+                    <v-divider class="border-opacity-50 my-2 mx-4" />
+                    <v-row>
+                      <v-col cols="1" class="d-flex align-center justify-center">
+                        <v-icon class="mr-1" color="white" icon="mdi-alert" />
+                      </v-col>
+                      <v-col cols="11">
+                        <span style="font-weight: bold">Nota:</span>
+                        los campos marcados con (*) son obligatorios para continuar con el proceso.
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </template>
+              </bec-text-field>
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="12">
               <bec-text-field
-                v-model="dialogPropiedades.elementos.descripcion"
-                :label="'Descripción *'"
-                :placeholder="'Descripción del sistema *'"
+                v-model="dialogPropiedades.elementos.telefono"
+                :label="'Teléfono '"
+                :placeholder="'Teléfono del cliente *'"
                 :prepend-icon="'mdi-text'"
-                :tooltip="'Descripción asignada al sistema'"
-              />
+                :rules="[validationRules.validatePhoneIfNotEmpty, validationRules.required]"
+                @keypress="inputFilters.onlyPhone"
+              >
+                <template #tooltip>
+                  <v-card color="transparent" elevation="0" class="py-3">
+                    <v-row>
+                      <v-col cols="1" class="d-flex align-center justify-center">
+                        <v-icon class="mr-1" color="white" icon="mdi-account-credit-card" />
+                      </v-col>
+                      <v-col cols="11">Ingrese el nombre del cliente que desea registrar.</v-col>
+                    </v-row>
+                    <v-divider class="border-opacity-50 my-2 mx-4" />
+                    <v-row>
+                      <v-col cols="1" class="d-flex align-center justify-center">
+                        <v-icon class="mr-1" color="white" icon="mdi-alert" />
+                      </v-col>
+                      <v-col cols="11">
+                        <span style="font-weight: bold">Nota:</span>
+                        los campos marcados con (*) son obligatorios para continuar con el proceso.
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </template>
+              </bec-text-field>
             </v-col>
             <v-col cols="12" md="6"> </v-col>
           </v-row>
@@ -104,15 +174,17 @@ import { ref, computed, defineComponent, mergeProps, onMounted, onUnmounted, wat
 
 //import interface
 
-import type { SistemaModel } from '@/interfaces/core/Sistema'
+import type { ClienteModel } from '@/interfaces/nomina/gape/ClienteModel'
 
 //import composable
-import { useSistemaModel } from '@/composables/core/useSistema'
+import { useClienteModel } from '@/composables/nomina/gape/useCliente'
+import { useDisplay } from 'vuetify'
 
 // import stores
-import { useSistemaStore } from '@/stores/modules/Core/sistema'
+import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 import { validationRules } from '@/utils/validationRules'
+import { inputFilters } from '@/utils/inputFilters'
 
 // import components
 import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
@@ -125,18 +197,21 @@ export default defineComponent({
   props: {
     dialogEvent: String,
     dialogItems: {
-      type: Object as () => Partial<SistemaModel>,
+      type: Object as () => Partial<ClienteModel>,
       required: true,
     },
     dialogTitle: String,
     dialogView: Boolean,
   },
   setup(props, { emit }) {
+    // 3. Composables | Vuetify
+    const { name, mobile, smAndDown } = useDisplay()
+
     // Estado reactivo
 
-    const { dataModel, setSistema, resetModel } = useSistemaModel()
+    const { dataModel, setCliente, resetModel } = useClienteModel()
 
-    const sistemaStore = useSistemaStore()
+    const clienteStore = useClienteStore()
     const dialogConfirmation = useDialogManagerStore()
 
     const formRef = ref()
@@ -169,8 +244,11 @@ export default defineComponent({
         mensaje = `¿Está seguro de que desea actualizar el registro "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Los cambios realizados serán guardados de forma permanente.`
       } else {
         titulo = 'Registro de datos'
-        mensaje = `¿Está seguro de que desea registrar el nuevo sistema "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Esta acción no se puede deshacer.`
+        mensaje = `¿Está seguro de que desea registrar el nuevo cliente "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Esta acción no se puede deshacer.`
       }
+      //clienteStore.sincronizarEmpresas()
+
+      //console.log(clienteStore.responseMessage)
 
       dialogConfirmation.onOpenDialogConfirmation(
         mensaje,
@@ -192,15 +270,15 @@ export default defineComponent({
         try {
           loading.value = true
 
-          setSistema({
+          setCliente({
             ...dialogPropiedades.value.elementos,
             estado: dialogPropiedades.value.elementos.estado ? true : false,
           })
 
           if (dialogPropiedades.value.elementos.id) {
-            await sistemaStore.updateSistema(dataModel.value, dialogPropiedades.value.elementos.id)
+            await clienteStore.updateCliente(dataModel.value, dialogPropiedades.value.elementos.id)
           } else {
-            await sistemaStore.storeSistema(dataModel.value)
+            await clienteStore.storeCliente(dataModel.value)
           }
 
           await form.value?.reset()
@@ -218,12 +296,12 @@ export default defineComponent({
           // Snackbar o confirmación aquí
         } catch (error: any) {
           if (error.type === 'validation') {
-            const errores = Object.values(error.errors).flat().join('\n')
+            const errores = Object.values(error.errors).flat().join('<br>')
             dialogConfirmation.onOpenDialogInformation(
               errores,
-              'Error de validación',
-              'warning',
-              '#FFA500',
+              'Verifique los siguientes errores',
+              'incorrect',
+              '#B00000',
               2,
             )
           } else {
@@ -231,7 +309,7 @@ export default defineComponent({
               'Ocurrió un error inesperado al guardar.',
               'Error',
               'incorrect',
-              '#FF0000',
+              '#B00000',
               2,
             )
           }
@@ -292,11 +370,13 @@ export default defineComponent({
       dialogPropiedades,
       formRef,
       getDialogContentPaddingTop,
-      mergeProps,
-      onDecision,
-      validationRules,
+      inputFilters,
       loading,
+      mergeProps,
       onClose,
+      onDecision,
+      smAndDown,
+      validationRules,
     }
   },
 })

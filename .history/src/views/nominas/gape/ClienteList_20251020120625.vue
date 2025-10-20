@@ -14,7 +14,7 @@
         </v-breadcrumbs>
       </v-col>
       <v-col cols="12" md="6" class="d-flex align-center justify-end overflow-auto">
-        <v-divider class="mr-5 border-opacity-25" vertical />
+        <v-divider class="mr-5 my-2 border-opacity-25" vertical />
 
         <!-- vbtnCargar -->
         <v-tooltip bottom color="primary" interactive>
@@ -23,9 +23,10 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.importarRegistros"
             >
               <v-icon color="white" icon="mdi-upload" size="24px" />
             </v-btn>
@@ -43,9 +44,10 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.descargarFormato"
             >
               <v-icon color="white" icon="mdi-download" size="24px" />
             </v-btn>
@@ -63,10 +65,11 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              disabled
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.eliminarRegistros"
+              @click="onExecuteOpcionesCheck('onDeleteIds')"
             >
               <v-icon color="white" icon="mdi-delete" size="24px" />
             </v-btn>
@@ -81,10 +84,10 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              disabled
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.guardarCambios"
             >
               <v-icon icon="mdi-floppy" color="white" size="24px" />
             </v-btn>
@@ -99,10 +102,10 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              disabled
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.activarRegistro"
               @click.stop="vbtnActivarRegistro = !vbtnActivarRegistro"
             >
               <v-icon color="white" size="24px">
@@ -127,9 +130,10 @@
             <v-btn
               v-bind="mergeProps(tooltipProps)"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.crearRegistro"
               @click="onOpenDialogCliente('onSave', {}, 'Nuevo cliente')"
             >
               <v-icon color="white" icon="mdi-plus" size="24px" />
@@ -240,12 +244,12 @@
                     <template v-slot:activator="{ props: tooltip }">
                       <v-checkbox-btn
                         v-bind="mergeProps(tooltip)"
-                        :indeterminate="someSelected && !allSelected"
-                        :model-value="allSelected"
+                        class="pa-0"
                         density="compact"
                         true-icon="mdi-checkbox-multiple-marked"
+                        :indeterminate="someSelected && !allSelected"
+                        :model-value="allSelected"
                         @update:model-value="selectAll(!allSelected)"
-                        class="pa-0"
                       />
                     </template>
                     <span>Seleccionar todo</span>
@@ -326,7 +330,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, mergeProps, computed, onMounted } from 'vue'
+import { ref, defineComponent, mergeProps, computed, onMounted, watch } from 'vue'
 
 import { useDisplay } from 'vuetify'
 
@@ -382,6 +386,15 @@ export default defineComponent({
       },
     ])
 
+    const btnDisabled = ref({
+      importarRegistros: true,
+      descargarFormato: true,
+      eliminarRegistros: true,
+      guardarCambios: true,
+      activarRegistro: true,
+      crearRegistro: false,
+    })
+
     const vbtnActivarRegistro = ref(true)
 
     // 4. Reactive | vrowFiltrosRef
@@ -416,7 +429,7 @@ export default defineComponent({
         title: 'Teléfono',
       },
       {
-        key: 'fecha',
+        key: 'fecha_creacion',
         align: 'center',
         title: 'Fecha',
       },
@@ -521,7 +534,7 @@ export default defineComponent({
             clienteStore.responseMessage,
             'Error al eliminar',
             'incorrect',
-            '#FF0000',
+            '#B00000',
             1,
           )
         }
@@ -573,26 +586,25 @@ export default defineComponent({
       vdtbPrincipalItems.value = clienteStore.clientes
     }
 
+    // watchers
+    watch(vdtbPrincipalItemsSeleccionados, (nuevosSeleccionados) => {
+      btnDisabled.value.eliminarRegistros = nuevosSeleccionados.length === 0
+    })
+
     onMounted(() => {
       fnCargarListado()
-
-      dialogConfirmation.onOpenDialogInformation(
-        'Prueba',
-        'Registros eliminados',
-        'correct',
-        '#438701',
-        1,
-      )
     })
 
     return {
+      btnDisabled,
+      dialogClientePropiedades,
+      dialogConfirmation,
       getTableHeight,
       getTableNoDataHeight,
-      dialogConfirmation,
-      dialogClientePropiedades,
       getVdtPrincipalTotalPaginas,
       mergeProps,
       onCloseDialogCliente,
+      onExecuteOpcionesCheck,
       onOpenDialogCliente,
       onSaveDialogCliente,
       smAndDown,
