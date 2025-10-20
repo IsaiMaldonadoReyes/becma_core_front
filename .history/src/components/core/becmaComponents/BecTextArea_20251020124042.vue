@@ -1,5 +1,5 @@
 <template>
-  <v-text-field
+  <v-textarea
     v-model="model"
     :color="color"
     :label="label"
@@ -8,13 +8,15 @@
     :prepend-inner-icon="prependIcon"
     :rules="rules"
     :variant="variant"
+    auto-grow
     clear-icon="mdi-close"
     clearable
     density="compact"
     hide-details="auto"
+    row-height="15"
+    rows="1"
   >
-    <!-- TOOLTIP SIMPLE -->
-    <template v-if="tooltip && !$slots.tooltip" v-slot:prepend>
+    <template v-if="tooltip" v-slot:prepend>
       <v-tooltip interactive>
         <template v-slot:activator="{ props: tooltipProps }">
           <v-icon
@@ -26,21 +28,7 @@
         <span v-html="tooltip"></span>
       </v-tooltip>
     </template>
-
-    <!-- TOOLTIP SLOT -->
-    <template v-if="$slots.tooltip" v-slot:prepend>
-      <v-tooltip interactive>
-        <template #activator="{ props: tooltipProps }">
-          <v-icon
-            v-bind="mergeProps(tooltipProps)"
-            icon="mdi-information-slab-circle-outline"
-            size="20"
-          />
-        </template>
-        <slot name="tooltip" />
-      </v-tooltip>
-    </template>
-  </v-text-field>
+  </v-textarea>
 </template>
 
 <script lang="ts">
@@ -48,16 +36,11 @@ import { defineComponent, computed, mergeProps } from 'vue'
 import type { PropType } from 'vue'
 
 export default defineComponent({
-  name: 'BecTextField',
+  name: 'BecTextArea',
   props: {
-    color: {
-      type: String,
-      default: 'primary',
-    },
     modelValue: {
       type: [String, Number, Object, Array, null] as PropType<any>,
-      required: true,
-      default: '',
+      default: null,
     },
     label: String,
     placeholder: String,
@@ -89,7 +72,6 @@ export default defineComponent({
     })
 
     return {
-      color: computed(() => props.color),
       label: computed(() => props.label),
       mergeProps,
       model,

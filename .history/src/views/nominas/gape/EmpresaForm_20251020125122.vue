@@ -177,11 +177,11 @@
             <v-card color="transparent" elevation="0" class="pa-3">
               <v-row>
                 <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon class="mr-1" color="white" icon="mdi-account-box" />
+                  <v-icon class="mr-1" color="white" icon="mdi-invoice-list" />
                 </v-col>
                 <v-col cols="11">Elija el cliente al que se asociará la nueva empresa.</v-col>
               </v-row>
-              <v-divider class="border-opacity-50 my-2 mx-2" />
+              <v-divider class="border-opacity-50 my-2 mx-4" />
               <v-row>
                 <v-col cols="1" class="d-flex align-center justify-center">
                   <v-icon class="mr-1" color="white" icon="mdi-alert" />
@@ -225,24 +225,24 @@
             <v-card color="transparent" elevation="0" class="pa-3">
               <v-row>
                 <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon class="mr-1" color="white" icon="mdi-briefcase-account" />
+                  <v-icon class="mr-1" color="white" icon="mdi-invoice-list" />
                 </v-col>
                 <v-col cols="11">
                   Elija el tipo de empresa que desea registrar: <br />
-                  - Fiscal: la información será considerada para procesos fiscales.
+                  &nbsp;&nbsp;Fiscal: la información será considerada para procesos fiscales.
                   <br />
-                  - No fiscal: se usa para registros sin efectos fiscales.
+                  &nbsp;&nbsp;No fiscal: se usa para registros sin efectos fiscales.
                 </v-col>
               </v-row>
-              <v-divider class="border-opacity-50 my-2 mx-2" />
+              <v-divider class="border-opacity-50 my-2 mx-4" />
               <v-row>
                 <v-col cols="1" class="d-flex align-center justify-center">
                   <v-icon class="mr-1" color="white" icon="mdi-alert" />
                 </v-col>
                 <v-col cols="11">
                   <span style="font-weight: bold">Nota:</span>
-                  antes de crear una nueva empresa, seleccione el tipo de empresa que desea
-                  registrar.
+                  antes de crear una nueva empresa, seleccione el cliente correspondiente. Esto le
+                  permitirá continuar con el proceso de registro.
                 </v-col>
               </v-row>
             </v-card>

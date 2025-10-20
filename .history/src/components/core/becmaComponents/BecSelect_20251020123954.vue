@@ -3,10 +3,8 @@
     v-model="model"
     :chips="multiple || showChips"
     :closable-chips="multiple"
-    :color="color"
     :disabled="disabled"
     :hide-selected="hideSelected"
-    :item-color="color"
     :item-title="itemTitle"
     :item-value="returnObject ? undefined : itemValue"
     :items="items"
@@ -19,8 +17,10 @@
     :variant="variant"
     clear-icon="mdi-close"
     clearable
+    :color="color"
     density="compact"
     hide-details="auto"
+    :item-color="color"
     no-data-text="No hay información disponible"
   >
     <!-- SELECCIÓN DINÁMICA -->

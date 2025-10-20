@@ -177,19 +177,19 @@
             <v-card color="transparent" elevation="0" class="pa-3">
               <v-row>
                 <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon class="mr-1" color="white" icon="mdi-account-box" />
+                  <v-icon class="mr-1" color="white" icon="mdi-invoice-list" />
                 </v-col>
                 <v-col cols="11">Elija el cliente al que se asociará la nueva empresa.</v-col>
               </v-row>
-              <v-divider class="border-opacity-50 my-2 mx-2" />
+              <v-divider class="border-opacity-50 my-2 mx-4" />
               <v-row>
                 <v-col cols="1" class="d-flex align-center justify-center">
                   <v-icon class="mr-1" color="white" icon="mdi-alert" />
                 </v-col>
                 <v-col cols="11">
                   <span style="font-weight: bold">Nota:</span>
-                  antes de crear una nueva empresa, seleccione el cliente correspondiente. Esto le
-                  permitirá continuar con el proceso de registro.
+                  los campos marcados con (*) son obligatorios para continuar con el proceso de
+                  facturación.
                 </v-col>
               </v-row>
             </v-card>
@@ -220,34 +220,8 @@
           :placeholder="'Seleccione'"
           :prepend-icon="'mdi-briefcase-account'"
           :rules="[(v) => !!v || 'Este campo es requerido']"
-        >
-          <template #tooltip>
-            <v-card color="transparent" elevation="0" class="pa-3">
-              <v-row>
-                <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon class="mr-1" color="white" icon="mdi-briefcase-account" />
-                </v-col>
-                <v-col cols="11">
-                  Elija el tipo de empresa que desea registrar: <br />
-                  - Fiscal: la información será considerada para procesos fiscales.
-                  <br />
-                  - No fiscal: se usa para registros sin efectos fiscales.
-                </v-col>
-              </v-row>
-              <v-divider class="border-opacity-50 my-2 mx-2" />
-              <v-row>
-                <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                </v-col>
-                <v-col cols="11">
-                  <span style="font-weight: bold">Nota:</span>
-                  antes de crear una nueva empresa, seleccione el tipo de empresa que desea
-                  registrar.
-                </v-col>
-              </v-row>
-            </v-card>
-          </template>
-        </bec-select>
+          :tooltip="'Es el % de retención que se tiene que se tiene que realizar a en la nómina fiscal, sobre sueldo o percepción bruta a los trabajadores agremiados.'"
+        />
       </v-col>
     </v-row>
     <v-row>

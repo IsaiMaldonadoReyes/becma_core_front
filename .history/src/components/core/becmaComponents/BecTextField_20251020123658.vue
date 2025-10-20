@@ -1,7 +1,6 @@
 <template>
   <v-text-field
     v-model="model"
-    :color="color"
     :label="label"
     :placeholder="placeholder"
     :prefix="prefix"
@@ -10,6 +9,7 @@
     :variant="variant"
     clear-icon="mdi-close"
     clearable
+    :color="color"
     density="compact"
     hide-details="auto"
   >
@@ -87,6 +87,14 @@ export default defineComponent({
         }
       },
     })
+
+    const label = computed(() => props.label)
+    const placeholder = computed(() => props.placeholder)
+    const prefix = computed(() => props.prefix)
+    const prependIcon = computed(() => props.prependIcon)
+    const rules = computed(() => props.rules)
+    const tooltip = computed(() => props.tooltip)
+    const variant = computed(() => props.variant)
 
     return {
       color: computed(() => props.color),

@@ -3,10 +3,8 @@
     v-model="model"
     :chips="multiple || showChips"
     :closable-chips="multiple"
-    :color="color"
     :disabled="disabled"
     :hide-selected="hideSelected"
-    :item-color="color"
     :item-title="itemTitle"
     :item-value="returnObject ? undefined : itemValue"
     :items="items"
@@ -19,8 +17,10 @@
     :variant="variant"
     clear-icon="mdi-close"
     clearable
+    color="primary"
     density="compact"
     hide-details="auto"
+    item-color="primary"
     no-data-text="No hay información disponible"
   >
     <!-- SELECCIÓN DINÁMICA -->
@@ -43,7 +43,7 @@
       <v-chip
         v-bind="props"
         :text="typeof item.raw === 'object' ? item.raw[itemTitle] : item.raw"
-        :color="color"
+        color="primary"
         label
         variant="flat"
       />
@@ -114,10 +114,6 @@ import type { PropType } from 'vue'
 export default defineComponent({
   name: 'BecSelect',
   props: {
-    color: {
-      type: String,
-      default: 'primary',
-    },
     modelValue: {
       type: [String, Number, Object, Array, null] as PropType<any>,
       default: null,
@@ -196,7 +192,6 @@ export default defineComponent({
     })
 
     return {
-      color: computed(() => props.color),
       disabled: computed(() => props.disabled),
       hideSelected: computed(() => props.hideSelected),
       itemSubtitle: computed(() => props.itemSubtitle),

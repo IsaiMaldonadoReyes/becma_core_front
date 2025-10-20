@@ -234,7 +234,7 @@
                   - No fiscal: se usa para registros sin efectos fiscales.
                 </v-col>
               </v-row>
-              <v-divider class="border-opacity-50 my-2 mx-2" />
+              <v-divider class="border-opacity-50 my-2 mx-4" />
               <v-row>
                 <v-col cols="1" class="d-flex align-center justify-center">
                   <v-icon class="mr-1" color="white" icon="mdi-alert" />

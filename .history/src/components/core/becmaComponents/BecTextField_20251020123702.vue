@@ -1,7 +1,6 @@
 <template>
   <v-text-field
     v-model="model"
-    :color="color"
     :label="label"
     :placeholder="placeholder"
     :prefix="prefix"
@@ -10,6 +9,7 @@
     :variant="variant"
     clear-icon="mdi-close"
     clearable
+    :color="color"
     density="compact"
     hide-details="auto"
   >

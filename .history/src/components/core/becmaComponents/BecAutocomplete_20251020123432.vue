@@ -1,5 +1,5 @@
 <template>
-  <v-select
+  <v-autocomplete
     v-model="model"
     :chips="multiple || showChips"
     :closable-chips="multiple"
@@ -17,10 +17,14 @@
     :return-object="returnObject"
     :rules="rules"
     :variant="variant"
+    auto-select-first
     clear-icon="mdi-close"
+    clear-on-select
     clearable
     density="compact"
+    filter-mode="every"
     hide-details="auto"
+    item-props
     no-data-text="No hay información disponible"
   >
     <!-- SELECCIÓN DINÁMICA -->
@@ -52,6 +56,7 @@
     <!-- ITEM DINÁMICO -->
     <template v-slot:item="{ props, item }">
       <v-list-item
+        :color="color"
         v-bind="props"
         :title="
           itemTitleDinamic
@@ -77,7 +82,7 @@
       </v-list-item>
     </template>
 
-    <!-- TOOLTIP SIMPLE -->
+    !-- TOOLTIP SIMPLE -->
     <template v-if="tooltip && !$slots.tooltip" v-slot:prepend>
       <v-tooltip interactive>
         <template v-slot:activator="{ props: tooltipProps }">
@@ -104,7 +109,7 @@
         <slot name="tooltip" />
       </v-tooltip>
     </template>
-  </v-select>
+  </v-autocomplete>
 </template>
 
 <script lang="ts">
@@ -112,15 +117,15 @@ import { defineComponent, computed, mergeProps } from 'vue'
 import type { PropType } from 'vue'
 
 export default defineComponent({
-  name: 'BecSelect',
+  name: 'BecAutocomplete',
   props: {
-    color: {
-      type: String,
-      default: 'primary',
-    },
     modelValue: {
       type: [String, Number, Object, Array, null] as PropType<any>,
       default: null,
+    },
+    color: {
+      type: String,
+      default: 'primary',
     },
     disabled: {
       type: Boolean,
@@ -136,20 +141,15 @@ export default defineComponent({
     },
     itemTitle: {
       type: String,
-      default: 'label',
+      default: 'title',
     },
-    /**
-     * Permite un título dinámico (función o propiedad).
-     * Ejemplo implementación:
-     * :item-title-dinamic="(item) => `${item.ejercicio} | Mes: ${item.mes} | Periodo: ${item.numeroperiodo}`"
-     */
     itemTitleDinamic: {
       type: [String, Function] as PropType<string | ((item: any) => string)>,
       default: null,
     },
     itemValue: {
       type: String,
-      default: 'value',
+      default: 'id',
     },
     items: {
       type: Array as PropType<any[]>,
@@ -160,13 +160,11 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    placeholder: String,
-    prependIcon: String,
-    showChips: {
-      type: Boolean,
-      default: false,
+    placeholder: {
+      type: String,
+      default: 'Seleccione',
     },
-    tooltip: String,
+    prependIcon: String,
     rules: {
       type: Array as PropType<((v: any) => true | string)[]>,
       default: () => [],
@@ -175,6 +173,11 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    showChips: {
+      type: Boolean,
+      default: false,
+    },
+    tooltip: String,
     onModelUpdate: Function as PropType<(val: any) => void>,
     variant: {
       type: String as PropType<
@@ -188,9 +191,9 @@ export default defineComponent({
     const model = computed({
       get: () => props.modelValue,
       set: (val) => {
-        emit('update:modelValue', val) // 🔧 actualiza el v-model en el padre
+        emit('update:modelValue', val)
         if (props.onModelUpdate) {
-          props.onModelUpdate(val) // 🔧 llama  función personalizada desde el Padre
+          props.onModelUpdate(val)
         }
       },
     })
@@ -210,6 +213,7 @@ export default defineComponent({
       multiple: computed(() => props.multiple),
       placeholder: computed(() => props.placeholder),
       prependIcon: computed(() => props.prependIcon),
+      returnObject: computed(() => props.returnObject),
       rules: computed(() => props.rules),
       showChips: computed(() => props.showChips),
       tooltip: computed(() => props.tooltip),
