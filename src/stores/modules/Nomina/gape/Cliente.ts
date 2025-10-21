@@ -79,6 +79,16 @@ export const useClienteStore = defineStore({
         this.responseMessage = error.message
       }
     },
+    async catalogoCliente() {
+      try {
+        const response = await axios.post(`/api/nominaCliente`)
+        this.clientes = response.data.data
+      } catch (error: any) {
+        console.error('Error al obtener clientes:', error)
+        this.responseMessage = error.message
+        throw error
+      }
+    },
 
     _handleError(error: any) {
       if (error.response) {
