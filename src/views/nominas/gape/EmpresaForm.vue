@@ -43,6 +43,7 @@
               height="40px"
               min-width="40px"
               width="40px"
+              :disabled="btnDisabled.importarRegistros"
             >
               <v-icon color="white" icon="mdi-upload" size="24px" />
             </v-btn>
@@ -63,6 +64,7 @@
               height="40px"
               min-width="40px"
               width="40px"
+              :disabled="btnDisabled.descargarFormato"
             >
               <v-icon color="white" icon="mdi-download" size="24px" />
             </v-btn>
@@ -80,10 +82,10 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              disabled
               height="40px"
               min-width="40px"
               width="40px"
+              :disabled="btnDisabled.eliminarRegistros"
             >
               <v-icon color="white" icon="mdi-delete" size="24px" />
             </v-btn>
@@ -101,6 +103,7 @@
               height="40px"
               min-width="40px"
               width="40px"
+              :disabled="btnDisabled.guardarCambios"
             >
               <v-icon icon="mdi-floppy" color="white" size="24px" />
             </v-btn>
@@ -115,11 +118,10 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              disabled
               height="40px"
               min-width="40px"
               width="40px"
-              @click.stop="vbtnActivarRegistro = !vbtnActivarRegistro"
+              :disabled="btnDisabled.activarRegistro"
             >
               <v-icon color="white" size="24px">
                 {{ vbtnActivarRegistro ? 'mdi-checkbox-blank-outline' : 'mdi-checkbox-marked' }}
@@ -146,7 +148,7 @@
               height="40px"
               min-width="40px"
               width="40px"
-              :to="'/nominas/gape/empresaForm'"
+              :disabled="btnDisabled.crearRegistro"
             >
               <v-icon color="white" icon="mdi-plus" size="24px" />
             </v-btn>
@@ -163,15 +165,16 @@
     <v-row ref="vrowFiltrosRef">
       <v-col cols="12" lg="9">
         <bec-autocomplete
-          v-model="modelEmpresa"
-          :item-title="'nombre_empresa'"
+          v-model="dataModel.id_nomina_gape_cliente"
+          :item-subtitle="(item) => `${item.codigo}`"
+          :item-title="'nombre'"
           :item-value="'id'"
-          :items="itemsEmpresas"
+          :items="itemsClientesNomina"
           :label="'Cliente'"
           :multiple="false"
           :prepend-icon="'mdi-account-box'"
           :return-object="false"
-          :rules="[vforFiltrosRule.required]"
+          :show-chips="false"
         >
           <template #tooltip>
             <v-card color="transparent" elevation="0" class="pa-3">
@@ -181,7 +184,7 @@
                 </v-col>
                 <v-col cols="11">Elija el cliente al que se asociará la nueva empresa.</v-col>
               </v-row>
-              <v-divider class="border-opacity-50 my-2 mx-2" />
+              <v-divider class="border-opacity-50 my-2" />
               <v-row>
                 <v-col cols="1" class="d-flex align-center justify-center">
                   <v-icon class="mr-1" color="white" icon="mdi-alert" />
@@ -219,7 +222,7 @@
           :multiple="false"
           :placeholder="'Seleccione'"
           :prepend-icon="'mdi-briefcase-account'"
-          :rules="[(v) => !!v || 'Este campo es requerido']"
+          :rules="[validationRules.required]"
         >
           <template #tooltip>
             <v-card color="transparent" elevation="0" class="pa-3">
@@ -333,51 +336,54 @@
                     <v-row class="mt-1">
                       <v-col cols="12">
                         <bec-autocomplete
-                          v-model="modelEmpresa"
+                          v-model="dataModel.id_empresa_database"
+                          :item-subtitle="(item) => `${item.nombre_base}`"
                           :item-title="'nombre_empresa'"
                           :item-value="'id'"
-                          :items="itemsEmpresas"
+                          :items="itemsEmpresaDatabase"
                           :label="'Empresa CONTAPQi Nóminas'"
                           :multiple="false"
                           :prepend-icon="'mdi-briefcase-account'"
                           :return-object="false"
-                          :rules="[vforFiltrosRule.required]"
+                          :rules="[validationRules.required2]"
                           :tooltip="'Ruta del archivo de la base de datos de la empresa del cliente.'"
                         />
                       </v-col>
                       <v-col cols="12">
                         <bec-text-field
-                          v-model="modelSueldoIMSS"
+                          v-model="dataModel.razon_social"
+                          disabled
                           :label="'Razón Social'"
                           :prepend-icon="'mdi-briefcase-account'"
-                          :rules="[(v) => !!v || 'Este campo es requerido']"
+                          :rules="[validationRules.required]"
                           :tooltip="'Porcentaje de comisión que se le cobrará al cliente'"
                         />
                       </v-col>
                       <v-col cols="12">
                         <bec-text-field
-                          v-model="modelSueldoIMSS"
+                          v-model="dataModel.rfc"
+                          disabled
                           :label="'RFC'"
                           :prepend-icon="'mdi-briefcase-account'"
-                          :rules="[(v) => !!v || 'Este campo es requerido']"
+                          :rules="[validationRules.required]"
                           :tooltip="'Porcentaje de comisión que se le cobrará al cliente'"
                         />
                       </v-col>
                       <v-col cols="12" lg="6" md="12">
                         <bec-text-field
-                          v-model="modelSueldoIMSS"
+                          v-model="dataModel.correo_notificacion"
                           :label="'Correo asignado para notificaciones'"
                           :prepend-icon="'mdi-email'"
-                          :rules="[(v) => !!v || 'Este campo es requerido']"
+                          :rules="[validationRules.required]"
                           :tooltip="'Porcentaje de comisión que se le cobrará al cliente'"
                         />
                       </v-col>
                       <v-col cols="12" lg="6" md="12">
                         <bec-text-field
-                          v-model="modelSueldoIMSS"
+                          v-model="dataModel.codigo_interno"
                           :label="'Código interno'"
                           :prepend-icon="'mdi-barcode'"
-                          :rules="[(v) => !!v || 'Este campo es requerido']"
+                          :rules="[validationRules.required]"
                           :tooltip="'Porcentaje de comisión que se le cobrará al cliente'"
                         />
                       </v-col>
@@ -612,7 +618,6 @@
                   :multiple="false"
                   :prepend-icon="'mdi-briefcase-account'"
                   :return-object="false"
-                  :rules="[vforFiltrosRule.required]"
                   :tooltip="'Ruta del archivo de la base de datos de la empresa del cliente.'"
                 />
               </v-col>
@@ -672,12 +677,29 @@ import {
   watch,
 } from 'vue'
 
+import { useDisplay } from 'vuetify'
+
+// import composables
+import { useClienteModel } from '@/composables/nomina/gape/useCliente'
+import { useEmpresaModel } from '@/composables/nomina/gape/useEmpresa'
+import { useEmpresaDatabase } from '@/composables/core/useEmpresaDatabase'
+
+// import stores
+import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
+import { useEmpresasStore } from '@/stores/modules/Core/empresas'
+import { useEmpresaStore } from '@/stores/modules/Nomina/gape/Empresa'
+
+// import utils
+import { getDefaultCliente } from '@/utils/nomina/gape/getDefaultCliente'
+import { getDefaultEmpresaDatabase } from '@/utils/core/getDefaultEmpresaDatabase'
+
+import { validationRules } from '@/utils/validationRules'
+import { inputFilters } from '@/utils/inputFilters'
+
+// import components
 import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
 import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
 import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
-
-import { useDisplay } from 'vuetify'
-import { rpt2VentasPorMarcas } from '../../../stores/modules/Comercial/rpt2VentasPorMarcas'
 
 interface Empresa {
   id: number
@@ -699,7 +721,16 @@ export default defineComponent({
     // 7. Lifecycle hooks (onMounted, mounted)
     // 8. Functions (fetch, metodos, async)
 
+    // import Stores
+    const clienteStore = useClienteStore()
+    const empresasStore = useEmpresasStore()
+    // GAPE
+    const empresaStore = useEmpresaStore()
+
     // 3. Composables (funciones reutilizables de Vuetify)
+
+    const { dataModel, setEmpresa, resetModel, resetModelEmpresa } = useEmpresaModel()
+
     const { name, mobile, smAndDown } = useDisplay()
 
     // 4. Reactive
@@ -716,6 +747,15 @@ export default defineComponent({
         title: 'Formulario',
       },
     ])
+
+    const btnDisabled = ref({
+      importarRegistros: true,
+      descargarFormato: true,
+      eliminarRegistros: true,
+      guardarCambios: false,
+      activarRegistro: true,
+      crearRegistro: true,
+    })
 
     const vconPrincipalRef = ref()
     const vrowFiltrosRef = ref()
@@ -741,7 +781,6 @@ export default defineComponent({
     const vbtnActivarModel = ref(true)
     const vbtnMenuExportarModel = ref(false)
     const cardHeight = ref(0)
-    const rfc = ref<string>('')
 
     const modelEmpresa = ref<Object>()
     const itemsEmpresas = ref<Object[]>([])
@@ -779,10 +818,6 @@ export default defineComponent({
     ])
 
     const vforFiltrosRef = ref()
-    const vforFiltrosRule = {
-      required: (v: string) => !!v || 'Este dato es requerido para continuar.',
-      required2: (v: any) => (v != null && String(v).length > 0) || 'Selecciona',
-    }
 
     const camposTab1 = ref([
       {
@@ -852,7 +887,6 @@ export default defineComponent({
       },
     ])
 
-    const itemsEmpresas2 = ref<Empresa[]>([])
     const modelEmpresa2 = ref<Empresa>()
 
     const headers = ref<
@@ -889,11 +923,45 @@ export default defineComponent({
       return { height: `${cardHeight.value}px !important` }
     })
 
+    // 6. Watchers
+    watch(
+      () => dataModel.value.id_nomina_gape_cliente,
+      async (idCliente) => {
+        if (idCliente) {
+          resetModel(true)
+
+          await fetchEmpresasNominaPorCliente(idCliente)
+        }
+      },
+    )
+
+    watch(
+      () => dataModel.value.id_empresa_database,
+      async (idEmpresa) => {
+        if (idEmpresa) {
+          resetModelEmpresa(true)
+
+          const empresaSeleccionada = itemsEmpresaDatabase.value.find(
+            (item) => item.id === idEmpresa,
+          )
+
+          const nombreBase = empresaSeleccionada?.nombre_base ?? ''
+
+          await fetchDatosEmpresasNominaPorCliente(
+            idEmpresa,
+            dataModel.value.id_nomina_gape_cliente,
+            nombreBase,
+          )
+        }
+      },
+    )
+
     // 7. Lifecycle hooks (onMounted, mounted)
     onMounted(() => {
       nextTick(() => {
         window.addEventListener('resize', calcularDimensiones)
-        fetchEmpresas()
+        fetchClientes()
+        fetchSincronizarBases()
       })
     })
 
@@ -917,31 +985,51 @@ export default defineComponent({
       }
     }
 
-    const validateRfc = (value: string): true | string => {
-      if (!value) return 'El RFC es requerido'
-
-      const rfcRegex =
-        /^([A-ZÑ&]{3,4})(\d{2})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[A-Z\d]{2}([A\d])$/
-
-      return rfcRegex.test(value.toUpperCase()) ? true : 'RFC no válido'
-    }
-
     const myCustomUpdate = (nuevoValor: any) => {
       //alert(nuevoValor);
       //alert(modelSueldoIMSS.value); //✅ ya está actualizado gracias al emit
     }
 
-    const reporte = rpt2VentasPorMarcas()
-
-    const fetchEmpresas = async () => {
+    const fetchDatosEmpresasNominaPorCliente = async (
+      idCliente: any,
+      idEmpresa: any,
+      rutaBD: string,
+    ) => {
       try {
-        await reporte.rptEmpresas()
+        await empresaStore.empresasDatosNominasPorCliente(idCliente, idEmpresa, rutaBD)
 
-        itemsEmpresas2.value = reporte.empresas.data
-
-        console.log(itemsEmpresas2.value)
+        if (empresaStore.empresa && !Array.isArray(empresaStore.empresa)) {
+          dataModel.value.razon_social = empresaStore.empresa.razon_social ?? ''
+          dataModel.value.rfc = empresaStore.empresa.rfc ?? ''
+          dataModel.value.correo_notificacion = empresaStore.empresa.correo_notificacion ?? ''
+          dataModel.value.codigo_interno = empresaStore.empresa.codigo_interno ?? ''
+        }
       } catch (error) {
-      } finally {
+        console.error('Error al cargar datps catálogos por empresa:', error)
+      }
+    }
+
+    const fetchEmpresasNominaPorCliente = async (idCliente: number) => {
+      try {
+        await empresasStore.empresasNominasPorCliente(idCliente)
+      } catch (error) {
+        console.error('Error al cargar catálogos por empresa:', error)
+      }
+    }
+
+    const fetchClientes = async () => {
+      try {
+        await clienteStore.catalogoCliente()
+      } catch (error) {
+        console.error('Error al cargar empresas nómina:', error)
+      }
+    }
+
+    const fetchSincronizarBases = async () => {
+      try {
+        await clienteStore.sincronizarEmpresas()
+      } catch (error) {
+        console.error('Error al cargar sincronizar las empresas:', error)
       }
     }
 
@@ -1039,48 +1127,53 @@ export default defineComponent({
       item.cuentasDeOrigen.push({ cuenta: '' })
     }
 
+    const itemsClientesNomina = computed(() => clienteStore.clientes)
+    const itemsEmpresaDatabase = computed(() => empresasStore.empresas)
+
     return {
-      tabEmpresa,
       agregarFila,
-      encabezadoCuentaOrigen,
-      itemsCuentaOrigen,
-      vswiFiscal,
-      modelGastosPorComprobar,
-      headers2,
-      movies,
-      onDragStart,
-      onDrop,
-      headers,
-      itemsSeleccionados,
-      items,
-      itemsEmpresas2,
-      modelEmpresa2,
-      myCustomUpdate,
+      btnDisabled,
       camposTab1,
+      dataModel,
+      encabezadoCuentaOrigen,
       getCardHeight,
-      itemsClasePrimaRiesgo,
-      itemsComprobacion,
+      headers,
+      headers2,
+      inputFilters,
+      items,
       itemsBaseFEE,
+      itemsClasePrimaRiesgo,
+      itemsClientesNomina,
+      itemsComprobacion,
+      itemsCuentaOrigen,
+      itemsEmpresaDatabase,
       itemsEmpresas,
+      itemsSeleccionados,
       mergeProps,
       modelEmpresa,
+      modelEmpresa2,
+      modelGastosPorComprobar,
+      modelPerioricidad,
       modelProvSoc,
       modelSueldoIMSS,
-      modelPerioricidad,
+      movies,
+      myCustomUpdate,
       name,
-      rfc,
+      onDragStart,
+      onDrop,
       smAndDown,
+      tabEmpresa,
       validarFiltros,
-      validateRfc,
+      validationRules,
       vbrePrincipalItems,
-      vrowBarraDeAccionesRef,
       vbtnActivarModel,
-      vbtnMenuExportarModel,
       vbtnActivarRegistro,
+      vbtnMenuExportarModel,
       vconPrincipalRef,
       vforFiltrosRef,
-      vforFiltrosRule,
+      vrowBarraDeAccionesRef,
       vrowFiltrosRef,
+      vswiFiscal,
       vtabMenuItems,
       vtabMenuModel,
       vtabMenuRef,

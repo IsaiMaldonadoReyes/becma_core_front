@@ -28,5 +28,15 @@ export const useEmpresasStore = defineStore({
         throw error
       }
     },
+    async empresasNominasPorCliente(clienteId: number) {
+      try {
+        const response = await axios.post(`/api/empresasNominasPorCliente/${clienteId}`)
+        this.empresas = response.data.data
+      } catch (error: any) {
+        console.error('Error al obtener empresas:', error)
+        this.responseMessage = error.message
+        throw error
+      }
+    },
   },
 })

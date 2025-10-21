@@ -109,7 +109,7 @@ export const useSistemaStore = defineStore({
         //throw error
       }
     },
-    
+
     async fetchExcel(data: any) {
       try {
         const now = new Date()

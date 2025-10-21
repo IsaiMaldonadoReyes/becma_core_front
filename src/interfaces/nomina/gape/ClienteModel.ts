@@ -6,6 +6,6 @@ export interface ClienteModel {
   usuario_creador?: number
   usuario_modificador?: number
   nombre?: string
-  codigo: string
+  codigo?: string
   telefono?: string
 }
