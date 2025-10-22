@@ -2,6 +2,7 @@
   <v-select
     v-model="model"
     :chips="multiple || showChips"
+    :clearable="clearable"
     :closable-chips="multiple"
     :color="color"
     :disabled="disabled"
@@ -18,7 +19,6 @@
     :rules="rules"
     :variant="variant"
     clear-icon="mdi-close"
-    clearable
     density="compact"
     hide-details="auto"
     no-data-text="No hay información disponible"
@@ -114,6 +114,10 @@ import type { PropType } from 'vue'
 export default defineComponent({
   name: 'BecSelect',
   props: {
+    clearable: {
+      type: Boolean,
+      default: false,
+    },
     color: {
       type: String,
       default: 'primary',
@@ -196,6 +200,7 @@ export default defineComponent({
     })
 
     return {
+      clearable: computed(() => props.clearable),
       color: computed(() => props.color),
       disabled: computed(() => props.disabled),
       hideSelected: computed(() => props.hideSelected),

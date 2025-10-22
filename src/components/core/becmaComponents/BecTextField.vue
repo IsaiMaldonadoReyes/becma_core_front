@@ -1,6 +1,7 @@
 <template>
   <v-text-field
     v-model="model"
+    :clearable="clearable"
     :color="color"
     :label="label"
     :placeholder="placeholder"
@@ -9,7 +10,6 @@
     :rules="rules"
     :variant="variant"
     clear-icon="mdi-close"
-    clearable
     density="compact"
     hide-details="auto"
   >
@@ -50,6 +50,10 @@ import type { PropType } from 'vue'
 export default defineComponent({
   name: 'BecTextField',
   props: {
+    clearable: {
+      type: Boolean,
+      default: false,
+    },
     color: {
       type: String,
       default: 'primary',
@@ -89,6 +93,7 @@ export default defineComponent({
     })
 
     return {
+      clearable: computed(() => props.clearable),
       color: computed(() => props.color),
       label: computed(() => props.label),
       mergeProps,

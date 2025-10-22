@@ -7,7 +7,7 @@ export interface EmpresaModel {
   usuario_modificador?: number | null
   id_nomina_gape_cliente?: number | null
   id_empresa_database?: number | null
-  fiscal: boolean | null
+  fiscal: boolean
   razon_social: string | null
   rfc: string | null
   codigo_interno: string | null
