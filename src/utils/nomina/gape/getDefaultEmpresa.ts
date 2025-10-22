@@ -10,7 +10,7 @@ export function getDefaultEmpresa(): EmpresaModel {
     usuario_modificador: undefined,
     id_nomina_gape_cliente: undefined,
     id_empresa_database: undefined,
-    fiscal: false,
+    fiscal: true,
     razon_social: '',
     rfc: '',
     codigo_interno: '',

@@ -265,6 +265,8 @@ export default defineComponent({
 
       const form = await formRef.value?.validate()
 
+      console.log(form)
+
       if (!form) return
 
       if (form.valid) {

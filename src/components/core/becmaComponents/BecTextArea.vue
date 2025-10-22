@@ -1,6 +1,7 @@
 <template>
   <v-textarea
     v-model="model"
+    :clearable="clearable"
     :color="color"
     :label="label"
     :placeholder="placeholder"
@@ -10,7 +11,6 @@
     :variant="variant"
     auto-grow
     clear-icon="mdi-close"
-    clearable
     density="compact"
     hide-details="auto"
     row-height="15"
@@ -38,6 +38,10 @@ import type { PropType } from 'vue'
 export default defineComponent({
   name: 'BecTextArea',
   props: {
+    clearable: {
+      type: Boolean,
+      default: false,
+    },
     color: {
       type: String,
       default: 'primary',
@@ -76,6 +80,7 @@ export default defineComponent({
     })
 
     return {
+      clearable: computed(() => props.clearable),
       color: computed(() => props.color),
       label: computed(() => props.label),
       mergeProps,

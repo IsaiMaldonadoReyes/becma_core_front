@@ -203,16 +203,26 @@
         </bec-autocomplete>
       </v-col>
       <v-col cols="12" lg="3" class="d-flex align-start justify-end">
+        <!--v-switch
+          v-model="vswiFiscal"
+          false-icon="mdi-bank-off"
+          hide-details
+          inset
+          true-icon="mdi-bank"
+          :label="vswiFiscal ? 'Empresa fiscal' : 'Empresa no fiscal'"
+          class="text-medium-emphasis"
+          density="compact"
+        /-->
         <bec-select
           v-model="dataModel.fiscal"
           :clearable="false"
           :disabled="btnDisabled.compTipoEmp"
-          :item-title="'title'"
-          :item-value="'value'"
           :items="[
             { title: 'Empresa fiscal', value: true },
             { title: 'Empresa no fiscal', value: false },
           ]"
+          :item-title="'title'"
+          :item-value="'value'"
           :label="'Tipo de empresa'"
           :multiple="false"
           :placeholder="'Seleccione'"
@@ -251,27 +261,26 @@
       <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
     </v-row>
 
-    <!-- vtabTipoEmpresaRef -->
-    <v-row ref="vtabTipoEmpresaRef">
+    <!-- vtabMenuRef -->
+    <v-row ref="vtabMenuRef">
       <v-col class="my-0 py-0">
-        <v-tabs v-model="vtabTipoEmpresa" class="text-medium-emphasis" color="primary" grow>
+        <v-tabs v-model="vtabMenuModel" class="text-medium-emphasis" color="primary" grow>
           <v-tab
-            :disabled="modelTipoEmpresa ? false : true"
-            class="text-none text-no-wrap"
             prepend-icon="mdi-bank"
+            value="tab01"
+            class="text-none text-no-wrap"
             style="letter-spacing: 0.5px"
-            value="tabTipoEmpresa01"
+            :disabled="dataModel.fiscal ? false : true"
             variant="tonal"
           >
             Fiscal
           </v-tab>
           <v-tab
-            :disabled="!modelTipoEmpresa ? false : true"
-            class="text-none text-no-wrap"
             prepend-icon="mdi-bank-off"
+            value="tab02"
+            class="text-none text-no-wrap"
             style="letter-spacing: 0.5px"
-            value="tabTipoEmpresa02"
-            variant="tonal"
+            :disabled="!dataModel.fiscal ? false : true"
           >
             No fiscal
           </v-tab>
@@ -284,44 +293,40 @@
 
     <v-row>
       <v-col>
-        <!-- vtabTipoEmpresa-->
-        <v-tabs-window v-model="vtabTipoEmpresa">
-          <!-- Empresa fiscal -->
-          <v-tabs-window-item value="tabTipoEmpresa01" eager>
+        <v-tabs-window v-model="vtabMenuModel">
+          <v-tabs-window-item value="tab01" eager>
             <div class="d-lg-flex flex-lg-row" style="height: 100%">
-              <!-- vtabDatos -->
               <v-tabs
                 v-model="tabEmpresa"
+                class="text-medium-emphasis tab-right border"
+                color="primary"
                 :direction="smAndDown ? 'horizontal' : 'vertical'"
                 align-tabs="center"
                 border
-                class="text-medium-emphasis tab-right border"
-                color="primary"
-                show-arrows
                 width="100px"
+                show-arrows
               >
                 <v-tab
-                  :variant="tabEmpresa == 'option-1' ? 'tonal' : 'text'"
-                  class="text-none text-no-wrap"
-                  min-width="100%"
                   prepend-icon="mdi-account"
-                  style="letter-spacing: 0.5px"
                   text="Datos generales"
                   value="option-1"
+                  class="text-none text-no-wrap"
+                  style="letter-spacing: 0.5px"
+                  :variant="tabEmpresa == 'option-1' ? 'tonal' : 'text'"
+                  min-width="100%"
                 ></v-tab>
                 <v-tab
-                  :variant="tabEmpresa == 'option-2' ? 'tonal' : 'text'"
-                  class="text-none"
-                  min-width="100%"
                   prepend-icon="mdi-bank"
-                  style="letter-spacing: 0.5px"
                   text="Bancos"
                   value="option-2"
+                  class="text-none"
+                  style="letter-spacing: 0.5px"
+                  :variant="tabEmpresa == 'option-2' ? 'tonal' : 'text'"
+                  min-width="100%"
                 ></v-tab>
               </v-tabs>
               <div class="flex-lg-grow-1 overflow-auto ml-2" :style="getCardHeight">
                 <v-tabs-window v-model="tabEmpresa" :mobile="smAndDown">
-                  <!-- Datos generales -->
                   <v-form ref="formRefFiscalGral">
                     <v-tabs-window-item value="option-1">
                       <v-row>
@@ -507,7 +512,6 @@
                       </v-row>
                     </v-tabs-window-item>
                   </v-form>
-                  <!-- Bancos  -->
                   <v-tabs-window-item value="option-2">
                     <v-row>
                       <v-col>
@@ -522,206 +526,205 @@
                     <!--v-form ref="formRefFiscalBanco"></v-form>
                     <v-form ref="formRefNoFiscalGral"></v-form>
                     <v-form ref="formRefNoFiscalBanco"></v-form-->
-
                     <v-row>
                       <v-col>
-                        <v-data-iterator :items="itemsBanco" items-per-page="-1">
-                          <template v-slot:default="{ items }">
-                            <v-row>
-                              <v-col key="id" cols="12" md="12">
-                                <v-card
-                                  class="rounded d-flex justify-center align-center mx-4 pa-2 border"
-                                  elevation="0"
-                                  min-height="60px"
-                                >
-                                  <v-row class="pa-2">
-                                    <v-col cols="12">
-                                      <v-expansion-panels elevation="0" class="border-0">
-                                        <!-- Fondeadora -->
-                                        <v-expansion-panel class="border" expand-icon="" readonly>
-                                          <v-expansion-panel-title v-slot="{ expanded }">
-                                            <v-row>
-                                              <v-col cols="12" md="2">
-                                                <v-switch
-                                                  v-model="isActiveFondeadora"
-                                                  class="text-medium-emphasis"
-                                                  color="primary"
-                                                  density="compact"
-                                                  false-icon="mdi-bank-off"
-                                                  hide-details
-                                                  inset
-                                                  true-icon="mdi-bank"
-                                                  @click.stop
-                                                />
-                                              </v-col>
-                                              <v-col
-                                                class="d-flex align-center justify-center"
-                                                cols="12"
-                                                md="8"
-                                              >
-                                                Fondeadora
-                                              </v-col>
-                                            </v-row>
-                                          </v-expansion-panel-title>
-                                        </v-expansion-panel>
-
-                                        <!-- Azteca interbancario -->
-                                        <v-expansion-panel
-                                          class="border"
-                                          collapse-icon="mdi-menu-up"
-                                          expand-icon="mdi-menu-down"
-                                        >
-                                          <v-expansion-panel-title
-                                            class="border-b"
-                                            v-slot="{ expanded }"
-                                          >
-                                            <v-row>
-                                              <v-col cols="12" md="2">
-                                                <v-switch
-                                                  v-model="isActiveAztecaInterbancario"
-                                                  class="text-medium-emphasis"
-                                                  color="primary"
-                                                  density="compact"
-                                                  false-icon="mdi-bank-off"
-                                                  hide-details
-                                                  inset
-                                                  true-icon="mdi-bank"
-                                                  @click.stop
-                                                />
-                                              </v-col>
-                                              <v-col
-                                                cols="12"
-                                                class="d-flex align-center justify-center"
-                                                md="8"
-                                              >
-                                                Azteca Interbancario
-                                              </v-col>
-                                              <v-col
-                                                v-if="expanded"
-                                                class="d-flex align-center justify-end"
-                                                cols="12"
-                                                md="2"
-                                              >
-                                                <v-tooltip bottom color="primary" interactive>
-                                                  <template
-                                                    v-slot:activator="{ props: tooltipProps }"
-                                                  >
-                                                    <v-btn
-                                                      v-bind="mergeProps(tooltipProps)"
-                                                      color="primary"
-                                                      flat
-                                                      height="40px"
-                                                      min-width="40px"
-                                                      width="40px"
-                                                      @click.stop="onInsertItemAztecaInterbancario"
-                                                    >
-                                                      <v-icon
-                                                        color="white"
-                                                        icon="mdi-plus"
-                                                        size="24px"
-                                                      />
-                                                    </v-btn>
-                                                  </template>
-                                                  <span>Agregar clave de banco ID</span>
-                                                </v-tooltip>
-                                                <v-divider
-                                                  vertical
-                                                  class="ml-5 mr-3 my-1 border-opacity-25"
-                                                />
-                                              </v-col>
-                                            </v-row>
-                                          </v-expansion-panel-title>
-                                          <v-expansion-panel-text>
-                                            <v-data-table
-                                              :headers="headersAztecaInterbancario"
-                                              :hover="true"
-                                              :items="itemsAztecaInterbancario"
-                                              :mobile="smAndDown"
-                                              hide-default-footer
-                                              hide-default-header
-                                              item-value="title"
-                                            >
-                                              <template v-slot:item.esActivo="{ item }">
-                                                <v-switch
-                                                  v-model="item.esActivo"
-                                                  false-icon="mdi-smart-card-off"
-                                                  hide-details
-                                                  inset
-                                                  true-icon="mdi-smart-card"
-                                                  class="text-medium-emphasis"
-                                                  density="compact"
-                                                  color="primary"
-                                                />
-                                              </template>
-
-                                              <template v-slot:item.claveDeBancoId="{ item }">
-                                                <bec-text-field
-                                                  v-model="item.claveDeBancoId"
-                                                  :label="'Clave de banco ID'"
-                                                  :placeholder="'Clave de banco ID'"
-                                                  :prepend-icon="'mdi-bank'"
-                                                  @keypress="inputFilters.onlyAlphanumeric"
-                                                >
-                                                  <template #tooltip>
-                                                    <v-card
-                                                      color="transparent"
-                                                      elevation="0"
-                                                      class="pa-3"
-                                                    >
-                                                      <v-row>
-                                                        <v-col
-                                                          cols="1"
-                                                          class="d-flex align-center justify-center"
-                                                        >
-                                                          <v-icon
-                                                            class="mr-1"
-                                                            color="white"
-                                                            icon="mdi-bank"
-                                                          />
-                                                        </v-col>
-                                                        <v-col cols="11">
-                                                          Capture la clave de banco ID
-                                                          correspondiente para generar el layout de
-                                                          dispersión del Banco Azteca Interbancario.
-                                                        </v-col>
-                                                      </v-row>
-                                                    </v-card>
-                                                  </template>
-                                                </bec-text-field>
-                                              </template>
-
-                                              <template v-slot:item.acciones="{ item }">
-                                                <v-tooltip interactive>
-                                                  <template
-                                                    v-slot:activator="{ props: tooltipProps }"
-                                                  >
-                                                    <v-btn
-                                                      v-bind="mergeProps(tooltipProps)"
-                                                      class="mr-1"
-                                                      color="primary"
-                                                      height="40px"
-                                                      min-width="40px"
-                                                      width="40px"
-                                                      variant="elevated"
-                                                      @click="onDeleteItemAztecaInterbancario(item)"
-                                                    >
-                                                      <v-icon color="white" icon="mdi-delete" />
-                                                    </v-btn>
-                                                  </template>
-                                                  <span>Eliminar</span>
-                                                </v-tooltip>
-                                              </template>
-                                            </v-data-table>
-                                          </v-expansion-panel-text>
-                                        </v-expansion-panel>
-                                      </v-expansion-panels>
-                                    </v-col>
-                                  </v-row>
-                                </v-card>
-                              </v-col>
-                            </v-row>
+                        <v-data-table
+                          :headers="headers2"
+                          v-model="itemsSeleccionados"
+                          :items="movies"
+                          item-value="title"
+                          hide-default-footer
+                          :mobile="smAndDown"
+                          :hover="true"
+                          show-select
+                        >
+                          <template v-slot:item.isActive="{ item }">
+                            <v-chip
+                              :color="
+                                itemsSeleccionados.some((i) => i === item.concepto)
+                                  ? 'green'
+                                  : 'red'
+                              "
+                              size="small"
+                              label
+                              variant="flat"
+                            >
+                              {{
+                                itemsSeleccionados.some((i) => i === item.concepto) ? 'Sí' : 'No'
+                              }}
+                            </v-chip>
                           </template>
-                        </v-data-iterator>
+                          <template
+                            v-slot:header.data-table-select="{
+                              allSelected,
+                              selectAll,
+                              someSelected,
+                            }"
+                          >
+                            <v-btn-group
+                              class="border-opacity-25"
+                              color="primary"
+                              density="compact"
+                              divided
+                              variant="outlined"
+                            >
+                              <v-btn density="compact" stacked class="pa-2" style="min-width: auto">
+                                <v-tooltip>
+                                  <template v-slot:activator="{ props: tooltip }">
+                                    <v-checkbox-btn
+                                      v-bind="mergeProps(tooltip)"
+                                      :indeterminate="someSelected && !allSelected"
+                                      :model-value="allSelected"
+                                      density="compact"
+                                      true-icon="mdi-checkbox-multiple-marked"
+                                      @update:model-value="selectAll(!allSelected)"
+                                      class="pa-0"
+                                    />
+                                  </template>
+                                  <span>Seleccionar todo</span>
+                                </v-tooltip>
+                              </v-btn>
+                            </v-btn-group>
+                          </template>
+                          <template
+                            v-slot:item.data-table-select="{
+                              internalItem,
+                              isSelected,
+                              toggleSelect,
+                            }"
+                          >
+                            <v-checkbox-btn
+                              :model-value="isSelected(internalItem)"
+                              color="primary"
+                              @update:model-value="toggleSelect(internalItem)"
+                            />
+                          </template>
+
+                          <template v-slot:item.clasePrimaRiesgo="{ item }">
+                            <v-data-table
+                              hide-default-footer
+                              v-model="item.cuentasDeOrigen"
+                              item-value="cuenta"
+                              :headers="encabezadoCuentaOrigen"
+                              :hover="true"
+                              :items="item.cuentasDeOrigen"
+                              eager
+                              color="transparent"
+                              no-data-text="Sin cuentas de origen"
+                            >
+                              <template v-slot:header.eliminar>
+                                <v-btn
+                                  class="mr-1"
+                                  color="primary"
+                                  height="24px"
+                                  min-width="24px"
+                                  width="24px"
+                                  size="x-small"
+                                  variant="elevated"
+                                  @click="agregarFila(item)"
+                                >
+                                  <v-icon color="white" icon="mdi-plus" />
+                                </v-btn>
+                              </template>
+                              <template v-slot:header.cuenta> Cuenta </template>
+                              <!-- solo sobrescribes la columna 'nombre' -->
+                              <template v-slot:item.cuenta="{ item }">
+                                <v-text-field
+                                  v-model="item.cuenta"
+                                  variant="underlined"
+                                  clearable
+                                  clear-icon="mdi-close"
+                                  density="compact"
+                                  hide-details
+                                  :placeholder="'0.00'"
+                                  class="text-end"
+                                  color="primary"
+                                />
+                              </template>
+                              <template v-slot:item.eliminar="{ item }">
+                                <v-tooltip interactive>
+                                  <template v-slot:activator="{ props: tooltipProps }">
+                                    <v-btn
+                                      v-bind="mergeProps(tooltipProps)"
+                                      class="mr-1"
+                                      color="primary"
+                                      height="24px"
+                                      min-width="24px"
+                                      width="24px"
+                                      size="x-small"
+                                      variant="elevated"
+                                    >
+                                      <v-icon color="white" icon="mdi-delete" />
+                                    </v-btn>
+                                  </template>
+                                  <span> Eliminar </span>
+                                </v-tooltip>
+                              </template>
+                            </v-data-table>
+                          </template>
+                          <template v-slot:item.valorPrimaRiesgo="{ item }">
+                            <v-data-table
+                              hide-default-footer
+                              v-model="item.cuentasDeOrigen"
+                              item-value="cuenta"
+                              :headers="encabezadoCuentaOrigen"
+                              :hover="true"
+                              :items="item.cuentasDeOrigen"
+                              eager
+                              color="transparent"
+                              no-data-text="Sin cuentas de origen"
+                            >
+                              <template v-slot:header.eliminar>
+                                <v-btn
+                                  class="mr-1"
+                                  color="primary"
+                                  height="24px"
+                                  min-width="24px"
+                                  width="24px"
+                                  size="x-small"
+                                  variant="elevated"
+                                  @click="agregarFila(item)"
+                                >
+                                  <v-icon color="white" icon="mdi-plus" />
+                                </v-btn>
+                              </template>
+                              <template v-slot:header.cuenta> Cuenta </template>
+                              <!-- solo sobrescribes la columna 'nombre' -->
+                              <template v-slot:item.cuenta="{ item }">
+                                <v-text-field
+                                  v-model="item.cuenta"
+                                  variant="underlined"
+                                  clearable
+                                  clear-icon="mdi-close"
+                                  density="compact"
+                                  hide-details
+                                  :placeholder="'0.00'"
+                                  class="text-end"
+                                  color="primary"
+                                />
+                              </template>
+                              <template v-slot:item.eliminar="{ item }">
+                                <v-tooltip interactive>
+                                  <template v-slot:activator="{ props: tooltipProps }">
+                                    <v-btn
+                                      v-bind="mergeProps(tooltipProps)"
+                                      class="mr-1"
+                                      color="primary"
+                                      height="24px"
+                                      min-width="24px"
+                                      width="24px"
+                                      size="x-small"
+                                      variant="elevated"
+                                    >
+                                      <v-icon color="white" icon="mdi-delete" />
+                                    </v-btn>
+                                  </template>
+                                  <span> Eliminar </span>
+                                </v-tooltip>
+                              </template>
+                            </v-data-table>
+                          </template>
+                        </v-data-table>
                       </v-col>
                     </v-row>
                   </v-tabs-window-item>
@@ -729,8 +732,7 @@
               </div>
             </div>
           </v-tabs-window-item>
-          <!-- Empresa no fiscal -->
-          <v-tabs-window-item value="tabTipoEmpresa02" eager>
+          <v-tabs-window-item value="tab02" eager>
             <div class="d-lg-flex flex-lg-row" style="height: 100%">
               <v-tabs
                 v-model="tabEmpresaNoFisc"
@@ -923,10 +925,208 @@
                     </v-row>
 
                     <!--v-form ref="formRefFiscalBanco"></v-form>
-        <v-form ref="formRefNoFiscalGral"></v-form>
-        <v-form ref="formRefNoFiscalBanco"></v-form-->
+                    <v-form ref="formRefNoFiscalGral"></v-form>
+                    <v-form ref="formRefNoFiscalBanco"></v-form-->
                     <v-row>
-                      <v-col> </v-col>
+                      <v-col>
+                        <v-data-table
+                          :headers="headers2"
+                          v-model="itemsSeleccionados"
+                          :items="movies"
+                          item-value="title"
+                          hide-default-footer
+                          :mobile="smAndDown"
+                          :hover="true"
+                          show-select
+                        >
+                          <template v-slot:item.isActive="{ item }">
+                            <v-chip
+                              :color="
+                                itemsSeleccionados.some((i) => i === item.concepto)
+                                  ? 'green'
+                                  : 'red'
+                              "
+                              size="small"
+                              label
+                              variant="flat"
+                            >
+                              {{
+                                itemsSeleccionados.some((i) => i === item.concepto) ? 'Sí' : 'No'
+                              }}
+                            </v-chip>
+                          </template>
+                          <template
+                            v-slot:header.data-table-select="{
+                              allSelected,
+                              selectAll,
+                              someSelected,
+                            }"
+                          >
+                            <v-btn-group
+                              class="border-opacity-25"
+                              color="primary"
+                              density="compact"
+                              divided
+                              variant="outlined"
+                            >
+                              <v-btn density="compact" stacked class="pa-2" style="min-width: auto">
+                                <v-tooltip>
+                                  <template v-slot:activator="{ props: tooltip }">
+                                    <v-checkbox-btn
+                                      v-bind="mergeProps(tooltip)"
+                                      :indeterminate="someSelected && !allSelected"
+                                      :model-value="allSelected"
+                                      density="compact"
+                                      true-icon="mdi-checkbox-multiple-marked"
+                                      @update:model-value="selectAll(!allSelected)"
+                                      class="pa-0"
+                                    />
+                                  </template>
+                                  <span>Seleccionar todo</span>
+                                </v-tooltip>
+                              </v-btn>
+                            </v-btn-group>
+                          </template>
+                          <template
+                            v-slot:item.data-table-select="{
+                              internalItem,
+                              isSelected,
+                              toggleSelect,
+                            }"
+                          >
+                            <v-checkbox-btn
+                              :model-value="isSelected(internalItem)"
+                              color="primary"
+                              @update:model-value="toggleSelect(internalItem)"
+                            />
+                          </template>
+
+                          <template v-slot:item.clasePrimaRiesgo="{ item }">
+                            <v-data-table
+                              hide-default-footer
+                              v-model="item.cuentasDeOrigen"
+                              item-value="cuenta"
+                              :headers="encabezadoCuentaOrigen"
+                              :hover="true"
+                              :items="item.cuentasDeOrigen"
+                              eager
+                              color="transparent"
+                              no-data-text="Sin cuentas de origen"
+                            >
+                              <template v-slot:header.eliminar>
+                                <v-btn
+                                  class="mr-1"
+                                  color="primary"
+                                  height="24px"
+                                  min-width="24px"
+                                  width="24px"
+                                  size="x-small"
+                                  variant="elevated"
+                                  @click="agregarFila(item)"
+                                >
+                                  <v-icon color="white" icon="mdi-plus" />
+                                </v-btn>
+                              </template>
+                              <template v-slot:header.cuenta> Cuenta </template>
+                              <!-- solo sobrescribes la columna 'nombre' -->
+                              <template v-slot:item.cuenta="{ item }">
+                                <v-text-field
+                                  v-model="item.cuenta"
+                                  variant="underlined"
+                                  clearable
+                                  clear-icon="mdi-close"
+                                  density="compact"
+                                  hide-details
+                                  :placeholder="'0.00'"
+                                  class="text-end"
+                                  color="primary"
+                                />
+                              </template>
+                              <template v-slot:item.eliminar="{ item }">
+                                <v-tooltip interactive>
+                                  <template v-slot:activator="{ props: tooltipProps }">
+                                    <v-btn
+                                      v-bind="mergeProps(tooltipProps)"
+                                      class="mr-1"
+                                      color="primary"
+                                      height="24px"
+                                      min-width="24px"
+                                      width="24px"
+                                      size="x-small"
+                                      variant="elevated"
+                                    >
+                                      <v-icon color="white" icon="mdi-delete" />
+                                    </v-btn>
+                                  </template>
+                                  <span> Eliminar </span>
+                                </v-tooltip>
+                              </template>
+                            </v-data-table>
+                          </template>
+                          <template v-slot:item.valorPrimaRiesgo="{ item }">
+                            <v-data-table
+                              hide-default-footer
+                              v-model="item.cuentasDeOrigen"
+                              item-value="cuenta"
+                              :headers="encabezadoCuentaOrigen"
+                              :hover="true"
+                              :items="item.cuentasDeOrigen"
+                              eager
+                              color="transparent"
+                              no-data-text="Sin cuentas de origen"
+                            >
+                              <template v-slot:header.eliminar>
+                                <v-btn
+                                  class="mr-1"
+                                  color="primary"
+                                  height="24px"
+                                  min-width="24px"
+                                  width="24px"
+                                  size="x-small"
+                                  variant="elevated"
+                                  @click="agregarFila(item)"
+                                >
+                                  <v-icon color="white" icon="mdi-plus" />
+                                </v-btn>
+                              </template>
+                              <template v-slot:header.cuenta> Cuenta </template>
+                              <!-- solo sobrescribes la columna 'nombre' -->
+                              <template v-slot:item.cuenta="{ item }">
+                                <v-text-field
+                                  v-model="item.cuenta"
+                                  variant="underlined"
+                                  clearable
+                                  clear-icon="mdi-close"
+                                  density="compact"
+                                  hide-details
+                                  :placeholder="'0.00'"
+                                  class="text-end"
+                                  color="primary"
+                                />
+                              </template>
+                              <template v-slot:item.eliminar="{ item }">
+                                <v-tooltip interactive>
+                                  <template v-slot:activator="{ props: tooltipProps }">
+                                    <v-btn
+                                      v-bind="mergeProps(tooltipProps)"
+                                      class="mr-1"
+                                      color="primary"
+                                      height="24px"
+                                      min-width="24px"
+                                      width="24px"
+                                      size="x-small"
+                                      variant="elevated"
+                                    >
+                                      <v-icon color="white" icon="mdi-delete" />
+                                    </v-btn>
+                                  </template>
+                                  <span> Eliminar </span>
+                                </v-tooltip>
+                              </template>
+                            </v-data-table>
+                          </template>
+                        </v-data-table>
+                      </v-col>
                     </v-row>
                   </v-tabs-window-item>
                 </v-tabs-window>
@@ -979,12 +1179,14 @@ import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
 export default defineComponent({
   name: 'EmpresaForm',
   components: { BecSelect, BecAutocomplete, BecTextField },
+
   props: {
     id: {
       type: Number,
       required: false,
     },
   },
+
   setup(props) {
     // 1. Imports
     // 2. Props y Emits
@@ -995,12 +1197,17 @@ export default defineComponent({
     // 7. Lifecycle hooks (onMounted, mounted)
     // 8. Functions (fetch, metodos, async)
 
-    // 3. Composables
+    // import Stores
     const clienteStore = useClienteStore()
     const empresasStore = useEmpresasStore()
-    const empresaStore = useEmpresaStore()
-    const { dataModel, setEmpresa, resetModel, resetModelEmpresa } = useEmpresaModel()
     const dialogConfirmation = useDialogManagerStore()
+    // GAPE
+    const empresaStore = useEmpresaStore()
+
+    // 3. Composables (funciones reutilizables de Vuetify)
+
+    const { dataModel, setEmpresa, resetModel, resetModelEmpresa } = useEmpresaModel()
+
     const { name, mobile, smAndDown } = useDisplay()
 
     // 4. Reactive
@@ -1025,6 +1232,7 @@ export default defineComponent({
       guardarCambios: false,
       activarRegistro: true,
       crearRegistro: true,
+      //
       compTipoEmp: false,
       compCliente: false,
       compEmpresa: false,
@@ -1042,8 +1250,20 @@ export default defineComponent({
     const vrowFiltrosRef = ref()
     const vbtnActivarRegistro = ref(true)
 
-    const vtabTipoEmpresaRef = ref()
-    const vtabTipoEmpresa = ref<any>('tabTipoEmpresa01')
+    const vtabMenuRef = ref()
+    const vtabMenuModel = ref<any>('tab01')
+    const vtabMenuItems = ref([
+      {
+        icon: 'mdi-bank',
+        title: 'Fiscal',
+        value: 'tab01',
+      },
+      {
+        icon: 'mdi-bank-off',
+        title: 'No fiscal',
+        value: 'tab02',
+      },
+    ])
 
     const loading = ref(false)
     const formRefFiscalGral = ref()
@@ -1054,92 +1274,40 @@ export default defineComponent({
     const tabEmpresa = ref('option-1')
     const tabEmpresaNoFisc = ref('option-1')
 
+    const vbtnActivarModel = ref(true)
+    const vbtnMenuExportarModel = ref(false)
     const cardHeight = ref(0)
 
-    const modelEmpresa = ref<Object>()
-    const itemsEmpresas = ref<Object[]>([])
-
-    const vforFiltrosRef = ref()
-
-    // 4. Reactive | Bancos
-
-    type Banco = { id: number; banco: string; esActivo: boolean }
-    const itemsBanco: Banco[] = [
-      {
-        id: 1,
-        banco: 'Fondeadora',
-        esActivo: true,
-      },
-      {
-        id: 2,
-        banco: 'Azteca interbancario',
-        esActivo: true,
-      },
-      {
-        id: 3,
-        banco: 'Azteca bancario',
-        esActivo: true,
-      },
-      {
-        id: 4,
-        banco: 'Banorte terceros',
-        esActivo: true,
-      },
-    ]
-
-    const isActiveFondeadora = ref(false)
-    const isActiveAztecaInterbancario = ref(false)
-    const isActiveAztecaBancario = ref(false)
-    const isActiveBanorteTerceros = ref(false)
-
-    type AztecaInterbancario = {
-      id: number
-      idCliente: number
-      idEmpresa: number
-      banco: string
-      esActivo: boolean
-      claveDeBancoId: string
-    }
-    const itemsAztecaInterbancario = ref<AztecaInterbancario[]>([
-      {
-        id: 1,
-        idCliente: 1,
-        idEmpresa: 1,
-        banco: 'Azteca Interbancario',
-        esActivo: true,
-        claveDeBancoId: '010203040506',
-      },
+    const itemsComprobacion = ref([
+      { title: 'Si', value: 0 },
+      { title: 'No', value: 1 },
     ])
 
-    const headersAztecaInterbancario = ref<
+    const headers = ref<
       {
         key: string
         align?: 'start' | 'center' | 'end'
-        sortable?: boolean
         title: string
+        sortable?: boolean
         width?: string
       }[]
     >([
-      {
-        key: 'esActivo',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-      {
-        key: 'claveDeBancoId',
-        align: 'center',
-        sortable: false,
-        title: '',
-      },
-      {
-        key: 'acciones',
-        align: 'end',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
+      { title: '', key: 'seleccionado', width: '5%', sortable: false },
+      { title: 'Concepto', key: 'concepto', sortable: false },
+      { title: 'Tope', key: 'tope', sortable: false },
+      { title: '', key: 'drag', sortable: false, align: 'end' },
     ])
+
+    const items = ref([
+      { concepto: 'Sueldo IMSS', tope: '5000' },
+      { concepto: 'Prev. Soc.', tope: '2000' },
+      { concepto: 'Fondos Sind.', tope: '' },
+      { concepto: 'Tarjeta Fácil', tope: '' },
+      { concepto: 'Hon. Asimilados', tope: '' },
+      { concepto: 'Gastos por comprobar', tope: '' },
+    ])
+
+    const itemsSeleccionados = ref(['Sueldo IMSS'])
 
     // 5. Computed properties
     const getCardHeight = computed(() => {
@@ -1189,7 +1357,7 @@ export default defineComponent({
     watch(
       () => dataModel.value.fiscal,
       async (nuevoValor) => {
-        vtabTipoEmpresa.value = nuevoValor ? 'tabTipoEmpresa01' : 'tabTipoEmpresa02'
+        vtabMenuModel.value = nuevoValor ? 'tab01' : 'tab02'
 
         const tabFiscal = nuevoValor
         const tabInfo = tabFiscal ? tabEmpresa.value : tabEmpresaNoFisc.value
@@ -1255,7 +1423,7 @@ export default defineComponent({
           vconPrincipalRef.value.$el.clientHeight -
           vrowBarraDeAccionesRef.value.$el.clientHeight -
           vrowFiltrosRef.value.$el.clientHeight -
-          vtabTipoEmpresaRef.value.$el.clientHeight -
+          vtabMenuRef.value.$el.clientHeight -
           15
       }
     }
@@ -1267,8 +1435,6 @@ export default defineComponent({
         if (empresaStore.empresa && !Array.isArray(empresaStore.empresa)) {
           const idCliente = empresaStore.empresa.id_nomina_gape_cliente
           const idEmpresa = empresaStore.empresa.id_empresa_database
-
-          console.log(idEmpresa);
 
           if (idEmpresa != 0) {
             fetchEmpresasNominaPorCliente(idCliente)
@@ -1336,14 +1502,14 @@ export default defineComponent({
       const tabInfo = fiscal ? tabEmpresa.value : tabEmpresaNoFisc.value
 
       /*
-   if (dialogPropiedades.value.elementos.id) {
-     titulo = 'Actualización de datos'
-     mensaje = `¿Está seguro de que desea actualizar el registro "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Los cambios realizados serán guardados de forma permanente.`
-   } else {
-     titulo = 'Registro de datos'
-     mensaje = `¿Está seguro de que desea registrar el nuevo cliente "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Esta acción no se puede deshacer.`
-   }
-   */
+      if (dialogPropiedades.value.elementos.id) {
+        titulo = 'Actualización de datos'
+        mensaje = `¿Está seguro de que desea actualizar el registro "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Los cambios realizados serán guardados de forma permanente.`
+      } else {
+        titulo = 'Registro de datos'
+        mensaje = `¿Está seguro de que desea registrar el nuevo cliente "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Esta acción no se puede deshacer.`
+      }
+      */
 
       titulo = 'Registro de datos'
       mensaje = `¿Está seguro de que desea registrar los datos? Esta acción no se puede deshacer.`
@@ -1416,90 +1582,136 @@ export default defineComponent({
       }
     }
 
-    function onDeleteItemAztecaInterbancario(item: AztecaInterbancario) {
-      itemsAztecaInterbancario.value = itemsAztecaInterbancario.value.filter(
-        (i) => i.id !== item.id,
-      )
+    let dragIndex = -1
+
+    function onDragStart(index: number) {
+      dragIndex = index
     }
 
-    function onInsertItemAztecaInterbancario() {
-      const items = itemsAztecaInterbancario.value
-
-      // Si hay al menos un elemento
-      if (items.length > 0) {
-        const lastItem = items[items.length - 1]
-
-        // Validar que el último registro tenga clave válida
-        if (!lastItem.claveDeBancoId || lastItem.claveDeBancoId.trim() === '') {
-          alert('Debe llenar la Clave de Banco ID del último registro antes de agregar otro.')
-          return
-        }
-      }
-
-      // Si pasa la validación, agregar un nuevo registro
-      const nuevo: AztecaInterbancario = {
-        id: Date.now(), // o algún contador local
-        idCliente: 1,
-        idEmpresa: 1,
-        banco: 'Azteca Interbancario',
-        esActivo: true,
-        claveDeBancoId: '', // vacío para que lo edite después
-      }
-
-      items.push(nuevo)
+    function onDrop(dropIndex: number) {
+      if (dragIndex === -1 || dragIndex === dropIndex) return
+      const moved = items.value.splice(dragIndex, 1)[0]
+      items.value.splice(dropIndex, 0, moved)
+      dragIndex = -1
     }
 
-    const modelTipoEmpresa = ref(true)
-    watch(
-      modelTipoEmpresa,
-      (nuevoValor) => {
-        vtabTipoEmpresa.value = nuevoValor ? 'tabTipoEmpresa01' : 'tabTipoEmpresa02'
+    const headers2 = ref<
+      {
+        key: string
+        align?: 'start' | 'center' | 'end'
+        title: string
+        sortable?: boolean
+        width?: string
+      }[]
+    >([
+      {
+        title: 'es',
+        key: 'isActive',
+        sortable: false,
       },
-      { immediate: true },
-    )
+      {
+        title: 'Banco',
+        key: 'perioricidad',
+        sortable: false,
+      },
+      {
+        title: '',
+        key: 'clasePrimaRiesgo',
+        sortable: false,
+        align: 'center',
+      },
+      {
+        title: 'Cuenta de origen',
+        key: 'valorPrimaRiesgo',
+        sortable: false,
+        align: 'center',
+      },
+    ])
+
+    const movies = ref([
+      {
+        perioricidad: 'Fondeadora',
+        cuentasDeOrigen: [{ cuenta: '1000000000' }, { cuenta: '2020202020' }],
+      },
+      {
+        perioricidad: 'Azteca Interbancario',
+        cuentasDeOrigen: [],
+      },
+      {
+        perioricidad: 'Azteca bancario',
+        cuentasDeOrigen: [],
+      },
+      {
+        perioricidad: 'Banorte de terceros',
+        cuentasDeOrigen: [],
+      },
+    ])
+
+    const encabezadoCuentaOrigen = ref<
+      {
+        key: string
+        align?: 'start' | 'center' | 'end'
+        title: string
+        sortable?: boolean
+        width?: string
+      }[]
+    >([
+      { title: 'Cuenta origen', key: 'cuenta', sortable: false, align: 'center', width: '90%' },
+      { title: '', key: 'eliminar', sortable: false, align: 'end' },
+    ])
+
+    const itemsCuentaOrigen = ref([{ cuenta: '001850255586' }, { cuenta: '001850255586' }])
+    const agregarFila = (item: any) => {
+      if (!Array.isArray(item.cuentasDeOrigen)) {
+        item.cuentasDeOrigen = []
+      }
+      item.cuentasDeOrigen.push({ cuenta: '' })
+    }
 
     const itemsClientesNomina = computed(() => clienteStore.clientes)
     const itemsEmpresaDatabase = computed(() => empresasStore.empresas)
 
     return {
+      loading,
+      dialogConfirmation,
+      agregarFila,
       btnDisabled,
       dataModel,
-      dialogConfirmation,
-      formRefFiscalBanco,
-      formRefFiscalGral,
-      formRefNoFiscalBanco,
-      formRefNoFiscalGral,
+      encabezadoCuentaOrigen,
       getCardHeight,
-      headersAztecaInterbancario,
+      headers,
+      headers2,
       inputFilters,
-      isActiveAztecaBancario,
-      isActiveAztecaInterbancario,
-      isActiveBanorteTerceros,
-      isActiveFondeadora,
-      itemsAztecaInterbancario,
-      itemsBanco,
+      items,
       itemsClientesNomina,
+      itemsComprobacion,
+      itemsCuentaOrigen,
       itemsEmpresaDatabase,
-      itemsEmpresas,
-      loading,
+      itemsSeleccionados,
       mergeProps,
-      modelEmpresa,
-      modelTipoEmpresa,
+      movies,
+      name,
       onDecision,
-      onDeleteItemAztecaInterbancario,
-      onInsertItemAztecaInterbancario,
+      onDragStart,
+      onDrop,
       smAndDown,
       tabEmpresa,
-      tabEmpresaNoFisc,
       validationRules,
       vbrePrincipalItems,
+      vbtnActivarModel,
       vbtnActivarRegistro,
+      vbtnMenuExportarModel,
       vconPrincipalRef,
-      vforFiltrosRef,
       vrowBarraDeAccionesRef,
       vrowFiltrosRef,
-      vtabTipoEmpresa,
-      vtabTipoEmpresaRef,
+      vtabMenuItems,
+      vtabMenuModel,
+      vtabMenuRef,
+      formRefFiscalGral,
+      formRefFiscalBanco,
+      formRefNoFiscalGral,
+      formRefNoFiscalBanco,
+      tabEmpresaNoFisc,
     }
   },
 })

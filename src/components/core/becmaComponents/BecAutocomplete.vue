@@ -2,6 +2,7 @@
   <v-autocomplete
     v-model="model"
     :chips="multiple || showChips"
+    :clearable="clearable"
     :closable-chips="multiple"
     :color="color"
     :disabled="disabled"
@@ -20,7 +21,6 @@
     auto-select-first
     clear-icon="mdi-close"
     clear-on-select
-    clearable
     density="compact"
     filter-mode="every"
     hide-details="auto"
@@ -123,6 +123,10 @@ export default defineComponent({
       type: [String, Number, Object, Array, null] as PropType<any>,
       default: null,
     },
+    clearable: {
+      type: Boolean,
+      default: true,
+    },
     color: {
       type: String,
       default: 'primary',
@@ -199,6 +203,7 @@ export default defineComponent({
     })
 
     return {
+      clearable: computed(() => props.clearable),
       color: computed(() => props.color),
       disabled: computed(() => props.disabled),
       hideSelected: computed(() => props.hideSelected),
