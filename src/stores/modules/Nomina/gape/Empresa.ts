@@ -8,6 +8,7 @@ axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL
 
 interface EmpresaState {
   empresa: EmpresaModel | EmpresaModel[] | null
+  empresasList: EmpresaModel[]
   responseMessage: string
   object: any
 }
@@ -16,10 +17,20 @@ export const useEmpresaStore = defineStore({
   id: 'nominaEmpresa',
   state: (): EmpresaState => ({
     empresa: null,
+    empresasList: [],
     responseMessage: '',
     object: {},
   }),
   actions: {
+    async indexEmpresas() {
+      try {
+        const response = await axios.get('/api/indexNominaEmpresa')
+        this.empresasList = response.data.data
+      } catch (error: any) {
+        console.error(error)
+        this.responseMessage = error.message
+      }
+    },
     async empresasDatosNominasPorClienteId(id: number) {
       try {
         const payload = {
@@ -51,6 +62,15 @@ export const useEmpresaStore = defineStore({
     async storeNominaGapeEmpresa(data: EmpresaModel) {
       try {
         const response = await axios.post('/api/storeNominaEmpresa', data)
+        this.empresa = response.data
+      } catch (error: any) {
+        this._handleError(error)
+        throw error
+      }
+    },
+    async updateNominaGapeEmpresa(data: EmpresaModel, id: number) {
+      try {
+        const response = await axios.put(`/api/updateNominaEmpresa/${id}`, data)
         this.empresa = response.data
       } catch (error: any) {
         this._handleError(error)

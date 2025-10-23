@@ -6,8 +6,11 @@ export interface EmpresaModel {
   usuario_creador?: number | null
   usuario_modificador?: number | null
   id_nomina_gape_cliente?: number | null
+  cliente?: string
   id_empresa_database?: number | null
+  empresa?: string
   fiscal: boolean
+  tipo: string
   razon_social: string | null
   rfc: string | null
   codigo_interno: string | null
