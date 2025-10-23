@@ -26,6 +26,7 @@
               height="40px"
               min-width="40px"
               width="40px"
+              :disabled="btnDisabled.importarRegistros"
             >
               <v-icon color="white" icon="mdi-upload" size="24px" />
             </v-btn>
@@ -46,6 +47,7 @@
               height="40px"
               min-width="40px"
               width="40px"
+              :disabled="btnDisabled.descargarFormato"
             >
               <v-icon color="white" icon="mdi-download" size="24px" />
             </v-btn>
@@ -63,10 +65,10 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              disabled
               height="40px"
               min-width="40px"
               width="40px"
+              :disabled="btnDisabled.eliminarRegistros"
             >
               <v-icon color="white" icon="mdi-delete" size="24px" />
             </v-btn>
@@ -81,10 +83,10 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              disabled
               height="40px"
               min-width="40px"
               width="40px"
+              :disabled="btnDisabled.guardarCambios"
             >
               <v-icon icon="mdi-floppy" color="white" size="24px" />
             </v-btn>
@@ -99,10 +101,10 @@
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              disabled
               height="40px"
               min-width="40px"
               width="40px"
+              :disabled="btnDisabled.activarRegistro"
               @click.stop="vbtnActivarRegistro = !vbtnActivarRegistro"
             >
               <v-icon color="white" size="24px">
@@ -130,6 +132,7 @@
               height="40px"
               min-width="40px"
               width="40px"
+              :disabled="btnDisabled.crearRegistro"
               :to="'/nominas/gape/empresaForm'"
             >
               <v-icon color="white" icon="mdi-plus" size="24px" />
@@ -375,6 +378,15 @@ export default defineComponent({
     ])
     const vbtnActivarRegistro = ref(true)
 
+    const btnDisabled = ref({
+      importarRegistros: true,
+      descargarFormato: true,
+      eliminarRegistros: true,
+      guardarCambios: true,
+      activarRegistro: true,
+      crearRegistro: false,
+    })
+
     // 4. Reactive | vrowFiltrosRef
     const vrowFiltrosRef = ref()
 
@@ -510,6 +522,7 @@ export default defineComponent({
     }
 
     return {
+      btnDisabled,
       getTableHeight,
       getTableNoDataHeight,
       getVdtPrincipalTotalPaginas,

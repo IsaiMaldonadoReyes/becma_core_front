@@ -178,6 +178,7 @@
           :prepend-icon="'mdi-account-box'"
           :return-object="false"
           :show-chips="false"
+          @update:model-value="buscarEmpresasNomina"
         >
           <template #tooltip>
             <v-card color="transparent" elevation="0" class="pa-3">
@@ -347,6 +348,7 @@
                             :prepend-icon="'mdi-briefcase-account'"
                             :return-object="false"
                             :rules="[validationRules.required2]"
+                            @update:model-value="buscarDatosEmpresaNomina"
                           >
                             <template #tooltip>
                               <v-card color="transparent" elevation="0" class="py-3">
@@ -976,6 +978,9 @@ import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
 import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
 import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
 
+// import router
+import { useRouter } from 'vue-router'
+
 export default defineComponent({
   name: 'EmpresaForm',
   components: { BecSelect, BecAutocomplete, BecTextField },
@@ -1002,6 +1007,8 @@ export default defineComponent({
     const { dataModel, setEmpresa, resetModel, resetModelEmpresa } = useEmpresaModel()
     const dialogConfirmation = useDialogManagerStore()
     const { name, mobile, smAndDown } = useDisplay()
+
+    const router = useRouter()
 
     // 4. Reactive
     const vrowBarraDeAccionesRef = ref()
@@ -1150,41 +1157,6 @@ export default defineComponent({
     })
 
     // 6. Watchers
-    watch(
-      () => dataModel.value.id_nomina_gape_cliente,
-      async (idCliente) => {
-        btnDisabled.value.eliminarRegistros = true
-
-        if (idCliente) {
-          resetModel(true)
-
-          await fetchEmpresasNominaPorCliente(idCliente)
-        }
-      },
-    )
-
-    watch(
-      () => dataModel.value.id_empresa_database,
-      async (idEmpresa) => {
-        if (idEmpresa) {
-          resetModelEmpresa(true)
-
-          btnDisabled.value.eliminarRegistros = true
-
-          const empresaSeleccionada = itemsEmpresaDatabase.value.find(
-            (item) => item.id === idEmpresa,
-          )
-
-          const nombreBase = empresaSeleccionada?.nombre_base ?? ''
-
-          await fetchDatosEmpresasNominaPorCliente(
-            dataModel.value.id_nomina_gape_cliente,
-            idEmpresa,
-            nombreBase,
-          )
-        }
-      },
-    )
 
     watch(
       () => dataModel.value.fiscal,
@@ -1215,12 +1187,15 @@ export default defineComponent({
     onMounted(() => {
       nextTick(() => {
         window.addEventListener('resize', calcularDimensiones)
-        fetchClientes()
-        fetchSincronizarBases()
       })
+
+      fetchClientes()
+      console.log('fetchClientes')
+      fetchSincronizarBases()
 
       // edit
       if (props.id !== undefined && props.id !== null) {
+        console.log('props')
         btnDisabled.value.eliminarRegistros = false
 
         btnDisabled.value.compTipoEmp = true
@@ -1237,6 +1212,8 @@ export default defineComponent({
         btnDisabled.value.compNoFisCodigo = false
 
         fetchDatosEmpresasNominaPorClienteId(props.id)
+
+        console.log('fetchDatosEmpresasNominaPorClienteId')
       }
       // new
       else {
@@ -1260,6 +1237,26 @@ export default defineComponent({
       }
     }
 
+    const buscarEmpresasNomina = async (codigo: string) => {
+      resetModel(true)
+
+      await fetchEmpresasNominaPorCliente(codigo)
+    }
+
+    const buscarDatosEmpresaNomina = async (codigo: number) => {
+      resetModelEmpresa(true)
+
+      const empresaSeleccionada = itemsEmpresaDatabase.value.find((item) => item.id === codigo)
+
+      const nombreBase = empresaSeleccionada?.nombre_base ?? ''
+
+      await fetchDatosEmpresasNominaPorCliente(
+        dataModel.value.id_nomina_gape_cliente,
+        codigo,
+        nombreBase,
+      )
+    }
+
     const fetchDatosEmpresasNominaPorClienteId = async (idCliente: any) => {
       try {
         await empresaStore.empresasDatosNominasPorClienteId(idCliente)
@@ -1268,7 +1265,7 @@ export default defineComponent({
           const idCliente = empresaStore.empresa.id_nomina_gape_cliente
           const idEmpresa = empresaStore.empresa.id_empresa_database
 
-          console.log(idEmpresa);
+          console.log(idEmpresa)
 
           if (idEmpresa != 0) {
             fetchEmpresasNominaPorCliente(idCliente)
@@ -1335,18 +1332,13 @@ export default defineComponent({
       const fiscal = dataModel.value.fiscal
       const tabInfo = fiscal ? tabEmpresa.value : tabEmpresaNoFisc.value
 
-      /*
-   if (dialogPropiedades.value.elementos.id) {
-     titulo = 'Actualización de datos'
-     mensaje = `¿Está seguro de que desea actualizar el registro "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Los cambios realizados serán guardados de forma permanente.`
-   } else {
-     titulo = 'Registro de datos'
-     mensaje = `¿Está seguro de que desea registrar el nuevo cliente "${dialogPropiedades.value.elementos.nombre}" (Código: ${dialogPropiedades.value.elementos.codigo})? Esta acción no se puede deshacer.`
-   }
-   */
-
-      titulo = 'Registro de datos'
-      mensaje = `¿Está seguro de que desea registrar los datos? Esta acción no se puede deshacer.`
+      if (props.id !== undefined && props.id !== null) {
+        titulo = 'Actualización de datos'
+        mensaje = `¿Está seguro de que desea actualizar el registro? Los cambios realizados serán guardados de forma permanente.`
+      } else {
+        titulo = 'Registro de datos'
+        mensaje = `¿Está seguro de que desea registrar los datos? Esta acción no se puede deshacer.`
+      }
 
       dialogConfirmation.onOpenDialogConfirmation(
         mensaje,
@@ -1392,6 +1384,8 @@ export default defineComponent({
           '#438701',
           2,
         )
+
+        router.push({ name: 'EmpresaList' })
       } catch (error: any) {
         if (error.type === 'validation') {
           const errores = Object.values(error.errors).flat().join('<br>')
@@ -1500,6 +1494,8 @@ export default defineComponent({
       vrowFiltrosRef,
       vtabTipoEmpresa,
       vtabTipoEmpresaRef,
+      buscarEmpresasNomina,
+      buscarDatosEmpresaNomina,
     }
   },
 })
