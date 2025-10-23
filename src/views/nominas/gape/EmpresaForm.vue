@@ -1015,12 +1015,11 @@ export default defineComponent({
     const vbrePrincipalItems = ref([
       {
         disabled: false,
-        href: 'breadcrumbs_dashboard',
+        href: 'empresaList',
         title: 'Empresa',
       },
       {
         disabled: false,
-        href: 'breadcrumbs_link_1',
         title: 'Formulario',
       },
     ])
@@ -1176,22 +1175,25 @@ export default defineComponent({
           formRef = tabInfo === 'option-1' ? formRefNoFiscalGral.value : formRefNoFiscalBanco.value
         }
 
-        if (formRef) {
-          await formRef.reset() // ✅ ahora sí puedes usar await
+        if (props.id !== undefined && props.id !== null) {
+        } else {
+          if (formRef) {
+            await formRef.reset() // ✅ ahora sí puedes usar await
+          }
         }
       },
       { immediate: true },
     )
 
     // 7. Lifecycle hooks (onMounted, mounted)
-    onMounted(() => {
+    onMounted(async () => {
       nextTick(() => {
         window.addEventListener('resize', calcularDimensiones)
       })
 
-      fetchClientes()
+      await fetchClientes()
       console.log('fetchClientes')
-      fetchSincronizarBases()
+      await fetchSincronizarBases()
 
       // edit
       if (props.id !== undefined && props.id !== null) {
@@ -1211,9 +1213,7 @@ export default defineComponent({
         btnDisabled.value.compNoFisCorreo = false
         btnDisabled.value.compNoFisCodigo = false
 
-        fetchDatosEmpresasNominaPorClienteId(props.id)
-
-        console.log('fetchDatosEmpresasNominaPorClienteId')
+        await fetchDatosEmpresasNominaPorClienteId(props.id)
       }
       // new
       else {
@@ -1237,7 +1237,7 @@ export default defineComponent({
       }
     }
 
-    const buscarEmpresasNomina = async (codigo: string) => {
+    const buscarEmpresasNomina = async (codigo: number) => {
       resetModel(true)
 
       await fetchEmpresasNominaPorCliente(codigo)
@@ -1262,20 +1262,32 @@ export default defineComponent({
         await empresaStore.empresasDatosNominasPorClienteId(idCliente)
 
         if (empresaStore.empresa && !Array.isArray(empresaStore.empresa)) {
-          const idCliente = empresaStore.empresa.id_nomina_gape_cliente
+          const idClienteEdit = empresaStore.empresa.id_nomina_gape_cliente
           const idEmpresa = empresaStore.empresa.id_empresa_database
 
           console.log(idEmpresa)
 
-          if (idEmpresa != 0) {
-            fetchEmpresasNominaPorCliente(idCliente)
-          }
-          dataModel.value.id_nomina_gape_cliente = empresaStore.empresa.id_nomina_gape_cliente
+          console.log('fetchEmpresasNominaPorCliente 1269')
+          await fetchEmpresasNominaPorClienteEdit(idClienteEdit)
+
+          console.log(itemsEmpresaDatabase)
+          console.log(itemsClientesNomina)
+
+          dataModel.value.id_nomina_gape_cliente = Number(
+            empresaStore.empresa.id_nomina_gape_cliente,
+          )
           dataModel.value.id_empresa_database = empresaStore.empresa.id_empresa_database
           dataModel.value.razon_social = empresaStore.empresa.razon_social ?? ''
           dataModel.value.rfc = empresaStore.empresa.rfc ?? ''
           dataModel.value.correo_notificacion = empresaStore.empresa.correo_notificacion ?? ''
           dataModel.value.codigo_interno = empresaStore.empresa.codigo_interno ?? ''
+          dataModel.value.id = Number(props.id)
+
+          dataModel.value.fiscal = (empresaStore.empresa.fiscal as any) === '1'
+
+          console.log('dataModel.value')
+          console.log(dataModel.value)
+          console.log('dataModel.value')
         }
       } catch (error) {
         console.error('Error al cargar datps catálogos por empresa:', error)
@@ -1298,6 +1310,14 @@ export default defineComponent({
         }
       } catch (error) {
         console.error('Error al cargar datps catálogos por empresa:', error)
+      }
+    }
+
+    const fetchEmpresasNominaPorClienteEdit = async (idCliente: any) => {
+      try {
+        await empresasStore.empresasNominasPorClienteEdit(idCliente)
+      } catch (error) {
+        console.error('Error al cargar catálogos por empresa:', error)
       }
     }
 
@@ -1373,7 +1393,11 @@ export default defineComponent({
         loading.value = true
 
         // Aquí va tu guardado real
-        await empresaStore.storeNominaGapeEmpresa(dataModel.value)
+        if (props.id !== undefined && props.id !== null) {
+          await empresaStore.updateNominaGapeEmpresa(dataModel.value, props.id)
+        } else {
+          await empresaStore.storeNominaGapeEmpresa(dataModel.value)
+        }
 
         await formRef.reset()
 

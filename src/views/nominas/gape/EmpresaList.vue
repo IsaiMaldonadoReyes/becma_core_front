@@ -276,6 +276,7 @@
                     min-width="36px"
                     width="36px"
                     variant="elevated"
+                    :to="`/nominas/gape/empresaForm/${item.id}`"
                   >
                     <v-icon size="small" color="white" icon="mdi-pencil" />
                   </v-btn>
@@ -323,24 +324,13 @@ import { ref, defineComponent, mergeProps, computed, onMounted } from 'vue'
 
 import { useDisplay } from 'vuetify'
 
-import { useSistemaStore } from '../../../stores/modules/Core/sistema'
+// import interfaces
+import type { EmpresaModel } from '@/interfaces/nomina/gape/Empresa'
+
+// import stores
+import { useEmpresaStore } from '@/stores/modules/Nomina/gape/Empresa'
+
 import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
-
-export interface Elementos {
-  id: number
-  codigo: string
-  descripcion: string
-  nombre: string
-}
-
-interface InterfaceItem {
-  id: number
-  nombre: string
-  codigo: string
-  descripcion: string
-  fecha_creacion: string
-  estado: number
-}
 
 export default defineComponent({
   name: 'EmpresaList',
@@ -355,6 +345,10 @@ export default defineComponent({
     // 6. Watchers
     // 7. Lifecycle hooks (onMounted, mounted)
     // 8. Functions (fetch, metodos, async)
+
+    //
+
+    const empresaStore = useEmpresaStore()
 
     // 3. Composables | Vuetify
     const { smAndDown } = useDisplay()
@@ -401,25 +395,43 @@ export default defineComponent({
       }[]
     >([
       {
-        key: 'nombre',
+        key: 'cliente',
         align: 'start',
         sortable: true,
-        title: 'Nombre',
+        title: 'Cliente',
       },
       {
-        key: 'codigo',
+        key: 'empresa',
         align: 'center',
         sortable: true,
-        title: 'Código',
+        title: 'Empresa',
       },
       {
-        key: 'descripcion',
+        key: 'tipo',
         align: 'start',
         sortable: true,
-        title: 'Descripción',
+        title: 'Tipo de registro',
       },
       {
-        key: 'fecha',
+        key: 'razon_social',
+        align: 'start',
+        sortable: true,
+        title: 'Razón social',
+      },
+      {
+        key: 'rfc',
+        align: 'start',
+        sortable: true,
+        title: 'RFC',
+      },
+      {
+        key: 'codigo_interno',
+        align: 'start',
+        sortable: true,
+        title: 'Código interno',
+      },
+      {
+        key: 'fecha_creacion',
         align: 'center',
         title: 'Fecha',
       },
@@ -430,19 +442,9 @@ export default defineComponent({
         sortable: false,
       },
     ])
-    const vdtbPrincipalItems = ref<
-      {
-        id: number
-        cliente: object
-        fiscal?: boolean
-        empresaBD: object
-        razonSocial: string
-        rfc: string
-        codigoInterno: string
-        correoNotificacion: string
-        esActiva?: boolean
-      }[]
-    >([])
+
+    const vdtbPrincipalItems = ref<EmpresaModel[]>([])
+
     const vdtbPrincipalItemsPorPagina = ref(5)
     const vdtbPrincipalItemsSeleccionados = ref([])
     const vdtbPrincipalOpcionesItemsPorPagina = ref([
@@ -453,8 +455,6 @@ export default defineComponent({
       { titulo: 'Ver todos', valor: 0 },
     ])
     const vdtbPrincipalPaginaActual = ref(1)
-
-    const sistema = useSistemaStore()
 
     // 5. Computed | vrowTableRef
     const getVdtPrincipalTotalPaginas = computed(() =>
@@ -497,28 +497,8 @@ export default defineComponent({
     async function fnCargarListado() {
       vdtbPrincipalItems.value = []
 
-      await sistema.indexSistema()
-
-      /*vdtbPrincipalItems.value = sistema.object.data.map((item: InterfaceItem) => ({
-        id: item.id,
-        nombre: item.nombre,
-        codigo: item.codigo,
-        descripcion: item.descripcion,
-        fecha: item.fecha_creacion,
-        estado: item.estado,
-      }));*/
-      /*
-      vdtbPrincipalItems.value = sistema.object.data.flatMap((item: InterfaceItem) =>
-        Array.from({ length: 5 }, () => ({
-          id: item.id,
-          nombre: item.nombre,
-          codigo: item.codigo,
-          descripcion: item.descripcion,
-          fecha: item.fecha_creacion,
-          estado: item.estado,
-        })),
-      )
-      */
+      await empresaStore.indexEmpresas()
+      vdtbPrincipalItems.value = empresaStore.empresasList
     }
 
     return {

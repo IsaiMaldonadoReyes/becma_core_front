@@ -411,40 +411,22 @@ export default defineComponent({
       }[]
     >([
       {
-        key: 'cliente',
+        key: 'nombre',
         align: 'start',
         sortable: true,
-        title: 'Cliente',
-      },
-      {
-        key: 'empresa',
-        align: 'center',
-        sortable: true,
-        title: 'Empresa',
-      },
-      {
-        key: 'tipo',
-        align: 'start',
-        sortable: true,
-        title: 'Tipo de registro',
-      },
-      {
-        key: 'razon_social',
-        align: 'start',
-        sortable: true,
-        title: 'Razón social',
-      },
-      {
-        key: 'rfc',
-        align: 'start',
-        sortable: true,
-        title: 'RFC',
+        title: 'Nombre',
       },
       {
         key: 'codigo',
+        align: 'center',
+        sortable: true,
+        title: 'Código',
+      },
+      {
+        key: 'telefono',
         align: 'start',
         sortable: true,
-        title: 'Código interno',
+        title: 'Teléfono',
       },
       {
         key: 'fecha_creacion',
