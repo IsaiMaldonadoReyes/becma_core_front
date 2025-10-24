@@ -23,7 +23,7 @@
                   <v-tooltip>
                     <template v-slot:activator="{ props: tooltip }">
                       <v-checkbox-btn
-                        v-model="dialogPropiedades.elementos.estado"
+                        v-model="dialogPropiedades.elementos.activo_dispersion"
                         v-bind="mergeProps(tooltip)"
                         color="primary"
                       />
@@ -68,6 +68,7 @@
                 :label="'Cuenta origen'"
                 :placeholder="'Cuenta origen'"
                 :prepend-icon="'mdi-bank'"
+                :rules="[validationRules.required]"
                 @keypress="inputFilters.onlyAlphanumeric"
               >
                 <template #tooltip>
@@ -77,8 +78,8 @@
                         <v-icon class="mr-1" color="white" icon="mdi-bank" />
                       </v-col>
                       <v-col cols="11">
-                        Capture la cuenta origen correspondiente para generar el layout de
-                        dispersión del Banco Azteca bancario.
+                        Capture la Cuenta origen correspondiente para generar el layout de
+                        dispersión del Banco Azteca Bancario.
                       </v-col>
                     </v-row>
                   </v-card>
@@ -96,15 +97,13 @@ import { ref, computed, defineComponent, mergeProps, onMounted, onUnmounted, wat
 import type { PropType } from 'vue'
 
 //import interface
-import type { ClienteModel } from '@/interfaces/nomina/gape/ClienteModel'
 import type { AztecaBancario } from '@/views/nominas/gape/EmpresaForm.vue'
 
 //import composable
-import { useClienteModel } from '@/composables/nomina/gape/useCliente'
 import { useDisplay } from 'vuetify'
 
 // import stores
-import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
+import { useBancoStore } from '@/stores/modules/Nomina/gape/Banco'
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 import { validationRules } from '@/utils/validationRules'
 import { inputFilters } from '@/utils/inputFilters'
@@ -128,9 +127,8 @@ export default defineComponent({
     const { name, mobile, smAndDown } = useDisplay()
 
     // Estado reactivo
-    const { dataModel, setCliente, resetModel } = useClienteModel()
 
-    const clienteStore = useClienteStore()
+    const bancoStore = useBancoStore()
     const dialogConfirmation = useDialogManagerStore()
 
     const formRef = ref()
@@ -141,8 +139,10 @@ export default defineComponent({
       dialog: ref(props.dialogView),
       elementos: {
         ...props.dialogItems,
-        estado:
-          props.dialogItems.estado !== undefined ? Number(props.dialogItems.estado) === 1 : false,
+        activo_dispersion:
+          props.dialogItems.activo_dispersion !== undefined
+            ? Number(props.dialogItems.activo_dispersion) === 1
+            : false,
       },
       evento: ref(props.dialogEvent),
       titulo: ref(props.dialogTitle),
@@ -164,9 +164,6 @@ export default defineComponent({
         titulo = 'Registro de datos'
         mensaje = `¿Desea agregar el nuevo registro?`
       }
-      //clienteStore.sincronizarEmpresas()
-
-      //console.log(clienteStore.responseMessage)
 
       dialogConfirmation.onOpenDialogConfirmation(
         mensaje,
@@ -188,16 +185,16 @@ export default defineComponent({
         try {
           loading.value = true
 
-          /*setCliente({
-            ...dialogPropiedades.value.elementos,
-            estado: dialogPropiedades.value.elementos.estado ? true : false,
-          })
+          dialogPropiedades.value.elementos.tipo_banco = 'bancario'
 
           if (dialogPropiedades.value.elementos.id) {
-            await clienteStore.updateCliente(dataModel.value, dialogPropiedades.value.elementos.id)
+            await bancoStore.updateBancoAzteca(
+              dialogPropiedades.value.elementos,
+              dialogPropiedades.value.elementos.id,
+            )
           } else {
-            await clienteStore.storeCliente(dataModel.value)
-          }*/
+            await bancoStore.storeBancoAzteca(dialogPropiedades.value.elementos)
+          }
 
           await form.value?.reset()
 
@@ -244,9 +241,9 @@ export default defineComponent({
           dialog: newDialogView,
           elementos: {
             ...props.dialogItems,
-            estado:
-              props.dialogItems.estado !== undefined
-                ? Number(props.dialogItems.estado) === 1
+            activo_dispersion:
+              props.dialogItems.activo_dispersion !== undefined
+                ? Number(props.dialogItems.activo_dispersion) === 1
                 : false,
           },
           evento: props.dialogEvent,
