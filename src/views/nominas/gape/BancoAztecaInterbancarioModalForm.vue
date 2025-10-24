@@ -68,6 +68,7 @@
                 :label="'Cuenta origen'"
                 :placeholder="'Cuenta origen'"
                 :prepend-icon="'mdi-bank'"
+                :rules="[validationRules.required]"
                 @keypress="inputFilters.onlyAlphanumeric"
               >
                 <template #tooltip>
@@ -96,15 +97,13 @@ import { ref, computed, defineComponent, mergeProps, onMounted, onUnmounted, wat
 import type { PropType } from 'vue'
 
 //import interface
-import type { ClienteModel } from '@/interfaces/nomina/gape/ClienteModel'
 import type { AztecaInterbancario } from '@/views/nominas/gape/EmpresaForm.vue'
 
 //import composable
-import { useClienteModel } from '@/composables/nomina/gape/useCliente'
 import { useDisplay } from 'vuetify'
 
 // import stores
-import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
+import { useBancoStore } from '@/stores/modules/Nomina/gape/Banco'
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 import { validationRules } from '@/utils/validationRules'
 import { inputFilters } from '@/utils/inputFilters'
@@ -128,9 +127,8 @@ export default defineComponent({
     const { name, mobile, smAndDown } = useDisplay()
 
     // Estado reactivo
-    const { dataModel, setCliente, resetModel } = useClienteModel()
 
-    const clienteStore = useClienteStore()
+    const bancoStore = useBancoStore()
     const dialogConfirmation = useDialogManagerStore()
 
     const formRef = ref()
@@ -166,9 +164,6 @@ export default defineComponent({
         titulo = 'Registro de datos'
         mensaje = `¿Desea agregar el nuevo registro?`
       }
-      //clienteStore.sincronizarEmpresas()
-
-      //console.log(clienteStore.responseMessage)
 
       dialogConfirmation.onOpenDialogConfirmation(
         mensaje,
@@ -190,16 +185,16 @@ export default defineComponent({
         try {
           loading.value = true
 
-          /*setCliente({
-            ...dialogPropiedades.value.elementos,
-            estado: dialogPropiedades.value.elementos.estado ? true : false,
-          })
+          dialogPropiedades.value.elementos.tipo_banco = 'interbancario'
 
           if (dialogPropiedades.value.elementos.id) {
-            await clienteStore.updateCliente(dataModel.value, dialogPropiedades.value.elementos.id)
+            await bancoStore.updateBancoAzteca(
+              dialogPropiedades.value.elementos,
+              dialogPropiedades.value.elementos.id,
+            )
           } else {
-            await clienteStore.storeCliente(dataModel.value)
-          }*/
+            await bancoStore.storeBancoAzteca(dialogPropiedades.value.elementos)
+          }
 
           await form.value?.reset()
 

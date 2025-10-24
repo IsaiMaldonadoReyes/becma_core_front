@@ -257,7 +257,7 @@
       <v-col class="my-0 py-0">
         <v-tabs v-model="vtabTipoEmpresa" class="text-medium-emphasis" color="primary" grow>
           <v-tab
-            :disabled="modelTipoEmpresa ? false : true"
+            :disabled="dataModel.fiscal ? false : true"
             class="text-none text-no-wrap"
             prepend-icon="mdi-bank"
             style="letter-spacing: 0.5px"
@@ -267,7 +267,7 @@
             Fiscal
           </v-tab>
           <v-tab
-            :disabled="!modelTipoEmpresa ? false : true"
+            :disabled="!dataModel.fiscal ? false : true"
             class="text-none text-no-wrap"
             prepend-icon="mdi-bank-off"
             style="letter-spacing: 0.5px"
@@ -311,6 +311,7 @@
                   value="option-1"
                 ></v-tab>
                 <v-tab
+                  :disabled="btnDisabled.tabBancos"
                   :variant="tabEmpresa == 'option-2' ? 'tonal' : 'text'"
                   class="text-none"
                   min-width="100%"
@@ -658,6 +659,7 @@
                                               inset
                                               true-icon="mdi-bank"
                                               @click.stop
+                                              @click="changeStatusAztecaInterbancario"
                                             />
                                           </template>
 
@@ -775,7 +777,7 @@
                                       hide-default-header
                                       item-value="title"
                                     >
-                                      <template v-slot:item.estado="{ item }">
+                                      <template v-slot:item.activo_dispersion="{ item }">
                                         <v-chip
                                           :color="item.activo_dispersion ? 'primary' : 'grey'"
                                           label
@@ -822,7 +824,7 @@
                                               min-width="40px"
                                               width="40px"
                                               variant="elevated"
-                                              @click="onDeleteItemAztecaInterbancario(item)"
+                                              @click="onDeleteConfirmationAztecaInterbancario(item)"
                                             >
                                               <v-icon color="white" icon="mdi-delete" />
                                             </v-btn>
@@ -856,6 +858,7 @@
                                               inset
                                               true-icon="mdi-bank"
                                               @click.stop
+                                              @click="changeStatusAztecaBancario"
                                             />
                                           </template>
 
@@ -966,7 +969,7 @@
                                       hide-default-header
                                       item-value="title"
                                     >
-                                      <template v-slot:item.estado="{ item }">
+                                      <template v-slot:item.activo_dispersion="{ item }">
                                         <v-chip
                                           :color="item.activo_dispersion ? 'primary' : 'grey'"
                                           label
@@ -1013,7 +1016,7 @@
                                               min-width="40px"
                                               width="40px"
                                               variant="elevated"
-                                              @click="onDeleteItemAztecaBancario(item)"
+                                              @click="onDeleteConfirmationAztecaInterbancario(item)"
                                             >
                                               <v-icon color="white" icon="mdi-delete" />
                                             </v-btn>
@@ -1047,6 +1050,7 @@
                                               inset
                                               true-icon="mdi-bank"
                                               @click.stop
+                                              @click="changeStatusBanorte"
                                             />
                                           </template>
 
@@ -1161,7 +1165,7 @@
                                       hide-default-header
                                       item-value="title"
                                     >
-                                      <template v-slot:item.estado="{ item }">
+                                      <template v-slot:item.activo_dispersion="{ item }">
                                         <v-chip
                                           :color="item.activo_dispersion ? 'primary' : 'grey'"
                                           label
@@ -1208,7 +1212,7 @@
                                               min-width="40px"
                                               width="40px"
                                               variant="elevated"
-                                              @click="onDeleteItemBanorteTerceros(item)"
+                                              @click="onDeleteConfirmationBanorte(item)"
                                             >
                                               <v-icon color="white" icon="mdi-delete" />
                                             </v-btn>
@@ -1253,6 +1257,7 @@
                   min-width="100%"
                 ></v-tab>
                 <v-tab
+                  :disabled="btnDisabled.tabBancos"
                   prepend-icon="mdi-bank"
                   text="Bancos"
                   value="option-2"
@@ -1412,7 +1417,7 @@
                       </v-row>
                     </v-tabs-window-item>
                   </v-form>
-                  <v-tabs-window-item value="option-2">
+                  <v-tabs-window-item value="option-2" eager>
                     <v-row>
                       <v-col>
                         <v-divider class="border-opacity-25 ma-0 pa-0" />
@@ -1424,10 +1429,702 @@
                     </v-row>
 
                     <!--v-form ref="formRefFiscalBanco"></v-form>
-        <v-form ref="formRefNoFiscalGral"></v-form>
-        <v-form ref="formRefNoFiscalBanco"></v-form-->
+                    <v-form ref="formRefNoFiscalGral"></v-form>
+                    <v-form ref="formRefNoFiscalBanco"></v-form-->
+
                     <v-row>
-                      <v-col> </v-col>
+                      <v-col key="id" cols="12" md="12">
+                        <v-card
+                          class="rounded d-flex justify-center align-center mx-4 pa-2 border"
+                          elevation="0"
+                          min-height="60px"
+                        >
+                          <v-row class="pa-2">
+                            <v-col cols="12">
+                              <v-expansion-panels elevation="0" class="border-0">
+                                <!-- Fondeadora -->
+                                <v-expansion-panel class="border" expand-icon="" readonly>
+                                  <v-expansion-panel-title v-slot="{ expanded }">
+                                    <v-row>
+                                      <v-col cols="12" md="2">
+                                        <v-tooltip interactive>
+                                          <template #activator="{ props: tooltipProps }">
+                                            <v-switch
+                                              v-model="isActiveFondeadora"
+                                              v-bind="mergeProps(tooltipProps)"
+                                              class="text-medium-emphasis"
+                                              color="primary"
+                                              density="compact"
+                                              false-icon="mdi-bank-off"
+                                              hide-details
+                                              inset
+                                              true-icon="mdi-bank"
+                                              @click.stop
+                                              @click="changeStatusFondeadora"
+                                            />
+                                          </template>
+
+                                          <template #default>
+                                            <v-card color="transparent" elevation="0" class="py-3">
+                                              <v-row>
+                                                <v-col
+                                                  cols="1"
+                                                  class="d-flex align-center justify-center"
+                                                >
+                                                  <v-icon
+                                                    class="mr-1"
+                                                    color="white"
+                                                    :icon="
+                                                      !isActiveFondeadora
+                                                        ? 'mdi-bank-off'
+                                                        : 'mdi-bank'
+                                                    "
+                                                  />
+                                                </v-col>
+                                                <v-col cols="11" v-if="!isActiveFondeadora">
+                                                  Haga clic aquí para <b>HABILITAR</b> el Banco
+                                                  Fondeadora.
+                                                </v-col>
+                                                <v-col cols="11" v-else>
+                                                  Haga clic aquí para <b>DESHABILITAR</b> el Banco
+                                                  Fodeadora.<br />
+                                                </v-col>
+                                              </v-row>
+
+                                              <v-divider class="border-opacity-50 my-2 mx-4" />
+
+                                              <v-row>
+                                                <v-col
+                                                  cols="1"
+                                                  class="d-flex align-center justify-center"
+                                                >
+                                                  <v-icon
+                                                    class="mr-1"
+                                                    color="white"
+                                                    icon="mdi-alert"
+                                                  />
+                                                </v-col>
+                                                <v-col cols="11" v-if="isActiveFondeadora">
+                                                  <span style="font-weight: bold"> Nota: </span>
+                                                  si el banco se encuentra
+                                                  <b>HABILITADO</b>, podrá generar el layout de
+                                                  dispersión de nómina correspondiente para esta
+                                                  empresa.
+                                                </v-col>
+                                                <v-col cols="11" v-else>
+                                                  <span style="font-weight: bold"> Nota: </span>
+                                                  si el banco se encuentra
+                                                  <b>DESHABILITADO</b>, no podrá generar el layout
+                                                  de dispersión de nómina correspondiente para esta
+                                                  empresa.
+                                                </v-col>
+                                              </v-row>
+                                            </v-card>
+                                          </template>
+                                        </v-tooltip>
+                                      </v-col>
+                                      <v-col
+                                        class="d-flex align-center justify-center"
+                                        cols="12"
+                                        md="8"
+                                      >
+                                        Fondeadora
+                                      </v-col>
+                                    </v-row>
+                                  </v-expansion-panel-title>
+                                </v-expansion-panel>
+
+                                <!-- Azteca interbancario -->
+                                <v-expansion-panel
+                                  class="border"
+                                  collapse-icon="mdi-menu-up"
+                                  expand-icon="mdi-menu-down"
+                                >
+                                  <v-expansion-panel-title class="border-b" v-slot="{ expanded }">
+                                    <v-row>
+                                      <v-col cols="12" md="2">
+                                        <v-tooltip interactive>
+                                          <template #activator="{ props: tooltipProps }">
+                                            <v-switch
+                                              v-model="isActiveAztecaInterbancario"
+                                              v-bind="mergeProps(tooltipProps)"
+                                              class="text-medium-emphasis"
+                                              color="primary"
+                                              density="compact"
+                                              false-icon="mdi-bank-off"
+                                              hide-details
+                                              inset
+                                              true-icon="mdi-bank"
+                                              @click.stop
+                                              @click="changeStatusAztecaInterbancario"
+                                            />
+                                          </template>
+
+                                          <template #default>
+                                            <v-card color="transparent" elevation="0" class="py-3">
+                                              <v-row>
+                                                <v-col
+                                                  cols="1"
+                                                  class="d-flex align-center justify-center"
+                                                >
+                                                  <v-icon
+                                                    class="mr-1"
+                                                    color="white"
+                                                    :icon="
+                                                      !isActiveAztecaInterbancario
+                                                        ? 'mdi-bank-off'
+                                                        : 'mdi-bank'
+                                                    "
+                                                  />
+                                                </v-col>
+                                                <v-col
+                                                  cols="11"
+                                                  v-if="!isActiveAztecaInterbancario"
+                                                >
+                                                  Haga clic aquí para <b>HABILITAR</b> el Banco
+                                                  Azteca Interbancario.
+                                                </v-col>
+                                                <v-col cols="11" v-else>
+                                                  Haga clic aquí para <b>DESHABILITAR</b> el Banco
+                                                  Azteca Interbancario.<br />
+                                                </v-col>
+                                              </v-row>
+
+                                              <v-divider class="border-opacity-50 my-2 mx-4" />
+
+                                              <v-row>
+                                                <v-col
+                                                  cols="1"
+                                                  class="d-flex align-center justify-center"
+                                                >
+                                                  <v-icon
+                                                    class="mr-1"
+                                                    color="white"
+                                                    icon="mdi-alert"
+                                                  />
+                                                </v-col>
+                                                <v-col cols="11" v-if="isActiveAztecaInterbancario">
+                                                  <span style="font-weight: bold"> Nota: </span>
+                                                  si el banco se encuentra
+                                                  <b>HABILITADO</b>, podrá generar el layout de
+                                                  dispersión de nómina correspondiente para esta
+                                                  empresa.
+                                                </v-col>
+                                                <v-col cols="11" v-else>
+                                                  <span style="font-weight: bold"> Nota: </span>
+                                                  si el banco se encuentra
+                                                  <b>DESHABILITADO</b>, no podrá generar el layout
+                                                  de dispersión de nómina correspondiente para esta
+                                                  empresa.
+                                                </v-col>
+                                              </v-row>
+                                            </v-card>
+                                          </template>
+                                        </v-tooltip>
+                                      </v-col>
+                                      <v-col
+                                        cols="12"
+                                        class="d-flex align-center justify-center"
+                                        md="8"
+                                      >
+                                        Azteca Interbancario
+                                      </v-col>
+                                      <v-col
+                                        v-if="expanded"
+                                        class="d-flex align-center justify-end"
+                                        cols="12"
+                                        md="2"
+                                      >
+                                        <v-tooltip bottom color="primary" interactive>
+                                          <template v-slot:activator="{ props: tooltipProps }">
+                                            <v-btn
+                                              v-bind="mergeProps(tooltipProps)"
+                                              color="primary"
+                                              flat
+                                              height="40px"
+                                              min-width="40px"
+                                              width="40px"
+                                              @click.stop="
+                                                onOpenModalFormAztecaInterbancario(
+                                                  'onSave',
+                                                  {},
+                                                  'Nuevo',
+                                                )
+                                              "
+                                            >
+                                              <v-icon color="white" icon="mdi-plus" size="24px" />
+                                            </v-btn>
+                                          </template>
+                                          <span>Agregar clave de banco ID</span>
+                                        </v-tooltip>
+                                        <v-divider
+                                          vertical
+                                          class="ml-5 mr-3 my-1 border-opacity-25"
+                                        />
+                                      </v-col>
+                                    </v-row>
+                                  </v-expansion-panel-title>
+                                  <v-expansion-panel-text>
+                                    <v-data-table
+                                      :headers="headersAztecaInterbancario"
+                                      :hover="true"
+                                      :items="itemsAztecaInterbancario"
+                                      :mobile="smAndDown"
+                                      hide-default-footer
+                                      hide-default-header
+                                      item-value="title"
+                                    >
+                                      <template v-slot:item.activo_dispersion="{ item }">
+                                        <v-chip
+                                          :color="item.activo_dispersion ? 'primary' : 'grey'"
+                                          label
+                                          size="small"
+                                          variant="flat"
+                                        >
+                                          {{
+                                            item.activo_dispersion ? 'Habilitado' : 'Inhabilitado'
+                                          }}
+                                        </v-chip>
+                                      </template>
+
+                                      <template v-slot:item.acciones="{ item }">
+                                        <v-tooltip interactive>
+                                          <template v-slot:activator="{ props: tooltipProps }">
+                                            <v-btn
+                                              v-bind="mergeProps(tooltipProps)"
+                                              class="mr-1"
+                                              color="primary"
+                                              height="40px"
+                                              min-width="40px"
+                                              width="40px"
+                                              variant="elevated"
+                                              @click.stop="
+                                                onOpenModalFormAztecaInterbancario(
+                                                  'onSave',
+                                                  item,
+                                                  'Editar',
+                                                )
+                                              "
+                                            >
+                                              <v-icon color="white" icon="mdi-pencil" />
+                                            </v-btn>
+                                          </template>
+                                          <span>Editar</span>
+                                        </v-tooltip>
+                                        <v-tooltip interactive>
+                                          <template v-slot:activator="{ props: tooltipProps }">
+                                            <v-btn
+                                              v-bind="mergeProps(tooltipProps)"
+                                              class="mr-1"
+                                              color="primary"
+                                              height="40px"
+                                              min-width="40px"
+                                              width="40px"
+                                              variant="elevated"
+                                              @click="onDeleteConfirmationAztecaInterbancario(item)"
+                                            >
+                                              <v-icon color="white" icon="mdi-delete" />
+                                            </v-btn>
+                                          </template>
+                                          <span>Eliminar</span>
+                                        </v-tooltip>
+                                      </template>
+                                    </v-data-table>
+                                  </v-expansion-panel-text>
+                                </v-expansion-panel>
+
+                                <!-- Azteca bancario -->
+                                <v-expansion-panel
+                                  class="border"
+                                  collapse-icon="mdi-menu-up"
+                                  expand-icon="mdi-menu-down"
+                                >
+                                  <v-expansion-panel-title class="border-b" v-slot="{ expanded }">
+                                    <v-row>
+                                      <v-col cols="12" md="2">
+                                        <v-tooltip interactive>
+                                          <template #activator="{ props: tooltipProps }">
+                                            <v-switch
+                                              v-model="isActiveAztecaBancario"
+                                              v-bind="mergeProps(tooltipProps)"
+                                              class="text-medium-emphasis"
+                                              color="primary"
+                                              density="compact"
+                                              false-icon="mdi-bank-off"
+                                              hide-details
+                                              inset
+                                              true-icon="mdi-bank"
+                                              @click.stop
+                                              @click="changeStatusAztecaBancario"
+                                            />
+                                          </template>
+
+                                          <template #default>
+                                            <v-card color="transparent" elevation="0" class="py-3">
+                                              <v-row>
+                                                <v-col
+                                                  cols="1"
+                                                  class="d-flex align-center justify-center"
+                                                >
+                                                  <v-icon
+                                                    class="mr-1"
+                                                    color="white"
+                                                    :icon="
+                                                      !isActiveAztecaBancario
+                                                        ? 'mdi-bank-off'
+                                                        : 'mdi-bank'
+                                                    "
+                                                  />
+                                                </v-col>
+                                                <v-col cols="11" v-if="!isActiveAztecaBancario">
+                                                  Haga clic aquí para <b>HABILITAR</b> el Banco
+                                                  Azteca Bancario.
+                                                </v-col>
+                                                <v-col cols="11" v-else>
+                                                  Haga clic aquí para <b>DESHABILITAR</b> el Banco
+                                                  Azteca Bancario.<br />
+                                                </v-col>
+                                              </v-row>
+
+                                              <v-divider class="border-opacity-50 my-2 mx-4" />
+
+                                              <v-row>
+                                                <v-col
+                                                  cols="1"
+                                                  class="d-flex align-center justify-center"
+                                                >
+                                                  <v-icon
+                                                    class="mr-1"
+                                                    color="white"
+                                                    icon="mdi-alert"
+                                                  />
+                                                </v-col>
+                                                <v-col cols="11" v-if="isActiveAztecaBancario">
+                                                  <span style="font-weight: bold"> Nota: </span>
+                                                  si el banco se encuentra
+                                                  <b>HABILITADO</b>, podrá generar el layout de
+                                                  dispersión de nómina correspondiente para esta
+                                                  empresa.
+                                                </v-col>
+                                                <v-col cols="11" v-else>
+                                                  <span style="font-weight: bold"> Nota: </span>
+                                                  si el banco se encuentra
+                                                  <b>DESHABILITADO</b>, no podrá generar el layout
+                                                  de dispersión de nómina correspondiente para esta
+                                                  empresa.
+                                                </v-col>
+                                              </v-row>
+                                            </v-card>
+                                          </template>
+                                        </v-tooltip>
+                                      </v-col>
+                                      <v-col
+                                        cols="12"
+                                        class="d-flex align-center justify-center"
+                                        md="8"
+                                      >
+                                        Azteca Bancario
+                                      </v-col>
+                                      <v-col
+                                        v-if="expanded"
+                                        class="d-flex align-center justify-end"
+                                        cols="12"
+                                        md="2"
+                                      >
+                                        <v-tooltip bottom color="primary" interactive>
+                                          <template v-slot:activator="{ props: tooltipProps }">
+                                            <v-btn
+                                              v-bind="mergeProps(tooltipProps)"
+                                              color="primary"
+                                              flat
+                                              height="40px"
+                                              min-width="40px"
+                                              width="40px"
+                                              @click.stop="
+                                                onOpenModalFormAztecaBancario('onSave', {}, 'Nuevo')
+                                              "
+                                            >
+                                              <v-icon color="white" icon="mdi-plus" size="24px" />
+                                            </v-btn>
+                                          </template>
+                                          <span>Agregar clave de banco ID</span>
+                                        </v-tooltip>
+                                        <v-divider
+                                          vertical
+                                          class="ml-5 mr-3 my-1 border-opacity-25"
+                                        />
+                                      </v-col>
+                                    </v-row>
+                                  </v-expansion-panel-title>
+                                  <v-expansion-panel-text>
+                                    <v-data-table
+                                      :headers="headersAztecaBancario"
+                                      :hover="true"
+                                      :items="itemsAztecaBancario"
+                                      :mobile="smAndDown"
+                                      hide-default-footer
+                                      hide-default-header
+                                      item-value="title"
+                                    >
+                                      <template v-slot:item.activo_dispersion="{ item }">
+                                        <v-chip
+                                          :color="item.activo_dispersion ? 'primary' : 'grey'"
+                                          label
+                                          size="small"
+                                          variant="flat"
+                                        >
+                                          {{
+                                            item.activo_dispersion ? 'Habilitado' : 'Inhabilitado'
+                                          }}
+                                        </v-chip>
+                                      </template>
+
+                                      <template v-slot:item.acciones="{ item }">
+                                        <v-tooltip interactive>
+                                          <template v-slot:activator="{ props: tooltipProps }">
+                                            <v-btn
+                                              v-bind="mergeProps(tooltipProps)"
+                                              class="mr-1"
+                                              color="primary"
+                                              height="40px"
+                                              min-width="40px"
+                                              width="40px"
+                                              variant="elevated"
+                                              @click.stop="
+                                                onOpenModalFormAztecaBancario(
+                                                  'onSave',
+                                                  item,
+                                                  'Editar',
+                                                )
+                                              "
+                                            >
+                                              <v-icon color="white" icon="mdi-pencil" />
+                                            </v-btn>
+                                          </template>
+                                          <span>Editar</span>
+                                        </v-tooltip>
+                                        <v-tooltip interactive>
+                                          <template v-slot:activator="{ props: tooltipProps }">
+                                            <v-btn
+                                              v-bind="mergeProps(tooltipProps)"
+                                              class="mr-1"
+                                              color="primary"
+                                              height="40px"
+                                              min-width="40px"
+                                              width="40px"
+                                              variant="elevated"
+                                              @click="onDeleteConfirmationAztecaInterbancario(item)"
+                                            >
+                                              <v-icon color="white" icon="mdi-delete" />
+                                            </v-btn>
+                                          </template>
+                                          <span>Eliminar</span>
+                                        </v-tooltip>
+                                      </template>
+                                    </v-data-table>
+                                  </v-expansion-panel-text>
+                                </v-expansion-panel>
+
+                                <!-- Banorte terceros -->
+                                <v-expansion-panel
+                                  class="border"
+                                  collapse-icon="mdi-menu-up"
+                                  expand-icon="mdi-menu-down"
+                                >
+                                  <v-expansion-panel-title class="border-b" v-slot="{ expanded }">
+                                    <v-row>
+                                      <v-col cols="12" md="2">
+                                        <v-tooltip interactive>
+                                          <template #activator="{ props: tooltipProps }">
+                                            <v-switch
+                                              v-model="isActiveBanorteTerceros"
+                                              v-bind="mergeProps(tooltipProps)"
+                                              class="text-medium-emphasis"
+                                              color="primary"
+                                              density="compact"
+                                              false-icon="mdi-bank-off"
+                                              hide-details
+                                              inset
+                                              true-icon="mdi-bank"
+                                              @click.stop
+                                              @click="changeStatusBanorte"
+                                            />
+                                          </template>
+
+                                          <template #default>
+                                            <v-card color="transparent" elevation="0" class="py-3">
+                                              <v-row>
+                                                <v-col
+                                                  cols="1"
+                                                  class="d-flex align-center justify-center"
+                                                >
+                                                  <v-icon
+                                                    class="mr-1"
+                                                    color="white"
+                                                    :icon="
+                                                      !isActiveBanorteTerceros
+                                                        ? 'mdi-bank-off'
+                                                        : 'mdi-bank'
+                                                    "
+                                                  />
+                                                </v-col>
+                                                <v-col cols="11" v-if="!isActiveBanorteTerceros">
+                                                  Haga clic aquí para <b>HABILITAR</b> el Banco
+                                                  Banorte terceros.
+                                                </v-col>
+                                                <v-col cols="11" v-else>
+                                                  Haga clic aquí para <b>DESHABILITAR</b> el Banco
+                                                  Banorte terceros.<br />
+                                                </v-col>
+                                              </v-row>
+
+                                              <v-divider class="border-opacity-50 my-2 mx-4" />
+
+                                              <v-row>
+                                                <v-col
+                                                  cols="1"
+                                                  class="d-flex align-center justify-center"
+                                                >
+                                                  <v-icon
+                                                    class="mr-1"
+                                                    color="white"
+                                                    icon="mdi-alert"
+                                                  />
+                                                </v-col>
+                                                <v-col cols="11" v-if="isActiveAztecaBancario">
+                                                  <span style="font-weight: bold"> Nota: </span>
+                                                  si el banco se encuentra
+                                                  <b>HABILITADO</b>, podrá generar el layout de
+                                                  dispersión de nómina correspondiente para esta
+                                                  empresa.
+                                                </v-col>
+                                                <v-col cols="11" v-else>
+                                                  <span style="font-weight: bold"> Nota: </span>
+                                                  si el banco se encuentra
+                                                  <b>DESHABILITADO</b>, no podrá generar el layout
+                                                  de dispersión de nómina correspondiente para esta
+                                                  empresa.
+                                                </v-col>
+                                              </v-row>
+                                            </v-card>
+                                          </template>
+                                        </v-tooltip>
+                                      </v-col>
+                                      <v-col
+                                        cols="12"
+                                        class="d-flex align-center justify-center"
+                                        md="8"
+                                      >
+                                        Banorte terceros
+                                      </v-col>
+                                      <v-col
+                                        v-if="expanded"
+                                        class="d-flex align-center justify-end"
+                                        cols="12"
+                                        md="2"
+                                      >
+                                        <v-tooltip bottom color="primary" interactive>
+                                          <template v-slot:activator="{ props: tooltipProps }">
+                                            <v-btn
+                                              v-bind="mergeProps(tooltipProps)"
+                                              color="primary"
+                                              flat
+                                              height="40px"
+                                              min-width="40px"
+                                              width="40px"
+                                              @click.stop="
+                                                onOpenModalFormBanorteTerceros(
+                                                  'onSave',
+                                                  {},
+                                                  'Nuevo',
+                                                )
+                                              "
+                                            >
+                                              <v-icon color="white" icon="mdi-plus" size="24px" />
+                                            </v-btn>
+                                          </template>
+                                          <span>Agregar clave de banco ID</span>
+                                        </v-tooltip>
+                                        <v-divider
+                                          vertical
+                                          class="ml-5 mr-3 my-1 border-opacity-25"
+                                        />
+                                      </v-col>
+                                    </v-row>
+                                  </v-expansion-panel-title>
+                                  <v-expansion-panel-text>
+                                    <v-data-table
+                                      :headers="headersBanorteTerceros"
+                                      :hover="true"
+                                      :items="itemsBanorteTerceros"
+                                      :mobile="smAndDown"
+                                      hide-default-footer
+                                      hide-default-header
+                                      item-value="title"
+                                    >
+                                      <template v-slot:item.activo_dispersion="{ item }">
+                                        <v-chip
+                                          :color="item.activo_dispersion ? 'primary' : 'grey'"
+                                          label
+                                          size="small"
+                                          variant="flat"
+                                        >
+                                          {{
+                                            item.activo_dispersion ? 'Habilitado' : 'Inhabilitado'
+                                          }}
+                                        </v-chip>
+                                      </template>
+
+                                      <template v-slot:item.acciones="{ item }">
+                                        <v-tooltip interactive>
+                                          <template v-slot:activator="{ props: tooltipProps }">
+                                            <v-btn
+                                              v-bind="mergeProps(tooltipProps)"
+                                              class="mr-1"
+                                              color="primary"
+                                              height="40px"
+                                              min-width="40px"
+                                              width="40px"
+                                              variant="elevated"
+                                              @click.stop="
+                                                onOpenModalFormBanorteTerceros(
+                                                  'onSave',
+                                                  item,
+                                                  'Editar',
+                                                )
+                                              "
+                                            >
+                                              <v-icon color="white" icon="mdi-pencil" />
+                                            </v-btn>
+                                          </template>
+                                          <span>Editar</span>
+                                        </v-tooltip>
+                                        <v-tooltip interactive>
+                                          <template v-slot:activator="{ props: tooltipProps }">
+                                            <v-btn
+                                              v-bind="mergeProps(tooltipProps)"
+                                              class="mr-1"
+                                              color="primary"
+                                              height="40px"
+                                              min-width="40px"
+                                              width="40px"
+                                              variant="elevated"
+                                              @click="onDeleteConfirmationBanorte(item)"
+                                            >
+                                              <v-icon color="white" icon="mdi-delete" />
+                                            </v-btn>
+                                          </template>
+                                          <span>Eliminar</span>
+                                        </v-tooltip>
+                                      </template>
+                                    </v-data-table>
+                                  </v-expansion-panel-text>
+                                </v-expansion-panel>
+                              </v-expansion-panels>
+                            </v-col>
+                          </v-row>
+                        </v-card>
+                      </v-col>
                     </v-row>
                   </v-tabs-window-item>
                 </v-tabs-window>
@@ -1835,15 +2532,6 @@ export default defineComponent({
       { immediate: true },
     )
 
-    const modelTipoEmpresa = ref(true)
-    watch(
-      modelTipoEmpresa,
-      (nuevoValor) => {
-        vtabTipoEmpresa.value = nuevoValor ? 'tabTipoEmpresa01' : 'tabTipoEmpresa02'
-      },
-      { immediate: true },
-    )
-
     // 7. Lifecycle hooks (onMounted, mounted)
     onMounted(async () => {
       nextTick(() => {
@@ -1855,7 +2543,6 @@ export default defineComponent({
 
       // edit
       if (props.id !== undefined && props.id !== null) {
-        console.log('props')
         btnDisabled.value.eliminarRegistros = false
 
         btnDisabled.value.compTipoEmp = true
@@ -1870,17 +2557,11 @@ export default defineComponent({
         btnDisabled.value.compNoFisRfc = false
         btnDisabled.value.compNoFisCorreo = false
         btnDisabled.value.compNoFisCodigo = false
+        btnDisabled.value.tabBancos = false
 
         await fetchDatosEmpresasNominaPorClienteId(props.id)
 
-        await bancoStore.datosBancosPorCliente(props.id)
-
-        itemsAztecaInterbancario.value = bancoStore.aztecaInter
-        itemsAztecaBancario.value = bancoStore.aztecaBancario
-        itemsBanorteTerceros.value = bancoStore.banorte
-
-        console.log(itemsAztecaInterbancario)
-        
+        await buscarDatosBancosPorId(props.id)
       }
       // new
       else {
@@ -1901,6 +2582,21 @@ export default defineComponent({
           vtabTipoEmpresaRef.value.$el.clientHeight -
           15
       }
+    }
+
+    const buscarDatosBancosPorId = async (id: any) => {
+      await bancoStore.datosBancosPorCliente(props.id)
+
+      itemsAztecaInterbancario.value = bancoStore.aztecaInter
+      itemsAztecaBancario.value = bancoStore.aztecaBancario
+      itemsBanorteTerceros.value = bancoStore.banorte
+
+      console.log(bancoStore.bancosDispersion)
+
+      isActiveFondeadora.value = bancoStore.bancosDispersion?.fondeadora ?? false
+      isActiveAztecaInterbancario.value = bancoStore.bancosDispersion?.azteca_interbancario ?? false
+      isActiveAztecaBancario.value = bancoStore.bancosDispersion?.azteca_bancario ?? false
+      isActiveBanorteTerceros.value = bancoStore.bancosDispersion?.banorte ?? false
     }
 
     const buscarEmpresasNomina = async (codigo: number) => {
@@ -1931,13 +2627,7 @@ export default defineComponent({
           const idClienteEdit = empresaStore.empresa.id_nomina_gape_cliente
           const idEmpresa = empresaStore.empresa.id_empresa_database
 
-          console.log(idEmpresa)
-
-          console.log('fetchEmpresasNominaPorCliente 1269')
           await fetchEmpresasNominaPorClienteEdit(idClienteEdit)
-
-          console.log(itemsEmpresaDatabase)
-          console.log(itemsClientesNomina)
 
           dataModel.value.id_nomina_gape_cliente = Number(
             empresaStore.empresa.id_nomina_gape_cliente,
@@ -1950,10 +2640,6 @@ export default defineComponent({
           dataModel.value.id = Number(props.id)
 
           dataModel.value.fiscal = (empresaStore.empresa.fiscal as any) === '1'
-
-          console.log('dataModel.value')
-          console.log(dataModel.value)
-          console.log('dataModel.value')
         }
       } catch (error) {
         console.error('Error al cargar datps catálogos por empresa:', error)
@@ -2012,13 +2698,35 @@ export default defineComponent({
     }
 
     const changeStatusFondeadora = async () => {
-      const fondeadoraFiscal = {
+      const datos = {
         id_nomina_gape_empresa: props.id,
-        activo_dispersion: !isActiveFondeadora.value,
+        fondeadora: !isActiveFondeadora.value,
       }
-      await bancoStore.storeBancoFondeadora(fondeadoraFiscal)
+      await bancoStore.upsertBancoDispersion(datos)
+    }
 
-      router.push({ path: `/nominas/gape/empresaForm/${props.id}` })
+    const changeStatusAztecaInterbancario = async () => {
+      const datos = {
+        id_nomina_gape_empresa: props.id,
+        azteca_interbancario: !isActiveAztecaInterbancario.value,
+      }
+      await bancoStore.upsertBancoDispersion(datos)
+    }
+
+    const changeStatusAztecaBancario = async () => {
+      const datos = {
+        id_nomina_gape_empresa: props.id,
+        azteca_bancario: !isActiveAztecaBancario.value,
+      }
+      await bancoStore.upsertBancoDispersion(datos)
+    }
+
+    const changeStatusBanorte = async () => {
+      const datos = {
+        id_nomina_gape_empresa: props.id,
+        banorte: !isActiveBanorteTerceros.value,
+      }
+      await bancoStore.upsertBancoDispersion(datos)
     }
 
     const onDecision = () => {
@@ -2118,8 +2826,7 @@ export default defineComponent({
       }
     }
 
-    type Eventos = 'onSave' | 'onEdit' | 'onDelete'
-
+    type Eventos = 'onSave' | 'onEdit'
     const methodsModalFormAztecaInterbancario: Record<Eventos, (...args: any[]) => void> = {
       onSave: () => {
         modalFormBancoAztecaInterbancario.value.dialog = false
@@ -2128,36 +2835,6 @@ export default defineComponent({
       onEdit: () => {
         modalFormBancoAztecaInterbancario.value.dialog = false
         //fnCargarListado()
-      },
-      onDelete: async (items: AztecaInterbancario | AztecaInterbancario[]) => {
-        dialogConfirmation.onCloseDialogConfirmation()
-
-        const idsToDelete = Array.isArray(items) ? items.map((item) => item.id) : [items.id]
-
-        try {
-          // Llamar a la API para eliminar los registros por sus IDs
-          await clienteStore.destroyClientesByIds(idsToDelete) // Asegúrate de que esta función exista en tu store
-
-          // Mostrar mensaje de éxito
-          dialogConfirmation.onOpenDialogInformation(
-            clienteStore.responseMessage,
-            'Registros eliminados',
-            'correct',
-            '#438701',
-            1,
-          )
-          // Refrescar la lista
-          //fnCargarListado()
-        } catch (error) {
-          // Mostrar mensaje de error
-          dialogConfirmation.onOpenDialogInformation(
-            clienteStore.responseMessage,
-            'Error al eliminar',
-            'incorrect',
-            '#B00000',
-            1,
-          )
-        }
       },
     }
 
@@ -2170,36 +2847,6 @@ export default defineComponent({
         modalFormBancoAztecaBancario.value.dialog = false
         //fnCargarListado()
       },
-      onDelete: async (items: AztecaBancario | AztecaBancario[]) => {
-        dialogConfirmation.onCloseDialogConfirmation()
-
-        const idsToDelete = Array.isArray(items) ? items.map((item) => item.id) : [items.id]
-
-        try {
-          // Llamar a la API para eliminar los registros por sus IDs
-          await clienteStore.destroyClientesByIds(idsToDelete) // Asegúrate de que esta función exista en tu store
-
-          // Mostrar mensaje de éxito
-          dialogConfirmation.onOpenDialogInformation(
-            clienteStore.responseMessage,
-            'Registros eliminados',
-            'correct',
-            '#438701',
-            1,
-          )
-          // Refrescar la lista
-          //fnCargarListado()
-        } catch (error) {
-          // Mostrar mensaje de error
-          dialogConfirmation.onOpenDialogInformation(
-            clienteStore.responseMessage,
-            'Error al eliminar',
-            'incorrect',
-            '#B00000',
-            1,
-          )
-        }
-      },
     }
 
     const methodsModalFormBanorteTerceros: Record<Eventos, (...args: any[]) => void> = {
@@ -2211,46 +2858,57 @@ export default defineComponent({
         modalFormBancoBanorteTerceros.value.dialog = false
         //fnCargarListado()
       },
-      onDelete: async (items: BanorteTerceros | BanorteTerceros[]) => {
-        dialogConfirmation.onCloseDialogConfirmation()
-
-        const idsToDelete = Array.isArray(items) ? items.map((item) => item.id) : [items.id]
-
-        try {
-          // Llamar a la API para eliminar los registros por sus IDs
-          await clienteStore.destroyClientesByIds(idsToDelete) // Asegúrate de que esta función exista en tu store
-
-          // Mostrar mensaje de éxito
-          dialogConfirmation.onOpenDialogInformation(
-            clienteStore.responseMessage,
-            'Registros eliminados',
-            'correct',
-            '#438701',
-            1,
-          )
-          // Refrescar la lista
-          //fnCargarListado()
-        } catch (error) {
-          // Mostrar mensaje de error
-          dialogConfirmation.onOpenDialogInformation(
-            clienteStore.responseMessage,
-            'Error al eliminar',
-            'incorrect',
-            '#B00000',
-            1,
-          )
-        }
-      },
     }
 
-    function onDeleteItemAztecaInterbancario(item: AztecaInterbancario) {
-      itemsAztecaInterbancario.value = itemsAztecaInterbancario.value.filter(
-        (i) => i.id !== item.id,
+    const onDeleteConfirmationAztecaInterbancario = (
+      item: AztecaInterbancario | AztecaBancario,
+    ) => {
+      let mensaje = `¿Está seguro de que desea eliminar el registro seleccionado? Esta acción no se puede deshacer.`
+      let titulo = 'Eliminiar registro'
+
+      dialogConfirmation.onOpenDialogConfirmation(
+        mensaje,
+        () => onDeleteItemAztecaInterbancario(item),
+        [],
+        titulo,
+        'alert',
       )
     }
 
+    async function onDeleteItemAztecaInterbancario(item: AztecaInterbancario | AztecaBancario) {
+      try {
+        // Llamar a la API para eliminar los registros por sus IDs
+        await bancoStore.deleteBancoAzteca(item.id) // Asegúrate de que esta función exista en tu store
+
+        await buscarDatosBancosPorId(props.id)
+        // Mostrar mensaje de éxito
+        dialogConfirmation.onOpenDialogInformation(
+          bancoStore.responseMessage,
+          'Registro eliminado',
+          'correct',
+          '#438701',
+          1,
+        )
+        // Refrescar la lista
+        //fnCargarListado()
+      } catch (error) {
+        // Mostrar mensaje de error
+        dialogConfirmation.onOpenDialogInformation(
+          bancoStore.responseMessage,
+          'Error al eliminar',
+          'incorrect',
+          '#B00000',
+          1,
+        )
+      }
+    }
+
     const onOpenModalFormAztecaInterbancario = (evento: string, items: object, titulo: string) => {
-      console.log('onOpenModalFormAztecaInterbancario')
+      if (titulo == 'Nuevo') {
+        items = {
+          id_nomina_gape_empresa: props.id,
+        }
+      }
 
       modalFormBancoAztecaInterbancario.value = {
         dialog: true,
@@ -2260,13 +2918,56 @@ export default defineComponent({
       }
     }
 
-    const onCloseModalFormAztecaInterbancario = () => {
+    const onCloseModalFormAztecaInterbancario = async () => {
       modalFormBancoAztecaInterbancario.value.dialog = false
+      await buscarDatosBancosPorId(props.id)
       //fnCargarListado()
     }
 
-    const onSaveModalFormAztecaInterbancario = (evento: Eventos) => {
+    const onSaveModalFormAztecaInterbancario = async (evento: Eventos) => {
       methodsModalFormAztecaInterbancario[evento]()
+      await buscarDatosBancosPorId(props.id)
+    }
+
+    const onDeleteConfirmationBanorte = (item: BanorteTerceros) => {
+      let mensaje = `¿Está seguro de que desea eliminar el registro seleccionado? Esta acción no se puede deshacer.`
+      let titulo = 'Eliminiar registro'
+
+      dialogConfirmation.onOpenDialogConfirmation(
+        mensaje,
+        () => onDeleteItemBanorte(item),
+        [],
+        titulo,
+        'alert',
+      )
+    }
+
+    async function onDeleteItemBanorte(item: BanorteTerceros) {
+      try {
+        // Llamar a la API para eliminar los registros por sus IDs
+        await bancoStore.deleteBancoBanorte(item.id) // Asegúrate de que esta función exista en tu store
+
+        await buscarDatosBancosPorId(props.id)
+        // Mostrar mensaje de éxito
+        dialogConfirmation.onOpenDialogInformation(
+          bancoStore.responseMessage,
+          'Registro eliminado',
+          'correct',
+          '#438701',
+          1,
+        )
+        // Refrescar la lista
+        //fnCargarListado()
+      } catch (error) {
+        // Mostrar mensaje de error
+        dialogConfirmation.onOpenDialogInformation(
+          bancoStore.responseMessage,
+          'Error al eliminar',
+          'incorrect',
+          '#B00000',
+          1,
+        )
+      }
     }
 
     function onDeleteItemAztecaBancario(item: AztecaBancario) {
@@ -2274,6 +2975,12 @@ export default defineComponent({
     }
 
     const onOpenModalFormAztecaBancario = (evento: string, items: object, titulo: string) => {
+      if (titulo == 'Nuevo') {
+        items = {
+          id_nomina_gape_empresa: props.id,
+        }
+      }
+
       modalFormBancoAztecaBancario.value = {
         dialog: true,
         evento: evento,
@@ -2282,20 +2989,22 @@ export default defineComponent({
       }
     }
 
-    const onCloseModalFormAztecaBancario = () => {
+    const onCloseModalFormAztecaBancario = async () => {
       modalFormBancoAztecaBancario.value.dialog = false
-      //fnCargarListado()
+      await buscarDatosBancosPorId(props.id)
     }
 
-    const onSaveModalFormAztecaBancario = (evento: Eventos) => {
+    const onSaveModalFormAztecaBancario = async (evento: Eventos) => {
       methodsModalFormAztecaBancario[evento]()
-    }
-
-    function onDeleteItemBanorteTerceros(item: BanorteTerceros) {
-      itemsBanorteTerceros.value = itemsBanorteTerceros.value.filter((i) => i.id !== item.id)
+      await buscarDatosBancosPorId(props.id)
     }
 
     const onOpenModalFormBanorteTerceros = (evento: string, items: object, titulo: string) => {
+      if (titulo == 'Nuevo') {
+        items = {
+          id_nomina_gape_empresa: props.id,
+        }
+      }
       modalFormBancoBanorteTerceros.value = {
         dialog: true,
         evento: evento,
@@ -2304,35 +3013,21 @@ export default defineComponent({
       }
     }
 
-    const onCloseModalFormBanorteTerceros = () => {
+    const onCloseModalFormBanorteTerceros = async () => {
       modalFormBancoBanorteTerceros.value.dialog = false
-      //fnCargarListado()
+      await buscarDatosBancosPorId(props.id)
     }
 
-    const onSaveModalFormBanorteTerceros = (evento: Eventos) => {
+    const onSaveModalFormBanorteTerceros = async (evento: Eventos) => {
       methodsModalFormBanorteTerceros[evento]()
+      await buscarDatosBancosPorId(props.id)
     }
 
     return {
-      onDeleteItemBanorteTerceros,
-      onOpenModalFormBanorteTerceros,
-      onCloseModalFormBanorteTerceros,
-      onSaveModalFormBanorteTerceros,
-      onDeleteItemAztecaBancario,
-      headersBanorteTerceros,
-      itemsBanorteTerceros,
-      headersAztecaBancario,
-      itemsAztecaBancario,
-      modalFormBancoAztecaInterbancario,
-      modalFormBancoAztecaBancario,
-      modalFormBancoBanorteTerceros,
-      onCloseModalFormAztecaInterbancario,
-      onOpenModalFormAztecaInterbancario,
-      onSaveModalFormAztecaInterbancario,
-      onCloseModalFormAztecaBancario,
-      onOpenModalFormAztecaBancario,
-      onSaveModalFormAztecaBancario,
       btnDisabled,
+      buscarDatosEmpresaNomina,
+      buscarEmpresasNomina,
+      changeStatusFondeadora,
       dataModel,
       dialogConfirmation,
       formRefFiscalBanco,
@@ -2340,23 +3035,41 @@ export default defineComponent({
       formRefNoFiscalBanco,
       formRefNoFiscalGral,
       getCardHeight,
+      headersAztecaBancario,
       headersAztecaInterbancario,
+      headersBanorteTerceros,
       inputFilters,
       isActiveAztecaBancario,
       isActiveAztecaInterbancario,
       isActiveBanorteTerceros,
       isActiveFondeadora,
+      itemsAztecaBancario,
       itemsAztecaInterbancario,
       itemsBanco,
+      itemsBanorteTerceros,
       itemsClientesNomina,
       itemsEmpresaDatabase,
       itemsEmpresas,
       loading,
       mergeProps,
+      modalFormBancoAztecaBancario,
+      modalFormBancoAztecaInterbancario,
+      modalFormBancoBanorteTerceros,
       modelEmpresa,
-      modelTipoEmpresa,
+      onCloseModalFormAztecaBancario,
+      onCloseModalFormAztecaInterbancario,
+      onCloseModalFormBanorteTerceros,
       onDecision,
+      onDeleteConfirmationAztecaInterbancario,
+      onDeleteConfirmationBanorte,
+      onDeleteItemAztecaBancario,
       onDeleteItemAztecaInterbancario,
+      onOpenModalFormAztecaBancario,
+      onOpenModalFormAztecaInterbancario,
+      onOpenModalFormBanorteTerceros,
+      onSaveModalFormAztecaBancario,
+      onSaveModalFormAztecaInterbancario,
+      onSaveModalFormBanorteTerceros,
       smAndDown,
       tabEmpresa,
       tabEmpresaNoFisc,
@@ -2369,9 +3082,9 @@ export default defineComponent({
       vrowFiltrosRef,
       vtabTipoEmpresa,
       vtabTipoEmpresaRef,
-      buscarEmpresasNomina,
-      buscarDatosEmpresaNomina,
-      changeStatusFondeadora,
+      changeStatusAztecaInterbancario,
+      changeStatusAztecaBancario,
+      changeStatusBanorte,
     }
   },
 })

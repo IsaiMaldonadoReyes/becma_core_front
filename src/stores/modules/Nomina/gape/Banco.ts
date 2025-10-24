@@ -15,7 +15,7 @@ export const useBancoStore = defineStore('bancoStore', {
     aztecaInter: [] as BancoAztecaModel[],
     aztecaBancario: [] as BancoAztecaModel[],
     banorte: [] as BancoBanorteModel[],
-    fondeadora: null as BancoFondeadoraModel | null,
+    bancosDispersion: null as BancoFondeadoraModel | null,
 
     // 🔁 Estados auxiliares
     response: null,
@@ -28,19 +28,47 @@ export const useBancoStore = defineStore('bancoStore', {
         const response = await axios.get(`/api/bancos/getBancosByEmpresa/${id}`)
         const data = response.data.data || {}
 
-        this.fondeadora = data.fondeadora ?? null
-        this.aztecaInter = data.azteca_interbancario ?? null
-        this.aztecaBancario = data.azteca_bancario ?? null
-        this.banorte = data.banorte ?? []
+        // Helper para convertir campos a boolean
+        const parseBoolean = (val: any) => val === true || val === 1 || val === '1'
+
+        // 🔹 Fondeadora (puede ser null)
+        this.bancosDispersion = data.dispersion
+          ? {
+              ...data.dispersion,
+              fondeadora: parseBoolean(data.dispersion.fondeadora),
+              azteca_interbancario: parseBoolean(data.dispersion.azteca_interbancario),
+              azteca_bancario: parseBoolean(data.dispersion.azteca_bancario),
+              banorte: parseBoolean(data.dispersion.banorte),
+            }
+          : null
+
+        // 🔹 Azteca Interbancario
+        this.aztecaInter = (data.azteca_interbancario ?? []).map((item: any) => ({
+          ...item,
+          activo_dispersion: parseBoolean(item.activo_dispersion),
+        }))
+
+        // 🔹 Azteca Bancario
+        this.aztecaBancario = (data.azteca_bancario ?? []).map((item: any) => ({
+          ...item,
+          activo_dispersion: parseBoolean(item.activo_dispersion),
+        }))
+
+        // 🔹 Banorte
+        this.banorte = (data.banorte ?? []).map((item: any) => ({
+          ...item,
+          activo_dispersion: parseBoolean(item.activo_dispersion),
+        }))
       } catch (error: any) {
         console.error(error)
         this.responseMessage = error.message
       }
     },
-    async storeBancoFondeadora(data: any) {
+
+    async upsertBancoDispersion(data: any) {
       try {
-        const response = await axios.post('/api/bancos/upsertBancoFondeadora', data)
-        this.fondeadora = response.data
+        const response = await axios.post('/api/bancos/upsertBancoDispersion', data)
+        this.responseMessage = response.data.message
       } catch (error: any) {
         this._handleError(error)
         throw error
@@ -58,8 +86,17 @@ export const useBancoStore = defineStore('bancoStore', {
     },
     async updateBancoAzteca(data: any, id: number) {
       try {
-        const response = await axios.post(`/api/bancos/updateBancoAzteca/${id}`, data)
+        const response = await axios.put(`/api/bancos/updateBancoAzteca/${id}`, data)
         this.aztecaBancario = response.data
+      } catch (error: any) {
+        this._handleError(error)
+        throw error
+      }
+    },
+    async deleteBancoAzteca(id: any) {
+      try {
+        const response = await axios.delete(`/api/bancos/deleteBancoAzteca/${id}`)
+        this.responseMessage = response.data.message
       } catch (error: any) {
         this._handleError(error)
         throw error
@@ -77,8 +114,17 @@ export const useBancoStore = defineStore('bancoStore', {
     },
     async updateBancoBanorte(data: any, id: number) {
       try {
-        const response = await axios.post(`/api/bancos/updateBancoBanorte/${id}`, data)
+        const response = await axios.put(`/api/bancos/updateBancoBanorte/${id}`, data)
         this.banorte = response.data
+      } catch (error: any) {
+        this._handleError(error)
+        throw error
+      }
+    },
+    async deleteBancoBanorte(id: any) {
+      try {
+        const response = await axios.delete(`/api/bancos/deleteBancoBanorte/${id}`)
+        this.responseMessage = response.data.message
       } catch (error: any) {
         this._handleError(error)
         throw error
