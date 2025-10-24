@@ -1589,6 +1589,13 @@ export default defineComponent({
       guardarCambios: false,
       activarRegistro: true,
       crearRegistro: true,
+
+      tabDatosGenerales: true,
+      tabBancos: true,
+
+      tabNoFisDatosGenerales: true,
+      tabNoFisBancos: true,
+
       compTipoEmp: false,
       compCliente: false,
       compEmpresa: false,
@@ -2041,6 +2048,7 @@ export default defineComponent({
       dialogConfirmation.onCloseDialogConfirmation()
 
       let formRef = null
+      let idEmpresaCreada = null
 
       if (tabFiscal) {
         // Empresa FISCAL
@@ -2060,24 +2068,31 @@ export default defineComponent({
       try {
         loading.value = true
 
+        let titulo = 'Registro guardado'
+        let mensaje = 'Los datos se guardaron de forma exitosa.'
+
         // Aquí va tu guardado real
         if (props.id !== undefined && props.id !== null) {
           await empresaStore.updateNominaGapeEmpresa(dataModel.value, props.id)
+          mensaje = 'Los datos se actualizaron de forma exitosa.'
+          titulo = 'Registro actualizado'
+
+          dialogConfirmation.onOpenDialogInformation(mensaje, titulo, 'correct', '#438701', 2)
+
+          router.push({ name: 'EmpresaList' })
         } else {
-          await empresaStore.storeNominaGapeEmpresa(dataModel.value)
+          const response = await empresaStore.storeNominaGapeEmpresa(dataModel.value)
+
+          idEmpresaCreada = response.id
+
+          dialogConfirmation.onOpenDialogInformation(mensaje, titulo, 'correct', '#438701', 2)
+
+          if (idEmpresaCreada) {
+            router.push({ path: `/nominas/gape/empresaForm/${idEmpresaCreada}` })
+          }
         }
 
         await formRef.reset()
-
-        dialogConfirmation.onOpenDialogInformation(
-          'Los datos se guardaron de forma exitosa.',
-          'Registro guardado',
-          'correct',
-          '#438701',
-          2,
-        )
-
-        router.push({ name: 'EmpresaList' })
       } catch (error: any) {
         if (error.type === 'validation') {
           const errores = Object.values(error.errors).flat().join('<br>')
