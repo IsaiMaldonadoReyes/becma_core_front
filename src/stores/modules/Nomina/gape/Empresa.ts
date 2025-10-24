@@ -63,6 +63,8 @@ export const useEmpresaStore = defineStore({
       try {
         const response = await axios.post('/api/storeNominaEmpresa', data)
         this.empresa = response.data
+
+        return response.data
       } catch (error: any) {
         this._handleError(error)
         throw error

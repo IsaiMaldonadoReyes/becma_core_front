@@ -33,7 +33,7 @@
     </v-app-bar>
 
     <v-main>
-      <router-view />
+      <router-view :key="$route.fullPath" />
     </v-main>
 
     <v-footer app v-if="sessionUsuario">
