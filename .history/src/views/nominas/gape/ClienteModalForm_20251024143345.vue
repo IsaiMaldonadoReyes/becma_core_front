@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogPropiedades.dialog" :width="smAndDown ? '95vw' : '30vw'" persistent>
+  <v-dialog v-model="dialogPropiedades.dialog" :width="smAndDown ? '95vw' : '35vw'"  persistent>
     <v-card>
       <v-form ref="formRef">
         <v-card-title
@@ -26,6 +26,7 @@
                         v-model="dialogPropiedades.elementos.estado"
                         v-bind="mergeProps(tooltip)"
                         color="primary"
+                        true-icon="mdi-checkbox-marked-outline"
                       />
                     </template>
                     <span>Marque la casilla para activar este registro.</span>

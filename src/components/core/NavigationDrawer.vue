@@ -315,7 +315,7 @@ export default defineComponent({
             nombre: 'concepto',
             descripcion: 'Catálogo de conceptos',
             etiqueta: 'Concepto',
-            ruta: '/nominas/gape/empresaList',
+            ruta: '/nominas/gape/empleadoForm',
             icono: 'mdi-book-open-variant',
             orden: 2,
           },

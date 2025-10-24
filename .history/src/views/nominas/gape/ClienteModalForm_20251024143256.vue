@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogPropiedades.dialog" :width="smAndDown ? '95vw' : '30vw'" persistent>
+  <v-dialog v-model="dialogPropiedades.dialog" :width="smAndDown ? '95vw' : '35vw'"  persistent>
     <v-card>
       <v-form ref="formRef">
         <v-card-title
@@ -26,6 +26,7 @@
                         v-model="dialogPropiedades.elementos.estado"
                         v-bind="mergeProps(tooltip)"
                         color="primary"
+                        true-icon="mdi-checkbox-marked-outline"
                       />
                     </template>
                     <span>Marque la casilla para activar este registro.</span>
@@ -67,7 +68,7 @@
                 v-model="dialogPropiedades.elementos.nombre"
                 :label="'Nombre *'"
                 :placeholder="'Nombre del cliente *'"
-                :prepend-icon="'mdi-account-box'"
+                :prepend-icon="'mdi-barcode'"
                 :rules="[
                   (v: any) =>
                     validationRules.validateAlphanumericFieldWithSpaces(v, {
@@ -81,7 +82,7 @@
                   <v-card color="transparent" elevation="0" class="py-3">
                     <v-row>
                       <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon class="mr-1" color="white" icon="mdi-account-box" />
+                        <v-icon class="mr-1" color="white" icon="mdi-account-credit-card" />
                       </v-col>
                       <v-col cols="11"> Ingrese el nombre del cliente. </v-col>
                     </v-row>
@@ -113,7 +114,7 @@
                   <v-card color="transparent" elevation="0" class="py-3">
                     <v-row>
                       <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon class="mr-1" color="white" icon="mdi-barcode" />
+                        <v-icon class="mr-1" color="white" icon="mdi-account-credit-card" />
                       </v-col>
                       <v-col cols="11"> Ingrese el código del cliente. </v-col>
                     </v-row>
@@ -132,12 +133,12 @@
                 </template>
               </bec-text-field>
             </v-col>
-            <v-col cols="12" md="12">
+            <v-col cols="12" md="6">
               <bec-text-field
                 v-model="dialogPropiedades.elementos.telefono"
                 :label="'Teléfono '"
                 :placeholder="'Teléfono del cliente *'"
-                :prepend-icon="'mdi-phone'"
+                :prepend-icon="'mdi-text'"
                 :rules="[validationRules.validatePhoneIfNotEmpty, validationRules.required]"
                 @keypress="inputFilters.onlyPhone"
               >
@@ -145,7 +146,7 @@
                   <v-card color="transparent" elevation="0" class="py-3">
                     <v-row>
                       <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon class="mr-1" color="white" icon="mdi-phone" />
+                        <v-icon class="mr-1" color="white" icon="mdi-account-credit-card" />
                       </v-col>
                       <v-col cols="11"> Ingrese el télefono del cliente. </v-col>
                     </v-row>

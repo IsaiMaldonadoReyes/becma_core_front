@@ -26,6 +26,7 @@
                         v-model="dialogPropiedades.elementos.estado"
                         v-bind="mergeProps(tooltip)"
                         color="primary"
+                        true-icon="mdi-checkbox-marked-outline"
                       />
                     </template>
                     <span>Marque la casilla para activar este registro.</span>
