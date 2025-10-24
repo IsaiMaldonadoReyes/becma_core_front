@@ -242,6 +242,8 @@ export default defineComponent({
     watch(
       () => props.dialogView,
       (newDialogView) => {
+
+        console.log("modal azteca");
         dialogPropiedades.value = {
           dialog: newDialogView,
           elementos: {

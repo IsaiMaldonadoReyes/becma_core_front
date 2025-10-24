@@ -1163,14 +1163,12 @@
                                     >
                                       <template v-slot:item.estado="{ item }">
                                         <v-chip
-                                          :color="item.activo_dispersion ? 'primary' : 'grey'"
+                                          :color="item.estado ? 'primary' : 'grey'"
                                           label
                                           size="small"
                                           variant="flat"
                                         >
-                                          {{
-                                            item.activo_dispersion ? 'Habilitado' : 'Inhabilitado'
-                                          }}
+                                          {{ item.estado ? 'Habilitado' : 'Inhabilitado' }}
                                         </v-chip>
                                       </template>
 
@@ -1878,9 +1876,6 @@ export default defineComponent({
         itemsAztecaInterbancario.value = bancoStore.aztecaInter
         itemsAztecaBancario.value = bancoStore.aztecaBancario
         itemsBanorteTerceros.value = bancoStore.banorte
-
-        console.log(itemsAztecaInterbancario)
-        
       }
       // new
       else {
@@ -2250,8 +2245,6 @@ export default defineComponent({
     }
 
     const onOpenModalFormAztecaInterbancario = (evento: string, items: object, titulo: string) => {
-      console.log('onOpenModalFormAztecaInterbancario')
-
       modalFormBancoAztecaInterbancario.value = {
         dialog: true,
         evento: evento,

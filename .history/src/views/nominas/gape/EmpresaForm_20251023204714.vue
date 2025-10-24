@@ -777,14 +777,12 @@
                                     >
                                       <template v-slot:item.estado="{ item }">
                                         <v-chip
-                                          :color="item.activo_dispersion ? 'primary' : 'grey'"
+                                          :color="item.estado ? 'primary' : 'grey'"
                                           label
                                           size="small"
                                           variant="flat"
                                         >
-                                          {{
-                                            item.activo_dispersion ? 'Habilitado' : 'Inhabilitado'
-                                          }}
+                                          {{ item.estado ? 'Habilitado' : 'Inhabilitado' }}
                                         </v-chip>
                                       </template>
 
@@ -1163,14 +1161,12 @@
                                     >
                                       <template v-slot:item.estado="{ item }">
                                         <v-chip
-                                          :color="item.activo_dispersion ? 'primary' : 'grey'"
+                                          :color="item.estado ? 'primary' : 'grey'"
                                           label
                                           size="small"
                                           variant="flat"
                                         >
-                                          {{
-                                            item.activo_dispersion ? 'Habilitado' : 'Inhabilitado'
-                                          }}
+                                          {{ item.estado ? 'Habilitado' : 'Inhabilitado' }}
                                         </v-chip>
                                       </template>
 
@@ -1517,26 +1513,27 @@ import BancoBanorteTercerosModalForm from '@/views/nominas/gape/BancoBanorteTerc
 
 export interface AztecaInterbancario {
   id: number
-  id_nomina_gape_empresa: number | null
-  activo_dispersion: boolean | null
-  cuenta_origen: string | null
-  tipo_banco: string | null
+  id_nomina_gape_empresa: number
+  tipo_banco: string
+  estado: boolean
+  cuenta_origen: string
 }
 
 export interface AztecaBancario {
   id: number
-  id_nomina_gape_empresa: number | null
-  activo_dispersion: boolean | null
-  cuenta_origen: string | null
-  tipo_banco: string | null
+  id_nomina_gape_empresa: number
+  tipo_banco: string
+  activo_dispersion: boolean
+  cuenta_origen: string
 }
 
 export interface BanorteTerceros {
   id: number
-  id_nomina_gape_empresa: number | null
-  activo_dispersion: boolean | null
-  cuenta_origen: string | null
-  clave_banco: string | null
+  id_nomina_gape_empresa: number
+  tipo_banco: string
+  estado: boolean
+  cuenta_origen: string
+  clave_banco: string
 }
 
 export default defineComponent({
@@ -1735,7 +1732,16 @@ export default defineComponent({
       },
     ])
 
-    const itemsBanorteTerceros = ref<BanorteTerceros[]>([])
+    const itemsBanorteTerceros = ref<BanorteTerceros[]>([
+      {
+        id: 1,
+        id_nomina_gape_empresa: 1,
+        tipo_banco: 'interbancario',
+        estado: true,
+        cuenta_origen: '010203040506',
+        clave_banco: '2323232323',
+      },
+    ])
 
     const headersBanorteTerceros = ref<
       {
@@ -1747,7 +1753,7 @@ export default defineComponent({
       }[]
     >([
       {
-        key: 'activo_dispersion',
+        key: 'estado',
         sortable: false,
         title: '',
         width: '20%',
@@ -1878,9 +1884,6 @@ export default defineComponent({
         itemsAztecaInterbancario.value = bancoStore.aztecaInter
         itemsAztecaBancario.value = bancoStore.aztecaBancario
         itemsBanorteTerceros.value = bancoStore.banorte
-
-        console.log(itemsAztecaInterbancario)
-        
       }
       // new
       else {
@@ -2250,8 +2253,6 @@ export default defineComponent({
     }
 
     const onOpenModalFormAztecaInterbancario = (evento: string, items: object, titulo: string) => {
-      console.log('onOpenModalFormAztecaInterbancario')
-
       modalFormBancoAztecaInterbancario.value = {
         dialog: true,
         evento: evento,

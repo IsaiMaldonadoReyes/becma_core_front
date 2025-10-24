@@ -1875,12 +1875,10 @@ export default defineComponent({
 
         await bancoStore.datosBancosPorCliente(props.id)
 
-        itemsAztecaInterbancario.value = bancoStore.aztecaInter
+        /*itemsAztecaInterbancario.value = bancoStore.aztecaInter
         itemsAztecaBancario.value = bancoStore.aztecaBancario
         itemsBanorteTerceros.value = bancoStore.banorte
-
-        console.log(itemsAztecaInterbancario)
-        
+        */
       }
       // new
       else {

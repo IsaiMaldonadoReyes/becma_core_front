@@ -1878,9 +1878,6 @@ export default defineComponent({
         itemsAztecaInterbancario.value = bancoStore.aztecaInter
         itemsAztecaBancario.value = bancoStore.aztecaBancario
         itemsBanorteTerceros.value = bancoStore.banorte
-
-        console.log(itemsAztecaInterbancario)
-        
       }
       // new
       else {

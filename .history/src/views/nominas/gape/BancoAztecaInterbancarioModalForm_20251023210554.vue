@@ -23,7 +23,7 @@
                   <v-tooltip>
                     <template v-slot:activator="{ props: tooltip }">
                       <v-checkbox-btn
-                        v-model="dialogPropiedades.elementos.activo_dispersion"
+                        v-model="dialogPropiedades.elementos.estado"
                         v-bind="mergeProps(tooltip)"
                         color="primary"
                       />
@@ -141,7 +141,7 @@ export default defineComponent({
       dialog: ref(props.dialogView),
       elementos: {
         ...props.dialogItems,
-        activo_dispersion:
+        estado:
           props.dialogItems.activo_dispersion !== undefined
             ? Number(props.dialogItems.activo_dispersion) === 1
             : false,
@@ -246,7 +246,7 @@ export default defineComponent({
           dialog: newDialogView,
           elementos: {
             ...props.dialogItems,
-            activo_dispersion:
+            estado:
               props.dialogItems.activo_dispersion !== undefined
                 ? Number(props.dialogItems.activo_dispersion) === 1
                 : false,
