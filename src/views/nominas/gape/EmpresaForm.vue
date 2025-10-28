@@ -2591,8 +2591,6 @@ export default defineComponent({
       itemsAztecaBancario.value = bancoStore.aztecaBancario
       itemsBanorteTerceros.value = bancoStore.banorte
 
-      console.log(bancoStore.bancosDispersion)
-
       isActiveFondeadora.value = bancoStore.bancosDispersion?.fondeadora ?? false
       isActiveAztecaInterbancario.value = bancoStore.bancosDispersion?.azteca_interbancario ?? false
       isActiveAztecaBancario.value = bancoStore.bancosDispersion?.azteca_bancario ?? false
@@ -2627,7 +2625,7 @@ export default defineComponent({
           const idClienteEdit = empresaStore.empresa.id_nomina_gape_cliente
           const idEmpresa = empresaStore.empresa.id_empresa_database
 
-          await fetchEmpresasNominaPorClienteEdit(idClienteEdit)
+          await fetchEmpresasNominaPorClienteAsignadas(idClienteEdit)
 
           dataModel.value.id_nomina_gape_cliente = Number(
             empresaStore.empresa.id_nomina_gape_cliente,
@@ -2665,9 +2663,9 @@ export default defineComponent({
       }
     }
 
-    const fetchEmpresasNominaPorClienteEdit = async (idCliente: any) => {
+    const fetchEmpresasNominaPorClienteAsignadas = async (idCliente: any) => {
       try {
-        await empresasStore.empresasNominasPorClienteEdit(idCliente)
+        await empresasStore.empresasNominasPorClienteAsignadas(idCliente)
       } catch (error) {
         console.error('Error al cargar catálogos por empresa:', error)
       }

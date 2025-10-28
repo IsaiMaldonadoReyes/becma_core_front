@@ -30,7 +30,7 @@ export const useEmpresasStore = defineStore({
     },
     async empresasNominasPorCliente(clienteId: number) {
       try {
-        const response = await axios.post(`/api/empresasNominasPorCliente/${clienteId}`)
+        const response = await axios.post(`/api/nominaGapeEmpresa/sinAsignar`)
         this.empresas = response.data.data
       } catch (error: any) {
         console.error('Error al obtener empresas:', error)
@@ -38,9 +38,22 @@ export const useEmpresasStore = defineStore({
         throw error
       }
     },
-    async empresasNominasPorClienteEdit(clienteId: number) {
+    async empresasNominasPorClienteTipo(clienteId: number) {
       try {
-        const response = await axios.post(`/api/empresasNominasPorClienteEdit/${clienteId}`)
+        const response = await axios.post(`/api/nominaGapeEmpresa/porClienteTipo/${clienteId}`)
+        this.empresas = response.data.data
+      } catch (error: any) {
+        console.error('Error al obtener empresas:', error)
+        this.responseMessage = error.message
+        throw error
+      }
+    },
+    async empresasNominasPorClienteAsignadas(clienteId: number) {
+      const data = {
+        idCliente: clienteId,
+      }
+      try {
+        const response = await axios.post(`/api/nominaGapeEmpresa/asignadasACliente`, data)
         this.empresas = response.data.data
       } catch (error: any) {
         console.error('Error al obtener empresas:', error)
