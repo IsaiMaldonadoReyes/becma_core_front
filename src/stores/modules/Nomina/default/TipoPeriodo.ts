@@ -28,5 +28,15 @@ export const useTipoPeriodoStore = defineStore({
         throw error
       }
     },
+    async tipoPeriodoNGE(data: any) {
+      try {
+        const response = await axios.post(`/api/catalogoNomina/tipoPeriodo`, data)
+        this.tipoPeriodo = response.data.data
+      } catch (error: any) {
+        console.error('Error al obtener tipo de periodo:', error)
+        this.responseMessage = error.message
+        throw error
+      }
+    },
   },
 })
