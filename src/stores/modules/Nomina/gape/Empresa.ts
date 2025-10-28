@@ -24,11 +24,31 @@ export const useEmpresaStore = defineStore({
   actions: {
     async indexEmpresas() {
       try {
-        const response = await axios.get('/api/indexNominaEmpresa')
+        const response = await axios.get('/api/nominaGapeEmpresa/index')
         this.empresasList = response.data.data
       } catch (error: any) {
         console.error(error)
         this.responseMessage = error.message
+      }
+    },
+    async storeNominaGapeEmpresa(data: EmpresaModel) {
+      try {
+        const response = await axios.post('/api/nominaGapeEmpresa/store', data)
+        this.empresa = response.data
+
+        return response.data
+      } catch (error: any) {
+        this._handleError(error)
+        throw error
+      }
+    },
+    async updateNominaGapeEmpresa(data: EmpresaModel, id: number) {
+      try {
+        const response = await axios.put(`/api/nominaGapeEmpresa/update/${id}`, data)
+        this.empresa = response.data
+      } catch (error: any) {
+        this._handleError(error)
+        throw error
       }
     },
     async empresasDatosNominasPorClienteId(id: number) {
@@ -36,7 +56,10 @@ export const useEmpresaStore = defineStore({
         const payload = {
           id: id,
         }
-        const response = await axios.post(`/api/empresasDatosNominasPorClienteId`, payload)
+        const response = await axios.post(
+          `/api/nominaGapeEmpresa/datosNominasPorClienteId`,
+          payload,
+        )
         this.empresa = response.data.data
       } catch (error: any) {
         console.error('Error al obtener datos del registro:', error)
@@ -51,7 +74,7 @@ export const useEmpresaStore = defineStore({
           idEmpresa: empresaId,
           nombreBase: rutaBD,
         }
-        const response = await axios.post(`/api/empresasDatosNominasPorCliente`, payload)
+        const response = await axios.post(`/api/nominaGapeEmpresa/datosNominasPorCliente`, payload)
         this.empresa = response.data.data
       } catch (error: any) {
         console.error('Error al obtener datos de cliente y empresa:', error)
@@ -59,26 +82,7 @@ export const useEmpresaStore = defineStore({
         throw error
       }
     },
-    async storeNominaGapeEmpresa(data: EmpresaModel) {
-      try {
-        const response = await axios.post('/api/storeNominaEmpresa', data)
-        this.empresa = response.data
 
-        return response.data
-      } catch (error: any) {
-        this._handleError(error)
-        throw error
-      }
-    },
-    async updateNominaGapeEmpresa(data: EmpresaModel, id: number) {
-      try {
-        const response = await axios.put(`/api/updateNominaEmpresa/${id}`, data)
-        this.empresa = response.data
-      } catch (error: any) {
-        this._handleError(error)
-        throw error
-      }
-    },
     _handleError(error: any) {
       if (error.response) {
         const status = error.response.status

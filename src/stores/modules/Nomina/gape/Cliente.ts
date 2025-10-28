@@ -20,7 +20,7 @@ export const useClienteStore = defineStore({
   actions: {
     async indexClientes() {
       try {
-        const response = await axios.get('/api/indexCliente')
+        const response = await axios.get('/api/nominaGapeCliente/index')
         this.clientes = response.data.data
       } catch (error: any) {
         console.error(error)
@@ -40,7 +40,7 @@ export const useClienteStore = defineStore({
 
     async storeCliente(data: ClienteModel) {
       try {
-        const response = await axios.post('/api/storeCliente', data)
+        const response = await axios.post('/api/nominaGapeCliente/store', data)
         this.clientes = response.data
       } catch (error: any) {
         this._handleError(error)
@@ -50,7 +50,7 @@ export const useClienteStore = defineStore({
 
     async updateCliente(data: ClienteModel, id: number) {
       try {
-        const response = await axios.put(`/api/updateCliente/${id}`, data)
+        const response = await axios.put(`/api/nominaGapeCliente/update/${id}`, data)
         this.clientes = response.data
       } catch (error: any) {
         this._handleError(error)
@@ -60,7 +60,7 @@ export const useClienteStore = defineStore({
 
     async destroyCliente(id: number) {
       try {
-        const response = await axios.delete(`/api/destroyCliente/${id}`)
+        const response = await axios.delete(`/api/nominaGapeCliente/destroy/${id}`)
         this.clientes = response.data
       } catch (error: any) {
         console.error(error)
@@ -70,7 +70,7 @@ export const useClienteStore = defineStore({
 
     async destroyClientesByIds(ids: number[]) {
       try {
-        const response = await axios.delete(`/api/destroyClienteByIds`, {
+        const response = await axios.delete(`/api/nominaGapeCliente/destroyByIds`, {
           data: { ids },
         })
         this.clientes = response.data
@@ -81,7 +81,7 @@ export const useClienteStore = defineStore({
     },
     async catalogoCliente() {
       try {
-        const response = await axios.post(`/api/nominaCliente`)
+        const response = await axios.post(`/api/catalogoNomina/gapeCliente`)
         this.clientes = response.data.data
       } catch (error: any) {
         console.error('Error al obtener clientes:', error)
