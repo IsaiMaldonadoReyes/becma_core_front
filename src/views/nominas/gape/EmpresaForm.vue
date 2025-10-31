@@ -117,6 +117,7 @@
         <v-tooltip bottom color="primary" interactive location="bottom">
           <template v-slot:activator="{ props: tooltipProps }">
             <v-btn
+              v-model="dataModel.estado"
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
@@ -124,9 +125,10 @@
               min-width="40px"
               width="40px"
               :disabled="btnDisabled.activarRegistro"
+              @click="dataModel.estado = !dataModel.estado"
             >
               <v-icon color="white" size="24px">
-                {{ vbtnActivarRegistro ? 'mdi-checkbox-blank-outline' : 'mdi-checkbox-marked' }}
+                {{ !dataModel.estado ? 'mdi-checkbox-blank-outline' : 'mdi-checkbox-marked' }}
               </v-icon>
             </v-btn>
           </template>
@@ -134,7 +136,7 @@
             Marque la casilla para
             <b>
               <i>
-                {{ vbtnActivarRegistro ? ' ACTIVAR ' : 'DESACTIVAR' }}
+                {{ !dataModel.estado ? ' ACTIVAR ' : 'DESACTIVAR' }}
               </i>
             </b>
             este registro
@@ -151,6 +153,7 @@
               min-width="40px"
               width="40px"
               :disabled="btnDisabled.crearRegistro"
+              :to="'/nominas/gape/empresaForm'"
             >
               <v-icon color="white" icon="mdi-plus" size="24px" />
             </v-btn>
@@ -738,7 +741,12 @@
                                         cols="12"
                                         md="2"
                                       >
-                                        <v-tooltip bottom color="primary" interactive location="bottom">
+                                        <v-tooltip
+                                          bottom
+                                          color="primary"
+                                          interactive
+                                          location="bottom"
+                                        >
                                           <template v-slot:activator="{ props: tooltipProps }">
                                             <v-btn
                                               v-bind="mergeProps(tooltipProps)"
@@ -934,7 +942,12 @@
                                         cols="12"
                                         md="2"
                                       >
-                                        <v-tooltip bottom color="primary" interactive location="bottom">
+                                        <v-tooltip
+                                          bottom
+                                          color="primary"
+                                          interactive
+                                          location="bottom"
+                                        >
                                           <template v-slot:activator="{ props: tooltipProps }">
                                             <v-btn
                                               v-bind="mergeProps(tooltipProps)"
@@ -1126,7 +1139,12 @@
                                         cols="12"
                                         md="2"
                                       >
-                                        <v-tooltip bottom color="primary" interactive location="bottom">
+                                        <v-tooltip
+                                          bottom
+                                          color="primary"
+                                          interactive
+                                          location="bottom"
+                                        >
                                           <template v-slot:activator="{ props: tooltipProps }">
                                             <v-btn
                                               v-bind="mergeProps(tooltipProps)"
@@ -1635,7 +1653,12 @@
                                         cols="12"
                                         md="2"
                                       >
-                                        <v-tooltip bottom color="primary" interactive location="bottom">
+                                        <v-tooltip
+                                          bottom
+                                          color="primary"
+                                          interactive
+                                          location="bottom"
+                                        >
                                           <template v-slot:activator="{ props: tooltipProps }">
                                             <v-btn
                                               v-bind="mergeProps(tooltipProps)"
@@ -1831,7 +1854,12 @@
                                         cols="12"
                                         md="2"
                                       >
-                                        <v-tooltip bottom color="primary" interactive location="bottom">
+                                        <v-tooltip
+                                          bottom
+                                          color="primary"
+                                          interactive
+                                          location="bottom"
+                                        >
                                           <template v-slot:activator="{ props: tooltipProps }">
                                             <v-btn
                                               v-bind="mergeProps(tooltipProps)"
@@ -2023,7 +2051,12 @@
                                         cols="12"
                                         md="2"
                                       >
-                                        <v-tooltip bottom color="primary" interactive location="bottom">
+                                        <v-tooltip
+                                          bottom
+                                          color="primary"
+                                          interactive
+                                          location="bottom"
+                                        >
                                           <template v-slot:activator="{ props: tooltipProps }">
                                             <v-btn
                                               v-bind="mergeProps(tooltipProps)"
@@ -2292,7 +2325,7 @@ export default defineComponent({
       descargarFormato: true,
       eliminarRegistros: true,
       guardarCambios: false,
-      activarRegistro: true,
+      activarRegistro: false,
       crearRegistro: true,
 
       tabDatosGenerales: true,
@@ -2316,7 +2349,6 @@ export default defineComponent({
 
     const vconPrincipalRef = ref()
     const vrowFiltrosRef = ref()
-    const vbtnActivarRegistro = ref(true)
 
     const vtabTipoEmpresaRef = ref()
     const vtabTipoEmpresa = ref<any>('tabTipoEmpresa01')
@@ -2559,6 +2591,8 @@ export default defineComponent({
         btnDisabled.value.compNoFisCodigo = false
         btnDisabled.value.tabBancos = false
 
+        btnDisabled.value.crearRegistro = false
+
         await fetchDatosEmpresasNominaPorClienteId(props.id)
 
         await buscarDatosBancosPorId(props.id)
@@ -2624,6 +2658,7 @@ export default defineComponent({
         if (empresaStore.empresa && !Array.isArray(empresaStore.empresa)) {
           const idClienteEdit = empresaStore.empresa.id_nomina_gape_cliente
           const idEmpresa = empresaStore.empresa.id_empresa_database
+          const estado = empresaStore.empresa.estado
 
           await fetchEmpresasNominaPorClienteAsignadas(idClienteEdit)
 
@@ -2636,6 +2671,7 @@ export default defineComponent({
           dataModel.value.correo_notificacion = empresaStore.empresa.correo_notificacion ?? ''
           dataModel.value.codigo_interno = empresaStore.empresa.codigo_interno ?? ''
           dataModel.value.id = Number(props.id)
+          dataModel.value.estado = estado
 
           dataModel.value.fiscal = (empresaStore.empresa.fiscal as any) === '1'
         }
@@ -3073,7 +3109,6 @@ export default defineComponent({
       tabEmpresaNoFisc,
       validationRules,
       vbrePrincipalItems,
-      vbtnActivarRegistro,
       vconPrincipalRef,
       vforFiltrosRef,
       vrowBarraDeAccionesRef,

@@ -10,7 +10,7 @@
     :item-color="color"
     :item-title="itemTitle"
     :item-value="returnObject ? undefined : itemValue"
-    :items="items"
+    :items="formattedItems"
     :label="label"
     :multiple="multiple"
     :placeholder="placeholder"
@@ -25,88 +25,57 @@
   >
     <!-- SELECCIÓN DINÁMICA -->
     <template v-slot:selection="{ item }">
-      {{
-        itemTitleDinamic
-          ? typeof itemTitleDinamic === 'function'
-            ? itemTitleDinamic(item.raw)
-            : typeof item.raw === 'object'
-              ? item.raw[itemTitleDinamic]
-              : item.raw
-          : typeof item.raw === 'object'
-            ? item.raw[itemTitle]
-            : item.raw
-      }}
+      {{ getDisplayText(item.raw) }}
     </template>
 
     <!-- CHIP DINÁMICO -->
     <template v-if="multiple || showChips" v-slot:chip="{ props, item }">
-      <v-chip
-        v-bind="props"
-        :text="typeof item.raw === 'object' ? item.raw[itemTitle] : item.raw"
-        :color="color"
-        label
-        variant="flat"
-      />
+      <v-chip v-bind="props" :text="getDisplayText(item.raw)" :color="color" label variant="flat" />
     </template>
 
     <!-- ITEM DINÁMICO -->
     <template v-slot:item="{ props, item }">
-      <v-list-item
-        v-bind="props"
-        :title="
-          itemTitleDinamic
-            ? typeof itemTitleDinamic === 'function'
-              ? itemTitleDinamic(item.raw)
-              : typeof item.raw === 'object'
-                ? item.raw[itemTitleDinamic]
-                : item.raw
-            : typeof item.raw === 'object'
-              ? item.raw[itemTitle]
-              : item.raw
-        "
-      >
+      <v-list-item v-bind="props" :title="getDisplayText(item.raw)">
         <v-list-item-subtitle v-if="itemSubtitle">
-          {{
-            typeof itemSubtitle === 'function'
-              ? itemSubtitle(item.raw)
-              : typeof item.raw === 'object'
-                ? item.raw[itemSubtitle]
-                : item.raw
-          }}
+          {{ getSubtitleText(item.raw) }}
         </v-list-item-subtitle>
       </v-list-item>
     </template>
 
     <!-- TOOLTIP SIMPLE -->
     <template v-if="tooltip && !$slots.tooltip" v-slot:prepend>
-      <v-tooltip location="bottom">
-        <template v-slot:activator="{ props: tooltipProps }">
-          <v-icon
-            v-bind="mergeProps(tooltipProps)"
-            icon="mdi-information-slab-circle-outline"
-            size="20"
-          />
-        </template>
-        <template #default>
-          <span v-html="tooltip"></span>
-        </template>
-      </v-tooltip>
+      <div style="pointer-events: auto; cursor: help">
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props: tooltipProps }">
+            <v-icon
+              v-bind="mergeProps(tooltipProps)"
+              icon="mdi-information-slab-circle-outline"
+              size="20"
+            />
+          </template>
+          <template #default>
+            <span v-html="tooltip"></span>
+          </template>
+        </v-tooltip>
+      </div>
     </template>
 
     <!-- TOOLTIP SLOT -->
     <template v-if="$slots.tooltip" v-slot:prepend>
-      <v-tooltip location="bottom">
-        <template #activator="{ props: tooltipProps }">
-          <v-icon
-            v-bind="mergeProps(tooltipProps)"
-            icon="mdi-information-slab-circle-outline"
-            size="20"
-          />
-        </template>
-        <template #default>
-          <slot name="tooltip" />
-        </template>
-      </v-tooltip>
+      <div style="pointer-events: auto; cursor: help">
+        <v-tooltip location="bottom">
+          <template #activator="{ props: tooltipProps }">
+            <v-icon
+              v-bind="mergeProps(tooltipProps)"
+              icon="mdi-information-slab-circle-outline"
+              size="20"
+            />
+          </template>
+          <template #default>
+            <slot name="tooltip" />
+          </template>
+        </v-tooltip>
+      </div>
     </template>
   </v-select>
 </template>
@@ -127,7 +96,7 @@ export default defineComponent({
       default: 'primary',
     },
     modelValue: {
-      type: [String, Number, Object, Array, null] as PropType<any>,
+      type: [String, Number, Object, Array, Boolean, null] as PropType<any>,
       default: null,
     },
     disabled: {
@@ -146,11 +115,6 @@ export default defineComponent({
       type: String,
       default: 'label',
     },
-    /**
-     * Permite un título dinámico (función o propiedad).
-     * Ejemplo implementación:
-     * :item-title-dinamic="(item) => `${item.ejercicio} | Mes: ${item.mes} | Periodo: ${item.numeroperiodo}`"
-     */
     itemTitleDinamic: {
       type: [String, Function] as PropType<string | ((item: any) => string)>,
       default: null,
@@ -193,16 +157,59 @@ export default defineComponent({
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
+    // 🔹 v-model bidireccional
     const model = computed({
       get: () => props.modelValue,
       set: (val) => {
-        emit('update:modelValue', val) // 🔧 actualiza el v-model en el padre
-        if (props.onModelUpdate) {
-          props.onModelUpdate(val) // 🔧 llama  función personalizada desde el Padre
-        }
+        emit('update:modelValue', val)
+        if (props.onModelUpdate) props.onModelUpdate(val)
       },
     })
 
+    // 🧩 Normaliza los items para aceptar booleans, strings, numbers u objetos
+    const formattedItems = computed(() => {
+      return props.items.map((item) => {
+        if (typeof item === 'boolean') {
+          return {
+            [props.itemTitle]: item ? 'Sí' : 'No',
+            [props.itemValue]: item,
+          }
+        }
+
+        if (typeof item === 'string' || typeof item === 'number') {
+          return {
+            [props.itemTitle]: item.toString(),
+            [props.itemValue]: item,
+          }
+        }
+
+        return item // ya es objeto
+      })
+    })
+
+    // 🔹 Texto mostrado en selección y lista
+    const getDisplayText = (raw: any) => {
+      if (typeof raw === 'boolean') return raw ? 'Sí' : 'No'
+
+      if (props.itemTitleDinamic) {
+        if (typeof props.itemTitleDinamic === 'function') return props.itemTitleDinamic(raw)
+        if (typeof raw === 'object') return raw[props.itemTitleDinamic]
+      }
+
+      if (typeof raw === 'object') return raw[props.itemTitle] ?? ''
+      return String(raw)
+    }
+
+    // 🔹 Subtítulo opcional
+    const getSubtitleText = (raw: any) => {
+      if (props.itemSubtitle) {
+        if (typeof props.itemSubtitle === 'function') return props.itemSubtitle(raw)
+        if (typeof raw === 'object') return raw[props.itemSubtitle]
+      }
+      return ''
+    }
+
+    // ✅ Retorno estructurado con tus computed originales + nuevos helpers
     return {
       clearable: computed(() => props.clearable),
       color: computed(() => props.color),
@@ -213,6 +220,7 @@ export default defineComponent({
       itemTitleDinamic: computed(() => props.itemTitleDinamic),
       itemValue: computed(() => props.itemValue),
       items: computed(() => props.items),
+      formattedItems,
       label: computed(() => props.label),
       mergeProps,
       model,
@@ -223,6 +231,8 @@ export default defineComponent({
       showChips: computed(() => props.showChips),
       tooltip: computed(() => props.tooltip),
       variant: computed(() => props.variant),
+      getDisplayText,
+      getSubtitleText,
     }
   },
 })

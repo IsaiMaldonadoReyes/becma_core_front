@@ -15,34 +15,38 @@
   >
     <!-- TOOLTIP SIMPLE -->
     <template v-if="tooltip && !$slots.tooltip" v-slot:prepend>
-      <v-tooltip location="bottom">
-        <template v-slot:activator="{ props: tooltipProps }">
-          <v-icon
-            v-bind="mergeProps(tooltipProps)"
-            icon="mdi-information-slab-circle-outline"
-            size="20"
-          />
-        </template>
-        <template #default>
-          <span v-html="tooltip"></span>
-        </template>
-      </v-tooltip>
+      <div style="pointer-events: auto; cursor: help">
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props: tooltipProps }">
+            <v-icon
+              v-bind="mergeProps(tooltipProps)"
+              icon="mdi-information-slab-circle-outline"
+              size="20"
+            />
+          </template>
+          <template #default>
+            <span v-html="tooltip"></span>
+          </template>
+        </v-tooltip>
+      </div>
     </template>
 
     <!-- TOOLTIP SLOT -->
     <template v-if="$slots.tooltip" v-slot:prepend>
-      <v-tooltip location="bottom">
-        <template #activator="{ props: tooltipProps }">
-          <v-icon
-            v-bind="mergeProps(tooltipProps)"
-            icon="mdi-information-slab-circle-outline"
-            size="20"
-          />
-        </template>
-        <template #default>
-          <slot name="tooltip" />
-        </template>
-      </v-tooltip>
+      <div style="pointer-events: auto; cursor: help">
+        <v-tooltip location="bottom">
+          <template #activator="{ props: tooltipProps }">
+            <v-icon
+              v-bind="mergeProps(tooltipProps)"
+              icon="mdi-information-slab-circle-outline"
+              size="20"
+            />
+          </template>
+          <template #default>
+            <slot name="tooltip" />
+          </template>
+        </v-tooltip>
+      </div>
     </template>
   </v-text-field>
 </template>

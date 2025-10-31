@@ -101,6 +101,13 @@ const router = createRouter({
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
     {
+      component: ParametrizacionForm,
+      name: 'ParametrizacionUpdateForm',
+      path: '/nominas/gape/parametrizacionForm/:id',
+      meta: { requiresAuth: true, sistema: 'nominas' },
+      props: true,
+    },
+    {
       component: LayoutDispersion,
       name: 'LayoutDispersion',
       path: '/nominas/gape/layoutDispersion',
