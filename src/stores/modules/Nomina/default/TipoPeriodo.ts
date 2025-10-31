@@ -18,6 +18,9 @@ export const useTipoPeriodoStore = defineStore({
     responseMessage: '',
   }),
   actions: {
+    reset() {
+      this.tipoPeriodo = []
+    },
     async catalogoTipoPeriodo(idEmpresa: number) {
       try {
         const response = await axios.post(`/api/nominaTipoPeriodo/${idEmpresa}`)

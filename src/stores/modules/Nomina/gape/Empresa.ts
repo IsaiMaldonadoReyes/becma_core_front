@@ -22,6 +22,9 @@ export const useEmpresaStore = defineStore({
     object: {},
   }),
   actions: {
+    reset() {
+      this.empresasList = []
+    },
     async indexEmpresas() {
       try {
         const response = await axios.get('/api/nominaGapeEmpresa/index')
@@ -78,6 +81,17 @@ export const useEmpresaStore = defineStore({
         this.empresa = response.data.data
       } catch (error: any) {
         console.error('Error al obtener datos de cliente y empresa:', error)
+        this.responseMessage = error.message
+        throw error
+      }
+    },
+
+    async empresasNominasPorClienteTipo(data: any) {
+      try {
+        const response = await axios.post(`/api/nominaGapeEmpresa/asignadasAClienteTipo`, data)
+        this.empresasList = response.data.data
+      } catch (error: any) {
+        console.error('Error al obtener empresas:', error)
         this.responseMessage = error.message
         throw error
       }
