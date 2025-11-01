@@ -1,74 +1,171 @@
 <template>
   <v-container fluid ref="vconPrincipalRef" class="h-100">
-    <v-row ref="vbrePrincipalRef" dense>
-      <v-col cols="12" md="6" class="d-flex align-end">
+    <!--vrowBarraDeAccionesRef -->
+    <v-row ref="vrowBarraDeAccionesRef" dense>
+      <v-col cols="12" md="6" class="d-flex align-center">
+        <v-tooltip interactive>
+          <template v-slot:activator="{ props: tooltipProps }">
+            <v-icon
+              v-bind="mergeProps(tooltipProps)"
+              icon="mdi-information-slab-circle-outline"
+              size="20"
+              class="text-medium-emphasis"
+            />
+          </template>
+          <v-icon icon="mdi-calendar-clock" size="14" />
+          <span style="font-size: 10px"> Fecha de creación: 02/04/2025 14:52:02</span>
+          <br />
+          <v-icon icon="mdi-account-circle" size="14" />
+          <span style="font-size: 10px"> Creado por: Administrador</span>
+          <br />
+          <v-icon icon="mdi-calendar-clock" size="14" />
+          <span style="font-size: 10px"> Última edición: 02/04/2025 14:52:02</span>
+          <br />
+          <v-icon icon="mdi-account-circle" size="14" />
+          <span style="font-size: 10px"> Última edición por: Administrador 2</span>
+        </v-tooltip>
         <v-breadcrumbs :items="vbrePrincipalItems" divider="|" class="text-medium-emphasis">
           <template v-slot:prepend>
-            <v-icon icon="mdi-chart-bar" color="primary" />
+            <v-icon icon="mdi-list-box" color="primary" />
           </template>
         </v-breadcrumbs>
       </v-col>
-
-      <v-col cols="12" md="6" class="d-flex align-end justify-end">
-        <v-tooltip bottom color="primary">
-          <template v-slot:activator="{ props }">
-            <v-divider vertical class="mr-5 mt-2 border-opacity-25"></v-divider>
+      <v-col cols="12" md="6" class="d-flex align-center justify-end overflow-auto">
+        <v-divider class="mr-5 my-2 border-opacity-50" vertical />
+        <!-- vbtnCargar -->
+        <v-tooltip bottom color="primary" interactive location="bottom">
+          <template v-slot:activator="{ props: tooltipProps }">
             <v-btn
-              v-bind="props"
+              v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
+            >
+              <!-- :disabled="btnDisabled.importarRegistros" -->
+              <v-icon color="white" icon="mdi-upload" size="24px" />
+            </v-btn>
+          </template>
+          <span>
+            <v-icon icon="mdi-microsoft-excel" />
+            Importar registros desde el formato Excel
+          </span>
+        </v-tooltip>
+
+        <!-- vbtnDescargar -->
+        <v-tooltip bottom color="primary" interactive location="bottom">
+          <template v-slot:activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="mergeProps(tooltipProps)"
+              class="mr-1"
+              color="primary"
+              height="40px"
+              min-width="40px"
+              width="40px"
+            >
+              <!-- :disabled="btnDisabled.descargarFormato" -->
+              <v-icon color="white" icon="mdi-download" size="24px" />
+            </v-btn>
+          </template>
+          <span>
+            <v-icon icon="mdi-microsoft-excel" />
+            Descargar el formato base de Excel para importación de registros
+          </span>
+        </v-tooltip>
+
+        <!-- vbtnEliminar -->
+        <v-tooltip bottom color="primary" interactive location="bottom">
+          <template v-slot:activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="mergeProps(tooltipProps)"
+              class="mr-1"
+              color="primary"
+              height="40px"
+              min-width="40px"
+              width="40px"
+            >
+              <!-- :disabled="btnDisabled.eliminarRegistros" -->
+              <v-icon color="white" icon="mdi-delete" size="24px" />
+            </v-btn>
+          </template>
+          <span>Eliminar</span>
+        </v-tooltip>
+
+        <!-- vbtnGuardar -->
+        <v-tooltip bottom color="primary" interactive location="bottom">
+          <template v-slot:activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="mergeProps(tooltipProps)"
               :loading="loading"
+              class="mr-1"
+              color="primary"
+              height="40px"
+              min-width="40px"
+              width="40px"
               @click="onDecision"
             >
-              <v-icon color="white" icon="mdi-microsoft-excel" size="24px" />
+              <!-- :disabled="btnDisabled.guardarCambios" -->
+              <v-icon icon="mdi-floppy" color="white" size="24px" />
             </v-btn>
           </template>
-          <span>Exportar información a .xlsx</span>
+          <span>Guardar</span>
         </v-tooltip>
-        <v-tooltip bottom color="primary">
-          <template v-slot:activator="{ props }">
+
+        <!-- vbtnActivar -->
+        <v-tooltip bottom color="primary" interactive location="bottom">
+          <template v-slot:activator="{ props: tooltipProps }">
             <v-btn
-              color="primary"
-              min-width="48px"
-              width="48px"
-              height="48px"
+              v-model="dataModel.estado"
+              v-bind="mergeProps(tooltipProps)"
               class="mr-1"
-              v-bind="props"
-            >
-              <v-icon size="24px" color="white">mdi-file-pdf-box</v-icon>
-            </v-btn>
-          </template>
-          <span>Exportar gráfica a .pdf</span>
-        </v-tooltip>
-        <v-tooltip bottom color="primary">
-          <template v-slot:activator="{ props }">
-            <v-btn
-              v-bind="props"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
-              @click.stop="vnavFiltrosIsOpen = !vnavFiltrosIsOpen"
+              height="40px"
+              min-width="40px"
+              width="40px"
             >
-              <v-icon size="24px" color="white">
-                {{ vnavFiltrosIsOpen ? 'mdi-filter-menu' : 'mdi-filter' }}
+              <!--  :disabled="btnDisabled.activarRegistro"
+              @click="dataModel.estado = !dataModel.estado" -->
+              <v-icon color="white" size="24px">
+                {{ !dataModel.estado ? 'mdi-checkbox-blank-outline' : 'mdi-checkbox-marked' }}
+                mdi-checkbox-blank-outline
               </v-icon>
             </v-btn>
           </template>
           <span>
-            {{ vnavFiltrosIsOpen ? 'Cerrar panel de filtros' : 'Abrir panel de filtros' }}
+            Marque la casilla para
+            <b>
+              <i>
+                {{ !dataModel.estado ? ' ACTIVAR ' : 'DESACTIVAR' }}
+              </i>
+            </b>
+            este registro
           </span>
+        </v-tooltip>
+
+        <!--vbtnCrear-->
+        <v-tooltip bottom color="primary" interactive location="bottom">
+          <template v-slot:activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="mergeProps(tooltipProps)"
+              color="primary"
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.crearRegistro"
+              :to="'/nominas/gape/parametrizacionForm'"
+            >
+              <v-icon color="white" icon="mdi-plus" size="24px" />
+            </v-btn>
+          </template>
+          <span>Crear nuevo registro</span>
         </v-tooltip>
       </v-col>
     </v-row>
     <v-row>
-      <v-col class="my-0 py-0">
-        <v-divider class="border-opacity-25 ma-0 pa-0" />
-      </v-col>
+      <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
     </v-row>
+
     <v-row>
       <v-col cols="12">
         <bec-autocomplete
@@ -100,6 +197,7 @@
         </v-tabs>
       </v-col>
     </v-row>
+
     <v-form ref="formRef">
       <v-row>
         <v-col>
@@ -1131,41 +1229,37 @@ export default defineComponent({
   components: { BecSelect, BecAutocomplete, BecTextField },
 
   setup() {
-    // 1.Imports
-    // 2.Props y Emits
-    // 3.Composables
-    // 4.Reactive
-    // 5.Computed
-    // 6.Watchers
-    // 7.Functions
+    // 1. Imports
+    // 2. Props y Emits
+    // 3. Composables (funciones reusables de Vuetify)
+    // 4. Reactive
+    // 5. Computed properties
+    // 6. Watchers
+    // 7. Lifecycle hooks (onMounted, mounted)
+    // 8. Functions (fetch, metodos, async)
 
-    // import Stores
-    //const nomGeneralesStore = useNomGeneralesStore()
-
-    const empresasStore = useEmpresasStore()
-
-    const tipoContratoStore = useTipoContratoStore()
-    const tipoPeriodoStore = useTipoPeriodoStore()
-    const departamentoStore = useDepartamentoStore()
-    const puestoStore = usePuestoStore()
-    const tipoPrestacionStore = useTipoPrestacionStore()
-    const turnoStore = useTurnoStore()
-    const tipoRegimenStore = useTipoRegimenStore()
-
-    const empresaStore = useEmpresaStore()
-
-    const registroPatronalStore = useRegistroPatronalStore()
-    const entidadFederativaStore = useEntidadFederativaStore()
+    // 3. Composables
     const bancoStore = useBancoStore()
-    const tipoJornadaStore = useTipoJornadaStore()
-
-    const empleadoStore = useEmpleadoStore()
-
+    const departamentoStore = useDepartamentoStore()
     const dialogConfirmation = useDialogManagerStore()
-
-    // Composable del empleado
+    const empleadoStore = useEmpleadoStore()
+    const empresaStore = useEmpresaStore()
+    const empresasStore = useEmpresasStore()
+    const entidadFederativaStore = useEntidadFederativaStore()
+    const puestoStore = usePuestoStore()
+    const registroPatronalStore = useRegistroPatronalStore()
+    const tipoContratoStore = useTipoContratoStore()
+    const tipoJornadaStore = useTipoJornadaStore()
+    const tipoPeriodoStore = useTipoPeriodoStore()
+    const tipoPrestacionStore = useTipoPrestacionStore()
+    const tipoRegimenStore = useTipoRegimenStore()
+    const turnoStore = useTurnoStore()
     const { dataModel, setEmpleado, resetModel } = useEmpleadoModel()
 
+    // 3. Composables vuetify
+    const { name, mobile, smAndDown } = useDisplay()
+
+    // 4. Reactive
     const formRef = ref()
     const loading = ref(false)
 
@@ -1184,7 +1278,7 @@ export default defineComponent({
         title: 'Empleado',
       },
     ])
-    const vbrePrincipalRef = ref()
+    const vrowBarraDeAccionesRef = ref()
     const vconPrincipalRef = ref()
 
     const vnavFiltrosIsOpen = ref(true)
@@ -1227,50 +1321,46 @@ export default defineComponent({
     const cardHeight = ref(0)
     const chartHeight = ref(0)
 
-    // Computed
+    const btnDisabled = ref({
+      importarRegistros: true,
+      descargarFormato: true,
+      eliminarRegistros: true,
+      guardarCambios: false,
+      activarRegistro: false,
+      crearRegistro: true,
+
+      compCliente: false,
+      compTipoEmp: true,
+      compEmpresa: true,
+      compTipoPeriodo: true,
+    })
+
+    // 5. Computed properties
     const getCardHeight = computed(() => {
+      const alto = ref(0)
       if (vconPrincipalRef.value) {
-        calcularDimensiones()
+        alto.value = cardHeight.value =
+          vconPrincipalRef.value.$el.clientHeight -
+          vrowBarraDeAccionesRef.value.$el.clientHeight -
+          vtabGraficaRef.value.$el.clientHeight -
+          80
       }
-      return { height: `${cardHeight.value}px !important` }
+      return { height: `${alto.value}px !important` }
     })
 
     const getChartHeight = computed(() => {
+      const alto = ref(0)
       if (vconPrincipalRef.value) {
-        calcularDimensiones()
-      }
-
-      return { height: `${chartHeight.value}px !important` }
-    })
-
-    // Funcionalidad vuetify
-    const { name, mobile, smAndDown } = useDisplay()
-
-    // Metodos
-
-    onMounted(() => {
-      nextTick(() => {
-        window.addEventListener('resize', calcularDimensiones)
-
-        fetchEmpresasNomina()
-      })
-    })
-
-    onBeforeUnmount(() => {
-      window.removeEventListener('resize', calcularDimensiones)
-    })
-
-    const calcularDimensiones = () => {
-      if (vconPrincipalRef.value) {
-        cardHeight.value =
+        alto.value = cardHeight.value =
           vconPrincipalRef.value.$el.clientHeight -
-          vbrePrincipalRef.value.$el.clientHeight -
+          vrowBarraDeAccionesRef.value.$el.clientHeight -
           vtabGraficaRef.value.$el.clientHeight -
-          80
-
-        chartHeight.value = cardHeight.value - 45
+          80 -
+          45
       }
-    }
+
+      return { height: `${alto.value}px !important` }
+    })
 
     const itemsEmpresasNomina = computed(() => empresasStore.empresas)
 
@@ -1316,50 +1406,7 @@ export default defineComponent({
       return validationRules.codeMask(empresaStore.empresa?.mascarillacodigo ?? '')
     })
 
-    const fetchEmpresasNomina = async () => {
-      try {
-        await empresasStore.empresasNominas()
-      } catch (error) {
-        console.error('Error al cargar empresas nómina:', error)
-      }
-    }
-
-    const cargarCatalogosPorEmpresa = async (idEmpresa: number) => {
-      await Promise.all([
-        tipoContratoStore.catalogoTipoContrato(idEmpresa),
-        tipoPeriodoStore.catalogoTipoPeriodo(idEmpresa),
-        departamentoStore.catalogoDepartamento(idEmpresa),
-        puestoStore.catalogoPuesto(idEmpresa),
-        tipoPrestacionStore.catalogoTipoPrestacion(idEmpresa),
-        turnoStore.catalogoTurno(idEmpresa),
-        tipoRegimenStore.catalogoTipoRegimen(idEmpresa),
-        registroPatronalStore.catalogoRegistroPatronal(idEmpresa),
-        entidadFederativaStore.catalogoEntidadFederativa(idEmpresa),
-        bancoStore.catalogoBanco(idEmpresa),
-        empresaStore.catalogoEmpresa(idEmpresa),
-        tipoJornadaStore.catalogoTipoJornada(idEmpresa),
-
-        (dataModel.value.zonasalario = empresaStore.empresa?.zonasalariogeneral ?? ''),
-      ])
-    }
-
-    watch(
-      () => dataModel.value.id_nomina_gape_empresa,
-      async (idEmpresa) => {
-        if (idEmpresa) {
-          resetModel(true)
-
-          await nextTick()
-          formRef.value?.reset()
-          formRef.value?.resetValidation()
-
-          codigoAsignado = false
-
-          await cargarCatalogosPorEmpresa(idEmpresa)
-        }
-      },
-    )
-
+    // 6. Watchers
     watch(
       () => ({
         nombre: dataModel.value.nombre,
@@ -1440,6 +1487,61 @@ export default defineComponent({
       { immediate: true },
     )
 
+    watch(
+      () => dataModel.value.id_nomina_gape_empresa,
+      async (idEmpresa) => {
+        if (idEmpresa) {
+          resetModel(true)
+
+          await nextTick()
+          formRef.value?.reset()
+          formRef.value?.resetValidation()
+
+          codigoAsignado = false
+
+          await cargarCatalogosPorEmpresa(idEmpresa)
+        }
+      },
+    )
+
+    // 7. Lifecycle hooks | onMounted, onBeforeUnmount
+
+    onMounted(() => {
+      nextTick(() => {
+        fetchEmpresasNomina()
+      })
+    })
+
+    onBeforeUnmount(() => {})
+
+    // 8. Functions (fetch, metodos, async)
+    const fetchEmpresasNomina = async () => {
+      try {
+        await empresasStore.empresasNominas()
+      } catch (error) {
+        console.error('Error al cargar empresas nómina:', error)
+      }
+    }
+
+    const cargarCatalogosPorEmpresa = async (idEmpresa: number) => {
+      await Promise.all([
+        tipoContratoStore.catalogoTipoContrato(idEmpresa),
+        tipoPeriodoStore.catalogoTipoPeriodo(idEmpresa),
+        departamentoStore.catalogoDepartamento(idEmpresa),
+        puestoStore.catalogoPuesto(idEmpresa),
+        tipoPrestacionStore.catalogoTipoPrestacion(idEmpresa),
+        turnoStore.catalogoTurno(idEmpresa),
+        tipoRegimenStore.catalogoTipoRegimen(idEmpresa),
+        registroPatronalStore.catalogoRegistroPatronal(idEmpresa),
+        entidadFederativaStore.catalogoEntidadFederativa(idEmpresa),
+        bancoStore.catalogoBanco(idEmpresa),
+        empresaStore.catalogoEmpresa(idEmpresa),
+        tipoJornadaStore.catalogoTipoJornada(idEmpresa),
+
+        (dataModel.value.zonasalario = empresaStore.empresa?.zonasalariogeneral ?? ''),
+      ])
+    }
+
     const onDecision = () => {
       dialogConfirmation.onOpenDialogConfirmation(
         '¿Estás seguro de guardar el registro?',
@@ -1482,6 +1584,7 @@ export default defineComponent({
     }
 
     return {
+      btnDisabled,
       itemsEmpresasNomina,
       itemsTipoContratoNomina,
       itemsTipoPeriodoNomina,
@@ -1508,7 +1611,7 @@ export default defineComponent({
       mergeProps,
       name,
       vbrePrincipalItems,
-      vbrePrincipalRef,
+      vrowBarraDeAccionesRef,
       vconPrincipalRef,
       vnavFiltrosIsOpen,
       vtabMenuItems,
