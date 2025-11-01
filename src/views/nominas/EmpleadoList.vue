@@ -147,6 +147,7 @@
     <v-row>
       <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
     </v-row>
+
     <v-row ref="vrowClienteRef">
       <v-col cols="12">
         <v-autocomplete
