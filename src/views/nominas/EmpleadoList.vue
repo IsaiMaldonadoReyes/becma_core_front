@@ -1,102 +1,114 @@
 <template>
-  <pre>{{ vdtbPrincipalItemsSeleccionados }}</pre>
   <v-container ref="vconPrincipalRef" fluid style="height: 95% !important">
-    <v-row ref="vbrePrincipalRef" dense>
+    <!-- vrowBarraDeAccionesRef -->
+    <v-row ref="vrowBarraDeAccionesRef" dense>
       <v-col cols="12" md="6" class="d-flex align-center">
-        <v-breadcrumbs :items="vbrePrincipalItems" divider="|" class="text-medium-emphasis">
+        <v-breadcrumbs
+          :items="vbrePrincipalItems"
+          class="text-medium-emphasis text-subtitle-1"
+          divider="|"
+        >
           <template v-slot:prepend>
-            <v-icon icon="mdi-account-tie" color="primary" />
+            <v-icon icon="mdi-account-box" color="primary" />
           </template>
         </v-breadcrumbs>
       </v-col>
       <v-col cols="12" md="6" class="d-flex align-center justify-end overflow-auto">
-        <v-divider class="mr-5 border-opacity-25" vertical />
+        <v-divider class="mr-5 my-2 border-opacity-25" vertical />
 
+        <!-- vbtnCargar -->
         <v-tooltip bottom color="primary" interactive>
-          <template v-slot:activator="{ props: tooltip }">
+          <template v-slot:activator="{ props: tooltipProps }">
             <v-btn
-              v-bind="mergeProps(vbtnMenuImportarModel, tooltip)"
+              v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.importarRegistros"
             >
-              <v-icon size="24px" color="white">mdi-upload</v-icon>
+              <v-icon color="white" icon="mdi-upload" size="24px" />
             </v-btn>
           </template>
           <span>
-            <v-icon icon="mdi-microsoft-excel" /> Importar registros desde el formato Excel
+            <v-icon icon="mdi-microsoft-excel" />
+            Importar registros desde el formato Excel
           </span>
         </v-tooltip>
 
+        <!-- vbtnDescargar -->
         <v-tooltip bottom color="primary" interactive>
-          <template v-slot:activator="{ props: tooltip }">
+          <template v-slot:activator="{ props: tooltipProps }">
             <v-btn
-              v-bind="mergeProps(vbtnMenuExportarModel, tooltip)"
+              v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.descargarFormato"
             >
-              <v-icon size="24px" color="white">mdi-download</v-icon>
+              <v-icon color="white" icon="mdi-download" size="24px" />
             </v-btn>
           </template>
           <span>
-            <v-icon icon="mdi-microsoft-excel" /> Descargar el formato base de Excel para
-            importación de registros
+            <v-icon icon="mdi-microsoft-excel" />
+            Descargar el formato base de Excel para importación de registros
           </span>
         </v-tooltip>
 
+        <!-- vbtnEliminar -->
         <v-tooltip bottom color="primary" interactive>
-          <template v-slot:activator="{ props }">
+          <template v-slot:activator="{ props: tooltipProps }">
             <v-btn
-              v-bind="props"
+              v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
-              disabled
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.eliminarRegistros"
             >
-              <v-icon size="24px" color="white">mdi-delete</v-icon>
+              <v-icon color="white" icon="mdi-delete" size="24px" />
             </v-btn>
           </template>
           <span>Eliminar</span>
         </v-tooltip>
 
-        <v-tooltip bottom color="primary">
-          <template v-slot:activator="{ props }">
+        <!-- vbtnGuardar -->
+        <v-tooltip bottom color="primary" interactive>
+          <template v-slot:activator="{ props: tooltipProps }">
             <v-btn
-              v-bind="props"
+              v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              disabled
-              height="48px"
-              min-width="48px"
-              width="48px"
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.guardarCambios"
             >
-              <v-icon size="24px" color="white">mdi-floppy</v-icon>
+              <v-icon icon="mdi-floppy" color="white" size="24px" />
             </v-btn>
           </template>
           <span>Guardar</span>
         </v-tooltip>
 
+        <!-- vbtnActivar -->
         <v-tooltip bottom color="primary" interactive>
-          <template v-slot:activator="{ props }">
+          <template v-slot:activator="{ props: tooltipProps }">
             <v-btn
-              v-bind="props"
+              v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
-              height="48px"
-              min-width="48px"
-              width="48px"
-              disabled
-              @click.stop="vbtnActivarModel = !vbtnActivarModel"
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.activarRegistro"
+              @click.stop="vbtnActivarRegistro = !vbtnActivarRegistro"
             >
-              <v-icon size="24px" color="white">
-                {{ vbtnActivarModel ? 'mdi-checkbox-blank-outline' : 'mdi-checkbox-marked' }}
+              <v-icon color="white" size="24px">
+                {{ vbtnActivarRegistro ? 'mdi-checkbox-blank-outline' : 'mdi-checkbox-marked' }}
               </v-icon>
             </v-btn>
           </template>
@@ -104,135 +116,264 @@
             Marque la casilla para
             <b>
               <i>
-                {{ vbtnActivarModel ? ' ACTIVAR ' : 'DESACTIVAR' }}
+                {{ vbtnActivarRegistro ? ' ACTIVAR ' : 'DESACTIVAR' }}
               </i>
             </b>
             este registro
           </span>
         </v-tooltip>
 
-        <v-tooltip bottom color="primary">
-          <template v-slot:activator="{ props }">
+        <!--vbtnCrear-->
+        <v-tooltip bottom color="primary" interactive>
+          <template v-slot:activator="{ props: tooltipProps }">
             <v-btn
+              v-bind="mergeProps(tooltipProps)"
               color="primary"
-              min-width="48px"
-              width="48px"
-              height="48px"
-              v-bind="props"
-              @click="onOpenDialogSistema('onSave', {}, 'Nuevo sistema')"
+              height="40px"
+              min-width="40px"
+              width="40px"
+              :disabled="btnDisabled.crearRegistro"
+              :to="'/nominas/gape/empleadoForm'"
             >
-              <v-icon size="24px" color="white">mdi-plus</v-icon>
+              <v-icon color="white" icon="mdi-plus" size="24px" />
             </v-btn>
           </template>
-          <span>Agregar nuevo</span>
+          <span>Crear nuevo registro</span>
         </v-tooltip>
-
-        <!--v-btn
-          min-width="48px"
-          width="48px"
-          height="48px"
-          color="primary"
-          style="font-size: 18px"
-          density="comfortable"
-        >
-          <v-tooltip>
-            <template v-slot:activator="{ props: tooltip }">
-              <v-checkbox-btn v-bind="mergeProps(tooltip)" />
-            </template>
-            <span>Marque la casilla para activar este registro.</span>
-          </v-tooltip>
-        </v-btn-->
       </v-col>
     </v-row>
     <v-row>
       <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
     </v-row>
 
-    <v-row ref="vrowClienteRef">
-      <v-col cols="12">
-        <v-autocomplete
-          :disabled="false"
-          auto-select-first
-          chips
-          clear-icon="mdi-close"
-          clear-on-select
-          clearable
-          closable-chips
-          color="primary"
-          filter-mode="every"
-          hide-details="auto"
-          item-color="primary"
-          item-props
-          item-title="nombre"
-          item-value="id"
-          label="Cliente"
-          no-data-text="No hay información disponible"
-          placeholder="Buscar"
-          prepend-inner-icon="mdi-briefcase-account"
-          variant="outlined"
-        >
-          <!--template v-slot:chip="{ props, item }">
-                          <v-chip
-                            v-bind="props"
-                            :text="item.raw.nombre_empresa"
-                            color="primary"
-                            variant="flat"
-                          />
-                        </template-->
-
-          <!--template v-slot:item="{ props, item }">
-                          <v-list-item
-                            v-bind="props"
-                            :subtitle="item.raw.nombre_base"
-                            :title="item.raw.nombre_empresa"
-                          />
-                        </template-->
-
-          <template v-slot:prepend>
-            <v-tooltip interactive>
-              <template v-slot:activator="{ props: tooltip }">
-                <v-icon icon="mdi-information-slab-circle-outline" v-bind="mergeProps(tooltip)" />
-              </template>
-              <span> Ruta del archivo de la base de datos de la empresa del cliente. </span>
-            </v-tooltip>
-          </template>
-        </v-autocomplete>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
-    </v-row>
+    <!-- vrowFiltrosRef -->
     <v-row ref="vrowFiltrosRef">
-      <v-col cols="12" lg="10" class="d-flex align-center">
-        <v-text-field
-          v-model="vdtbPrincipalBusqueda"
-          clear-icon="mdi-close"
-          clearable
-          color="primary"
-          flat
-          hide-details
-          placeholder="Buscar"
-          prepend-inner-icon="mdi-magnify"
-          single-line
-          variant="outlined"
+      <v-col cols="12">
+        <bec-autocomplete
+          v-model="dataModel.id_nomina_gape_cliente"
+          :clearable="false"
+          :disabled="btnDisabled.compCliente"
+          :item-subtitle="(item) => `${item.codigo}`"
+          :item-title="'nombre'"
+          :item-value="'id'"
+          :items="itemsClientesNomina"
+          :label="'Cliente'"
+          :multiple="false"
+          :prepend-icon="'mdi-account-box'"
+          :return-object="false"
+          :show-chips="false"
+          @update:model-value="buscarEmpresasNomina"
         >
-          <template v-slot:prepend>
-            <v-tooltip interactive>
-              <template v-slot:activator="{ props: tooltip }">
-                <v-icon icon="mdi-information-slab-circle-outline" v-bind="mergeProps(tooltip)" />
-              </template>
-              <span>Se requiere reporte de ISN mensual.</span>
-            </v-tooltip>
+          <template #tooltip>
+            <v-card
+              :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+              class="py-3"
+              color="transparent"
+              elevation="0"
+            >
+              <v-row>
+                <v-col cols="1" class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-information-slab-circle-outline" />
+                </v-col>
+                <v-col cols="11">
+                  <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
+                  Elija el <b style="color: #2a73c5"><i>CLIENTE</i></b> para poder filtrar la
+                  información correspondientes.
+                </v-col>
+              </v-row>
+              <v-divider class="border-opacity-50 my-2 mx-2" />
+              <v-row>
+                <v-col cols="1" class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-cursor-default-click" />
+                </v-col>
+                <v-col cols="11">
+                  <span style="font-weight: bold; color: #2a73c5">Evento:</span>
+                  al seleccionar una opción en este campo, se habilitará y mostrará la información
+                  correspondiente de: <b style="color: #2a73c5"><i>TIPO DE EMPRESA</i></b>
+                </v-col>
+              </v-row>
+            </v-card>
           </template>
-        </v-text-field>
+        </bec-autocomplete>
       </v-col>
-      <v-col cols="12" lg="2" class="d-flex justify-end align-center">
-        <v-tooltip interactive>
+      <v-col cols="12" md="3" class="d-flex align-start justify-end">
+        <bec-select
+          v-model="dataModel.fiscal"
+          :clearable="false"
+          :disabled="btnDisabled.compTipoEmp"
+          :item-title="'title'"
+          :item-value="'value'"
+          :items="[
+            { title: 'Empresa fiscal', value: true },
+            { title: 'Empresa no fiscal', value: false },
+          ]"
+          :label="'Tipo de empresa'"
+          :multiple="false"
+          :placeholder="'Seleccione'"
+          :prepend-icon="'mdi-briefcase-account'"
+          @update:model-value="buscarEmpresasNomina"
+        >
+          <template #tooltip>
+            <v-card
+              :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+              class="py-3"
+              color="transparent"
+              elevation="0"
+            >
+              <v-row>
+                <v-col cols="1" class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-information-slab-circle-outline" />
+                </v-col>
+                <v-col cols="11">
+                  <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
+                  elija el tipo de empresa (fiscal o no fiscal) para mostrar únicamente las empresas
+                  correspondientes.
+                </v-col>
+              </v-row>
+              <v-divider class="border-opacity-50 my-2 mx-2" />
+              <v-row>
+                <v-col cols="1" class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-file-rotate-left" />
+                </v-col>
+                <v-col cols="11">
+                  <span style="font-weight: bold; color: #2a73c5">Campo dependiente:</span>
+                  debe seleccionar primero
+                  <b style="color: #2a73c5"><i>CLIENTE</i></b> para poder habilitar este campo.
+                </v-col>
+              </v-row>
+              <v-divider class="border-opacity-50 my-2 mx-2" />
+              <v-row>
+                <v-col cols="1" class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-cursor-default-click" />
+                </v-col>
+                <v-col cols="11">
+                  <span style="font-weight: bold; color: #2a73c5">Evento:</span>
+                  al seleccionar una opción en este campo, se habilitará y mostrará la información
+                  correspondiente de: <b style="color: #2a73c5"><i>EMPRESA</i></b>
+                </v-col>
+              </v-row>
+            </v-card>
+          </template>
+        </bec-select>
+      </v-col>
+      <v-col cols="12" md="9">
+        <bec-autocomplete
+          v-model="dataModel.id_nomina_gape_empresa"
+          :clearable="false"
+          :disabled="btnDisabled.compEmpresa"
+          :item-subtitle="(item) => `${item.rfc}`"
+          :item-title="'razon_social'"
+          :item-value="'id'"
+          :items="itemsEmpresaDatabase"
+          :label="'Empresa *'"
+          :multiple="false"
+          :prepend-icon="'mdi-briefcase-account'"
+          :return-object="false"
+          :show-chips="false"
+          @update:model-value="buscarEmpleadosClienteEmpresa"
+        >
+          <template #tooltip>
+            <v-card
+              :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+              class="py-3"
+              color="transparent"
+              elevation="0"
+            >
+              <v-row>
+                <v-col cols="1" class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-information-slab-circle-outline" />
+                </v-col>
+                <v-col cols="11">
+                  <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
+                  elija la empresa por la que desea filtrar los empleados.
+                </v-col>
+              </v-row>
+              <v-divider class="border-opacity-50 my-2 mx-2" />
+              <v-row>
+                <v-col cols="1" class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-file-rotate-left" />
+                </v-col>
+                <v-col cols="11">
+                  <span style="font-weight: bold; color: #2a73c5">Campo dependiente:</span>
+                  debe seleccionar primero
+                  <b style="color: #2a73c5"><i>TIPO DE EMPRESA</i></b> para poder habilitar este
+                  campo y mostrar las empresas correspondientes.
+                </v-col>
+              </v-row>
+              <v-divider class="border-opacity-50 my-2 mx-2" />
+              <v-row>
+                <v-col cols="1" class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-cursor-default-click" />
+                </v-col>
+                <v-col cols="11">
+                  <span style="font-weight: bold; color: #2a73c5">Evento:</span>
+                  al seleccionar una opción en este campo, se habilitará el:
+                  <b style="color: #2a73c5"><i>BUSCADOR</i></b> de empleados
+                </v-col>
+              </v-row>
+            </v-card>
+          </template>
+        </bec-autocomplete>
+      </v-col>
+      <v-col cols="12" md="10" class="d-flex align-center">
+        <bec-text-field
+          v-model="vdtbPrincipalBusqueda"
+          :placeholder="'Buscar'"
+          :prepend-icon="'mdi-magnify'"
+        >
+          >
+          <template #tooltip>
+            <v-card
+              :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+              class="py-3"
+              color="transparent"
+              elevation="0"
+            >
+              <v-row>
+                <v-col cols="1" class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-information-slab-circle-outline" />
+                </v-col>
+                <v-col cols="11">
+                  <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
+                  puede buscar registros ingresando cualquier coincidencia con los datos de la
+                  tabla.
+                </v-col>
+              </v-row>
+              <v-divider class="border-opacity-50 my-2 mx-2" />
+              <v-row>
+                <v-col cols="1" class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-file-rotate-left" />
+                </v-col>
+                <v-col cols="11">
+                  <span style="font-weight: bold; color: #2a73c5">Campo dependiente:</span>
+                  debe seleccionar primero
+                  <b style="color: #2a73c5"><i>TIPO DE EMPRESA</i></b> para poder habilitar este
+                  campo y mostrar las empresas correspondientes.
+                </v-col>
+              </v-row>
+              <v-divider class="border-opacity-50 my-2 mx-2" />
+              <v-row>
+                <v-col cols="1" class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-cursor-default-click" />
+                </v-col>
+                <v-col cols="11">
+                  <span style="font-weight: bold; color: #2a73c5">Evento:</span>
+                  al ingresar su búsqueda, se mostrará en la tabla el listado con las coincidencias
+                  encontradas.
+                </v-col>
+              </v-row>
+            </v-card>
+          </template>
+        </bec-text-field>
+      </v-col>
+      <v-col cols="12" md="2" class="d-flex justify-end align-center">
+        <v-tooltip location="bottom">
           <template v-slot:activator="{ props: tooltip }">
             <v-btn-group
               v-bind="mergeProps(tooltip)"
               class="border-opacity-25"
               color="primary"
+              density="comfortable"
               divided
               variant="outlined"
             >
@@ -244,7 +385,6 @@
                   hide-details
                   max="15"
                   min="1"
-                  rounded="xl"
                   type="number"
                   variant="plain"
                   width="50"
@@ -268,15 +408,32 @@
               </v-menu>
             </v-btn-group>
           </template>
-          <span>
-            Escriba o seleccione la cantidad de registros que desea ver por página en la tabla.
-          </span>
+          <template #default>
+            <v-card
+              :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+              class="py-3"
+              color="transparent"
+              elevation="0"
+            >
+              <v-row>
+                <v-col cols="1" class="d-flex align-center justify-center">
+                  <v-icon icon="mdi-information-slab-circle-outline" />
+                </v-col>
+                <v-col cols="11">
+                  <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
+                  escriba o seleccione la cantidad de registros que desea ver por página en la
+                  tabla.
+                </v-col>
+              </v-row>
+            </v-card>
+          </template>
         </v-tooltip>
       </v-col>
     </v-row>
     <v-row>
       <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
     </v-row>
+
     <v-row>
       <v-col>
         <v-card color="transparent" elevation="0">
@@ -297,8 +454,7 @@
             sort-desc-icon="mdi-arrow-up-thin"
             fixed-header
             eager
-            :height="getCardHeight"
-            :cell-props="rowProps"
+            :height="smAndDown ? undefined : getTableHeight"
           >
             <template v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }">
               <v-btn-group
@@ -313,33 +469,17 @@
                     <template v-slot:activator="{ props: tooltip }">
                       <v-checkbox-btn
                         v-bind="mergeProps(tooltip)"
-                        :indeterminate="someSelected && !allSelected"
-                        :model-value="allSelected"
+                        class="pa-0"
                         density="compact"
                         true-icon="mdi-checkbox-multiple-marked"
+                        :indeterminate="someSelected && !allSelected"
+                        :model-value="allSelected"
                         @update:model-value="selectAll(!allSelected)"
-                        class="pa-0"
                       />
                     </template>
                     <span>Seleccionar todo</span>
                   </v-tooltip>
                 </v-btn>
-
-                <v-menu>
-                  <template v-slot:activator="{ props: menu }">
-                    <v-tooltip>
-                      <template v-slot:activator="{ props: tooltip }">
-                        <v-btn icon="mdi-menu-down" v-bind="mergeProps(menu, tooltip)" />
-                      </template>
-                      <span>Acciones</span>
-                    </v-tooltip>
-                  </template>
-                  <v-list>
-                    <v-list-item v-for="(item, index) in vdtbPrincipalOpcionesCheck" :key="index">
-                      <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
               </v-btn-group>
             </template>
             <template v-slot:item.data-table-select="{ internalItem, isSelected, toggleSelect }">
@@ -349,166 +489,190 @@
                 @update:model-value="toggleSelect(internalItem)"
               />
             </template>
-            <!-- sobrescribes la columna 'drag' -->
-            <template v-slot:item.drag="{ index }">
-              <v-icon
-                icon="mdi-drag"
-                class="draggable-row"
-                draggable="true"
-                @dragstart="onDragStart(index)"
-                @dragover.prevent
-                @drop="onDrop(index)"
-              />
-            </template>
-            <template v-slot:item.actions="{ item }">
-              <v-icon
-                class="me-2"
-                icon="mdi-pencil"
-                size="small"
-                color="primary"
-                @click="onOpenDialogSistema('onEdit', item, 'Editar sistema')"
-              />
-              <v-divider class="mx-3 align-self-center" length="24" thickness="2" vertical />
-              <v-icon
-                icon="mdi-delete"
-                size="small"
-                color="primary"
-                @click="
-                  onOpenDialogConfirmation(
-                    `Esta acción eliminará ${item.codigo} de forma definitiva. ¿Desea continuar?`,
-                    'onDelete',
-                    item,
-                    `Eliminar ${item.codigo}`,
-                  )
-                "
-              />
+            <template v-slot:item.acciones="{ item }">
+              <v-tooltip interactive>
+                <template v-slot:activator="{ props: tooltipProps }">
+                  <v-btn
+                    v-bind="mergeProps(tooltipProps)"
+                    class="mr-1"
+                    color="primary"
+                    height="36px"
+                    min-width="36px"
+                    width="36px"
+                    variant="elevated"
+                  >
+                    <v-icon size="small" color="white" icon="mdi-pencil" />
+                  </v-btn>
+                </template>
+                <span>
+                  Editar <b>{{ item.nombre }}</b>
+                </span>
+              </v-tooltip>
             </template>
             <template v-slot:no-data>
-              <v-card border class="my-5 pa-10 text-center" color="transparent" elevation="0">
-                <v-icon color="grey-lighten-1" size="60" icon="mdi-selection-search" />
-                <v-card-text class="text-grey-darken-1">No se encontraron registros.</v-card-text>
+              <v-card
+                border
+                class="ma-5 d-flex align-center justify-center"
+                color="transparent"
+                elevation="0"
+                :height="getTableNoDataHeight"
+              >
+                <v-card-text class="text-grey-darken-1">
+                  <v-icon color="grey-lighten-1" size="60" icon="mdi-selection-search" />
+                  <span>No se encontraron registros.</span>
+                </v-card-text>
               </v-card>
             </template>
             <template v-slot:bottom>
+              <v-divider class="border-opacity-25 ma-0 pa-0" />
               <v-pagination
                 v-model="vdtbPrincipalPaginaActual"
                 :length="getVdtPrincipalTotalPaginas"
-                :total-visible="5"
+                :total-visible="smAndDown ? 3 : 20"
                 active-color="primary"
+                class="pt-2"
                 color="primary"
+                density="comfortable"
                 show-first-last-page
-                variant="tonal"
-                class="pt-1"
+                variant="elevated"
               />
             </template>
           </v-data-table>
         </v-card>
       </v-col>
     </v-row>
-    <dialog-information
-      :dialog-color="dialogInformation.color"
-      :dialog-content="dialogInformation.cuerpo"
-      :dialog-icon="dialogInformation.icono"
-      :dialog-speed-icon="dialogInformation.velocidad"
-      :dialog-title="dialogInformation.titulo"
-      :dialog-view="dialogInformation.dialog"
-      @close="onCloseDialogInformation"
-    />
-    <dialog-confirmation
-      :dialog-content="dialogConfirmation.cuerpo"
-      :dialog-event="dialogConfirmation.evento"
-      :dialog-icon="dialogConfirmation.icono"
-      :dialog-items="dialogConfirmation.items"
-      :dialog-title="dialogConfirmation.titulo"
-      :dialog-view="dialogConfirmation.dialog"
-      @clickNo="onCloseDialogConfirmation"
-      @clickYes="onClickYesDialogConfirmation"
-    />
-    <dialog-sistema
-      :dialog-event="dialogSistemaPropiedades.evento"
-      :dialog-items="dialogSistemaPropiedades.items"
-      :dialog-title="dialogSistemaPropiedades.titulo"
-      :dialog-view="dialogSistemaPropiedades.dialog"
-      @close="onCloseDialogSistema"
-      @cancel="onCloseDialogSistema"
-      @save="onSaveDialogSistema"
-    />
   </v-container>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, toRaw, mergeProps, computed, onMounted } from 'vue'
+import { ref, defineComponent, mergeProps, computed, onMounted, watch } from 'vue'
 
 import { useDisplay } from 'vuetify'
 
-//import DialogConfirmation from "../../components/core/dialogMessage/DialogConfirmation.vue";
-//import DialogInformation from "../../components/core/dialogMessage/DialogInformation.vue";
-//import DialogSistema from "../../helpers/core/dialogForm/DialogSistema.vue";
-import { useSistemaStore } from '../../stores/modules/Core/sistema'
+// import interfaces
+import type { ClienteModel } from '@/interfaces/nomina/gape/ClienteModel'
 
-export interface Elementos {
-  id: number
-  codigo: string
-  descripcion: string
-  nombre: string
-}
+// import composables
 
-interface InterfaceItem {
-  id: number
-  nombre: string
-  codigo: string
-  descripcion: string
-  fecha_creacion: string
-  estado: number
-}
+// import stores
+import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
+import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
+import { useEmpresaStore } from '@/stores/modules/Nomina/gape/Empresa'
+import { useRouter } from 'vue-router'
+
+// import components
+import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
+import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
+import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
+
+// import views
 
 export default defineComponent({
   name: 'EmpleadoList',
-  components: {},
+  components: { BecTextField, BecSelect, BecAutocomplete },
 
   setup() {
-    const sistema = useSistemaStore()
+    // 1. Imports
+    // 2. Props y Emits
+    // 3. Composables (funciones reusables)
+    // 4. Reactive
+    // 5. Computed properties
+    // 6. Watchers
+    // 7. Lifecycle hooks (onMounted, mounted)
+    // 8. Functions (fetch, metodos, async)
 
-    // breadcrumbs
+    // 3. Composables
+    const router = useRouter()
+    const clienteStore = useClienteStore()
+    const empresasStore = useEmpresaStore()
+
+    const dialogConfirmation = useDialogManagerStore()
+    const { smAndDown } = useDisplay()
+
+    const dataModel = ref({
+      id_nomina_gape_cliente: undefined,
+      fiscal: false,
+      id_nomina_gape_empresa: undefined,
+    })
+
+    // 4. Reactive
+    const vconPrincipalRef = ref()
+    const vrowBarraDeAccionesRef = ref()
+    const vrowFiltrosRef = ref()
     const vbrePrincipalItems = ref([
       {
         disabled: false,
-        href: 'breadcrumbs_dashboard',
+        href: '',
         title: 'Empleado',
       },
       {
         disabled: false,
-        href: 'breadcrumbs_link_1',
+        href: '',
         title: 'Listado',
       },
     ])
 
-    const vbtnActivarModel = ref(true)
-    const vbtnMenuExportarModel = ref(false)
-    const vbtnMenuImportarModel = ref(false)
+    const btnDisabled = ref({
+      importarRegistros: true,
+      descargarFormato: true,
+      eliminarRegistros: true,
+      guardarCambios: true,
+      activarRegistro: true,
+      crearRegistro: false,
 
-    // Tabla
+      compCliente: false,
+      compTipoEmp: false,
+      compEmpresa: true,
+    })
+
+    const vbtnActivarRegistro = ref(true)
+
+    // 4. Reactive | vrowTableRef
     const vdtbPrincipalBusqueda = ref('')
     const vdtbPrincipalEncabezados = ref<
       {
         key: string
         align?: 'start' | 'center' | 'end'
-        title: string
         sortable?: boolean
+        title: string
       }[]
     >([
-      { key: 'nombre', align: 'start', title: 'Nombre', sortable: true },
-      { key: 'codigo', align: 'center', title: 'Código', sortable: true },
-      { key: 'descripcion', align: 'start', title: 'Descripción', sortable: true },
-      { key: 'fecha', align: 'center', title: 'Fecha' },
-      { title: 'Actions', key: 'actions', sortable: false, align: 'end' },
-      { title: '', key: 'drag', sortable: false, align: 'end' },
-    ])
-    const vdtbPrincipalItems = ref<InterfaceItem[]>([])
+      {
+        key: 'codigo',
+        align: 'center',
+        sortable: true,
+        title: 'Código',
+      },
+      {
+        key: 'nombre',
+        align: 'start',
+        sortable: true,
+        title: 'Nombre',
+      },
 
+      {
+        key: 'rfc',
+        align: 'start',
+        sortable: true,
+        title: 'RFC',
+      },
+      {
+        key: 'fecha_alta',
+        align: 'center',
+        title: 'Fecha de alta',
+      },
+      {
+        key: 'acciones',
+        title: '',
+        align: 'end',
+        sortable: false,
+      },
+    ])
+
+    const vdtbPrincipalItems = ref<ClienteModel[]>([])
     const vdtbPrincipalItemsPorPagina = ref(5)
-    const vdtbPrincipalItemsSeleccionados = ref([])
-    const vdtbPrincipalOpcionesCheck = ref([{ title: 'Eliminar' }, { title: 'Click Me2' }])
+    const vdtbPrincipalItemsSeleccionados = ref<string[]>([])
+
     const vdtbPrincipalOpcionesItemsPorPagina = ref([
       { titulo: '5', valor: 5 },
       { titulo: '10', valor: 10 },
@@ -516,238 +680,135 @@ export default defineComponent({
       { titulo: '20', valor: 20 },
       { titulo: 'Ver todos', valor: 0 },
     ])
+
     const vdtbPrincipalPaginaActual = ref(1)
 
+    // 5. Computed | vrowTableRef
     const getVdtPrincipalTotalPaginas = computed(() =>
       Math.ceil(vdtbPrincipalItems.value.length / vdtbPrincipalItemsPorPagina.value),
     )
 
-    // Funcionalidad vuetify
-    const { smAndDown } = useDisplay()
-
-    const dialogSistemaPropiedades = ref({
-      dialog: false,
-      evento: '',
-      items: {},
-      titulo: '',
-    })
-
-    // DialogInformation
-    const dialogInformation = ref({
-      color: '',
-      cuerpo: '',
-      dialog: false,
-      icono: '',
-      titulo: '',
-      velocidad: 0,
-    })
-
-    const onCloseDialogInformation = () => {
-      dialogInformation.value.dialog = false
-    }
-
-    const onOpenDialogInformation = (
-      color: string,
-      cuerpo: string,
-      icono: string,
-      titulo: string,
-      velocidad: number,
-    ) => {
-      dialogInformation.value = {
-        color: color,
-        cuerpo: cuerpo,
-        dialog: true,
-        icono: icono,
-        titulo: titulo,
-        velocidad: velocidad,
-      }
-    }
-
-    // DialogConfirmation
-    const dialogConfirmation = ref({
-      cuerpo: '',
-      dialog: false,
-      evento: '',
-      icono: '',
-      items: {},
-      titulo: '',
-    })
-
-    const onOpenDialogConfirmation = (
-      cuerpo: string,
-      evento: string,
-      items: object,
-      titulo: string,
-    ) => {
-      dialogConfirmation.value = {
-        cuerpo: cuerpo,
-        dialog: true,
-        evento: evento,
-        icono: 'alert',
-        items: items,
-        titulo: titulo,
-      }
-    }
-
-    const onCloseDialogConfirmation = () => {
-      dialogConfirmation.value.dialog = false
-    }
-
-    const onClickYesDialogConfirmation = (evento: Eventos, items: object) => {
-      methods[evento](items)
-    }
-
-    // DialogSistema
-    type Eventos = 'onSave' | 'onEdit' | 'onDelete'
-
-    const methods: Record<Eventos, (...args: any[]) => void> = {
-      onSave: () => {
-        dialogSistemaPropiedades.value.dialog = false
-        fnCargarListado()
-      },
-      onEdit: () => {
-        dialogSistemaPropiedades.value.dialog = false
-        fnCargarListado()
-      },
-      onDelete: async (items: Elementos) => {
-        dialogConfirmation.value.dialog = false
-
-        fnCargarListado()
-      },
-    }
-
-    const onOpenDialogSistema = (evento: string, items: object, titulo: string) => {
-      dialogSistemaPropiedades.value = {
-        dialog: true,
-        evento: evento,
-        items: items,
-        titulo: titulo,
-      }
-    }
-
-    const onCloseDialogSistema = () => {
-      dialogSistemaPropiedades.value.dialog = false
-    }
-
-    const onSaveDialogSistema = (evento: Eventos) => {
-      methods[evento]()
-    }
-
-    async function fnCargarListado() {
-      vdtbPrincipalItems.value = []
-
-      await sistema.indexSistema()
-
-      /*vdtbPrincipalItems.value = sistema.object.data.map((item: InterfaceItem) => ({
-        id: item.id,
-        nombre: item.nombre,
-        codigo: item.codigo,
-        descripcion: item.descripcion,
-        fecha: item.fecha_creacion,
-        estado: item.estado,
-      }));*/
-    }
-
-    onMounted(() => {
-      fnCargarListado()
-    })
-
-    // Computed
-
-    const vbrePrincipalRef = ref()
-    const vconPrincipalRef = ref()
-    const vrowClienteRef = ref()
-    const vrowFiltrosRef = ref()
-    const cardHeight = ref(0)
-    const tableHeight = ref(0)
-
-    const getCardHeight = computed(() => {
-      if (vconPrincipalRef.value) {
-        calcularDimensiones()
-      }
-
-      return `${cardHeight.value}px`
-    })
-
     const getTableHeight = computed(() => {
+      const height = ref(0)
       if (vconPrincipalRef.value) {
-        calcularDimensiones()
+        height.value =
+          vconPrincipalRef.value.$el.clientHeight -
+          vrowBarraDeAccionesRef.value.$el.clientHeight -
+          vrowFiltrosRef.value.$el.clientHeight -
+          80
       }
 
-      return { height: `${tableHeight.value}px !important` }
+      return `${height.value}px !important`
     })
 
-    const calcularDimensiones = () => {
+    const getTableNoDataHeight = computed(() => {
+      const height = ref(0)
       if (vconPrincipalRef.value) {
-        cardHeight.value =
+        height.value =
           vconPrincipalRef.value.$el.clientHeight -
-          vbrePrincipalRef.value.$el.clientHeight -
-          vrowClienteRef.value.$el.clientHeight -
+          vrowBarraDeAccionesRef.value.$el.clientHeight -
           vrowFiltrosRef.value.$el.clientHeight -
-          112
+          80 -
+          100
+      }
 
-        tableHeight.value = cardHeight.value - 100
+      return `${height.value}px !important`
+    })
+
+    const itemsClientesNomina = computed(() => clienteStore.clientes)
+    const itemsEmpresaDatabase = computed(() => empresasStore.empresasList)
+
+    // 6. Watchers
+    watch(vdtbPrincipalItemsSeleccionados, (nuevosSeleccionados) => {
+      btnDisabled.value.eliminarRegistros = nuevosSeleccionados.length === 0
+    })
+
+    // 7. Lifecycle hooks (onMounted, mounted)
+    onMounted(async () => {
+      await fetchClientes()
+    })
+
+    // 8. Functions (fetch, metodos, async)
+
+    const fetchClientes = async () => {
+      try {
+        await clienteStore.catalogoCliente()
+      } catch (error) {
+        console.error('Error al cargar empresas nómina:', error)
       }
     }
 
-    let dragIndex = -1
+    const buscarEmpresasNomina = async (codigo: any) => {
+      dataModel.value.id_nomina_gape_empresa = undefined
 
-    function onDragStart(index: number) {
-      dragIndex = index
+      const idCliente = dataModel.value.id_nomina_gape_cliente
+      const fiscal = dataModel.value.fiscal
+
+      btnDisabled.value.compEmpresa = idCliente != null ? false : true
+
+      // ✅ Si el cliente está seleccionado, aplicar la lógica fiscal/no fiscal
+      await fetchEmpresasNominaPorClienteTipo(idCliente, fiscal)
     }
 
-    function onDrop(dropIndex: number) {
-      if (dragIndex === -1 || dragIndex === dropIndex) return
-      const moved = vdtbPrincipalItems.value.splice(dragIndex, 1)[0]
-      vdtbPrincipalItems.value.splice(dropIndex, 0, moved)
-      dragIndex = -1
+    const buscarEmpleadosClienteEmpresa = async (codigo: any) => {
+      const data = {
+        idCliente: dataModel.value.id_nomina_gape_cliente,
+        fiscal: dataModel.value.fiscal,
+        idEmpresa: dataModel.value.id_nomina_gape_empresa,
+      }
+
+      await fetchEmpleadosClienteEmpresa(data)
     }
 
-    const rowProps = (item: any) => {
-      const isSelected = vdtbPrincipalItemsSeleccionados.value.some((i) => i === item.codigo)
+    const fetchEmpleadosClienteEmpresa = async (data: any) => {
+      vdtbPrincipalItems.value = []
+      try {
+        await empresasStore.empresasNominasPorClienteTipo(data)
 
-      return {
-        class: isSelected ? '' : 'bg-blue-lighten-5',
+        vdtbPrincipalItems.value = clienteStore.clientes
+      } catch (error) {
+        console.error('Error al cargar los empleados:', error)
+      }
+    }
+
+    const fetchEmpresasNominaPorClienteTipo = async (idCliente: any, fiscal: boolean) => {
+      empresasStore.reset()
+      try {
+        const data = {
+          idCliente: idCliente,
+          fiscal: fiscal,
+        }
+        await empresasStore.empresasNominasPorClienteTipo(data)
+      } catch (error) {
+        console.error('Error al cargar catálogos por empresa:', error)
       }
     }
 
     return {
-      rowProps,
-      onDragStart,
-      onDrop,
-      vrowClienteRef,
-      vrowFiltrosRef,
-      vbtnMenuExportarModel,
-      vbtnMenuImportarModel,
-      vbtnActivarModel,
-      vbrePrincipalRef,
-      vconPrincipalRef,
-      getCardHeight,
-      getTableHeight,
+      btnDisabled,
+      buscarEmpleadosClienteEmpresa,
+      buscarEmpresasNomina,
+      dataModel,
       dialogConfirmation,
-      dialogInformation,
-      dialogSistemaPropiedades,
+      getTableHeight,
+      getTableNoDataHeight,
       getVdtPrincipalTotalPaginas,
+      itemsClientesNomina,
+      itemsEmpresaDatabase,
       mergeProps,
-      onClickYesDialogConfirmation,
-      onCloseDialogConfirmation,
-      onCloseDialogInformation,
-      onCloseDialogSistema,
-      onOpenDialogConfirmation,
-      onOpenDialogInformation,
-      onOpenDialogSistema,
-      onSaveDialogSistema,
       smAndDown,
-      toRaw,
       vbrePrincipalItems,
+      vbtnActivarRegistro,
+      vconPrincipalRef,
       vdtbPrincipalBusqueda,
       vdtbPrincipalEncabezados,
       vdtbPrincipalItems,
       vdtbPrincipalItemsPorPagina,
       vdtbPrincipalItemsSeleccionados,
-      vdtbPrincipalOpcionesCheck,
       vdtbPrincipalOpcionesItemsPorPagina,
       vdtbPrincipalPaginaActual,
+      vrowBarraDeAccionesRef,
+      vrowFiltrosRef,
     }
   },
 })

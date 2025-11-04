@@ -841,7 +841,6 @@ export default defineComponent({
     // 8. Functions (fetch, metodos, async)
 
     // 3. Composables (funciones reutilizables de Vuetify)
-
     const router = useRouter()
 
     const { dataModel, setConceptoPagoParametrizacion, resetModel } =

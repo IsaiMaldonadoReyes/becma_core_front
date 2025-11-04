@@ -5,13 +5,15 @@ import { getDefaultEmpleado } from '@/utils/nomina/gape/getDefaultEmpleado' // o
 export function useEmpleadoModel() {
   const dataModel = ref<EmpleadoModel>(getDefaultEmpleado())
 
-  const resetModel = (preservarEmpresa = true) => {
-    const empresaId = dataModel.value.id_nomina_gape_empresa
+  const resetModel = (preservarCliente = true) => {
+    const clienteId = dataModel.value.id_nomina_gape_cliente
+    const fiscal = dataModel.value.fiscal
 
     dataModel.value = getDefaultEmpleado()
 
-    if (preservarEmpresa) {
-      dataModel.value.id_nomina_gape_empresa = empresaId
+    if (preservarCliente) {
+      dataModel.value.id_nomina_gape_cliente = clienteId
+      dataModel.value.fiscal = fiscal
     }
   }
 
