@@ -102,5 +102,10 @@ export function getDefaultEmpleado(): EmpleadoModel {
     carga_masiva: false,
     estado: '',
     curpCompleto: '',
+    id_nomina_gape_cliente: undefined,
+    fiscal: false,
+    fecha_alta_gape: undefined,
+    sueldo_real: 0,
+    sueldo_imss_gape: 0,
   }
 }

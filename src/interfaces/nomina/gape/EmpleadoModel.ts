@@ -99,4 +99,9 @@ export interface EmpleadoModel {
   carga_masiva?: boolean
   estado?: string
   curpCompleto?: string
+  id_nomina_gape_cliente?: number | null
+  fiscal: boolean
+  fecha_alta_gape?: Date
+  sueldo_real?: number
+  sueldo_imss_gape?: number
 }

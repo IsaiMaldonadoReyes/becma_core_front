@@ -60,13 +60,13 @@ const router = createRouter({
     {
       component: EmpleadoList,
       name: 'EmpleadoList',
-      path: '/nominas/empleadoList',
+      path: '/nominas/gape/empleadoList',
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
     {
       component: EmpleadoForm,
       name: 'EmpleadoForm',
-      path: '/nominas/empleadoForm',
+      path: '/nominas/gape/empleadoForm',
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
     {

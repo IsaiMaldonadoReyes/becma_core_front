@@ -255,7 +255,7 @@ export default defineComponent({
             icono: "mdi-account",
             orden: 2,
           },
-          
+
         ];*/
 
         items.value = [
@@ -303,7 +303,7 @@ export default defineComponent({
             nombre: 'empleado',
             descripcion: 'Empleados',
             etiqueta: 'Empleado',
-            ruta: '/nominas/empleadoForm',
+            ruta: '/nominas/gape/empleadoList',
             icono: 'mdi-calendar-cursor',
             orden: 2,
           },
