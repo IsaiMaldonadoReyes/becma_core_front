@@ -355,29 +355,7 @@
                             @update:model-value="buscarDatosEmpresaNomina"
                           >
                             <template #tooltip>
-                              <v-card color="transparent" elevation="0" class="py-3">
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-laptop" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    Elija la empresa del sistema CONTPAQi Nóminas que desea vincular
-                                    a la nueva empresa Fiscal para establecer la conexión
-                                    correspondiente.
-                                  </v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2 mx-2" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empresa-tooltips name="ayudaEmpresaNomina" />
                             </template>
                           </bec-autocomplete>
                         </v-col>
@@ -1432,6 +1410,100 @@
                             </template>
                           </bec-text-field>
                         </v-col>
+                        <v-col cols="12" lg="6" md="12">
+                          <bec-text-field
+                            v-model="dataModel.mascara_codigo"
+                            :disabled="btnDisabled.compNoFiscMascara"
+                            :label="'Mascara del código'"
+                            :prepend-icon="'mdi-email'"
+                            :rules="[validationRules.required]"
+                            @keypress="inputFilters.onlyLetters"
+                          >
+                            <template #tooltip>
+                              <v-card color="transparent" elevation="0" class="py-3">
+                                <v-row>
+                                  <v-col cols="1" class="d-flex align-center justify-center">
+                                    <v-icon class="mr-1" color="white" icon="mdi-email" />
+                                  </v-col>
+                                  <v-col cols="11"> Ingrese un correo electrónico válido. </v-col>
+                                </v-row>
+                                <v-divider class="border-opacity-50 my-2 mx-4" />
+                                <v-row>
+                                  <v-col cols="1" class="d-flex align-center justify-center">
+                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
+                                  </v-col>
+                                  <v-col cols="11">
+                                    <span style="font-weight: bold">Nota:</span>
+                                    los campos marcados con (*) son obligatorios para continuar con
+                                    el proceso de facturación.
+                                  </v-col>
+                                </v-row>
+                              </v-card>
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+                        <v-col cols="12" lg="6" md="12">
+                          <bec-text-field
+                            v-model="dataModel.codigo_inicial"
+                            :disabled="btnDisabled.compNoFiscCodigoInicial"
+                            :label="'Código inicial'"
+                            :prepend-icon="'mdi-email'"
+                            :rules="[validationRules.required]"
+                          >
+                            <template #tooltip>
+                              <v-card color="transparent" elevation="0" class="py-3">
+                                <v-row>
+                                  <v-col cols="1" class="d-flex align-center justify-center">
+                                    <v-icon class="mr-1" color="white" icon="mdi-email" />
+                                  </v-col>
+                                  <v-col cols="11"> Ingrese un correo electrónico válido. </v-col>
+                                </v-row>
+                                <v-divider class="border-opacity-50 my-2 mx-4" />
+                                <v-row>
+                                  <v-col cols="1" class="d-flex align-center justify-center">
+                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
+                                  </v-col>
+                                  <v-col cols="11">
+                                    <span style="font-weight: bold">Nota:</span>
+                                    los campos marcados con (*) son obligatorios para continuar con
+                                    el proceso de facturación.
+                                  </v-col>
+                                </v-row>
+                              </v-card>
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+                        <v-col cols="12" lg="6" md="12">
+                          <bec-text-field
+                            v-model="dataModel.codigo_actual"
+                            :disabled="btnDisabled.compNoFiscCodigoActual"
+                            :label="'Código actual'"
+                            :prepend-icon="'mdi-email'"
+                            :rules="[validationRules.required]"
+                          >
+                            <template #tooltip>
+                              <v-card color="transparent" elevation="0" class="py-3">
+                                <v-row>
+                                  <v-col cols="1" class="d-flex align-center justify-center">
+                                    <v-icon class="mr-1" color="white" icon="mdi-email" />
+                                  </v-col>
+                                  <v-col cols="11"> Ingrese un correo electrónico válido. </v-col>
+                                </v-row>
+                                <v-divider class="border-opacity-50 my-2 mx-4" />
+                                <v-row>
+                                  <v-col cols="1" class="d-flex align-center justify-center">
+                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
+                                  </v-col>
+                                  <v-col cols="11">
+                                    <span style="font-weight: bold">Nota:</span>
+                                    los campos marcados con (*) son obligatorios para continuar con
+                                    el proceso de facturación.
+                                  </v-col>
+                                </v-row>
+                              </v-card>
+                            </template>
+                          </bec-text-field>
+                        </v-col>
                       </v-row>
                     </v-tabs-window-item>
                   </v-form>
@@ -2214,9 +2286,7 @@ import {
 import { useDisplay } from 'vuetify'
 
 // import composables
-import { useClienteModel } from '@/composables/nomina/gape/useCliente'
 import { useEmpresaModel } from '@/composables/nomina/gape/useEmpresa'
-import { useEmpresaDatabase } from '@/composables/core/useEmpresaDatabase'
 
 // import stores
 import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
@@ -2226,8 +2296,6 @@ import { useBancoStore } from '@/stores/modules/Nomina/gape/Banco'
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 
 // import utils
-import { getDefaultCliente } from '@/utils/nomina/gape/getDefaultCliente'
-import { getDefaultEmpresaDatabase } from '@/utils/core/getDefaultEmpresaDatabase'
 
 import { validationRules } from '@/utils/validationRules'
 import { inputFilters } from '@/utils/inputFilters'
@@ -2236,7 +2304,7 @@ import { inputFilters } from '@/utils/inputFilters'
 import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
 import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
 import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
-
+import EmpresaTooltips from '@/components/nomina/ayudas/EmpresaTooltips.vue'
 // import router
 import { useRouter } from 'vue-router'
 
@@ -2275,6 +2343,7 @@ export default defineComponent({
     BecSelect,
     BecAutocomplete,
     BecTextField,
+    EmpresaTooltips,
     BancoAztecaInterbancarioModalForm,
     BancoAztecaBancarioModalForm,
     BancoBanorteTercerosModalForm,
@@ -2345,6 +2414,10 @@ export default defineComponent({
       compNoFisRfc: false,
       compNoFisCorreo: false,
       compNoFisCodigo: false,
+
+      compNoFiscMascara: false,
+      compNoFiscCodigoInicial: true,
+      compNoFiscCodigoActual: true,
     })
 
     const vconPrincipalRef = ref()
@@ -2592,6 +2665,7 @@ export default defineComponent({
         btnDisabled.value.tabBancos = false
 
         btnDisabled.value.crearRegistro = false
+        btnDisabled.value.compNoFiscMascara = true
 
         await fetchDatosEmpresasNominaPorClienteId(props.id)
 

@@ -18,9 +18,9 @@ export const useTipoPrestacionStore = defineStore({
     responseMessage: '',
   }),
   actions: {
-    async catalogoTipoPrestacion(idEmpresa: number) {
+    async catalogoTipoPrestacion(data: any) {
       try {
-        const response = await axios.post(`/api/nominaTipoPrestacion/${idEmpresa}`)
+        const response = await axios.post(`/api/catalogoNomina/tipoPrestacion`, data)
         this.tipoPrestacion = response.data.data
       } catch (error: any) {
         console.error('Error al obtener tipo de prestacion:', error)

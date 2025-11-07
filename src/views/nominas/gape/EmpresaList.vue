@@ -433,7 +433,7 @@ export default defineComponent({
       {
         key: 'fecha_creacion',
         align: 'center',
-        title: 'Fecha',
+        title: 'Fecha de alta',
       },
       {
         key: 'acciones',

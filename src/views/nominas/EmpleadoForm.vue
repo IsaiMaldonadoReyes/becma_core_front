@@ -116,7 +116,7 @@
         <v-tooltip bottom color="primary" interactive location="bottom">
           <template v-slot:activator="{ props: tooltipProps }">
             <v-btn
-              v-model="dataModel.estado"
+              v-model="dataModel.estado_empleado"
               v-bind="mergeProps(tooltipProps)"
               class="mr-1"
               color="primary"
@@ -124,10 +124,12 @@
               min-width="40px"
               width="40px"
               :disabled="btnDisabled.activarRegistro"
-              @click="dataModel.estado = !dataModel.estado"
+              @click="dataModel.estado_empleado = !dataModel.estado_empleado"
             >
               <v-icon color="white" size="24px">
-                {{ !dataModel.estado ? 'mdi-checkbox-blank-outline' : 'mdi-checkbox-marked' }}
+                {{
+                  !dataModel.estado_empleado ? 'mdi-checkbox-blank-outline' : 'mdi-checkbox-marked'
+                }}
                 mdi-checkbox-blank-outline
               </v-icon>
             </v-btn>
@@ -136,7 +138,7 @@
             Marque la casilla para
             <b>
               <i>
-                {{ !dataModel.estado ? ' ACTIVAR ' : 'DESACTIVAR' }}
+                {{ !dataModel.estado_empleado ? ' ACTIVAR ' : 'DESACTIVAR' }}
               </i>
             </b>
             este registro
@@ -153,7 +155,7 @@
               min-width="40px"
               width="40px"
               :disabled="btnDisabled.crearRegistro"
-              :to="'/nominas/gape/parametrizacionForm'"
+              :to="'/nominas/gape/empleadoForm'"
             >
               <v-icon color="white" icon="mdi-plus" size="24px" />
             </v-btn>
@@ -370,7 +372,7 @@
             <div class="d-lg-flex flex-lg-row" style="height: 100%">
               <!-- vtabDatos -->
               <v-tabs
-                v-model="vtabGraficaSelected"
+                v-model="vtabDatosFiscales"
                 :direction="smAndDown ? 'horizontal' : 'vertical'"
                 align-tabs="center"
                 border
@@ -380,12 +382,12 @@
                 width="100px"
               >
                 <v-tab
-                  v-for="tab in vtabMenuItems"
+                  v-for="tab in vtabDatosFiscalesItems"
                   :key="tab.value"
                   :prepend-icon="tab.icon"
                   :text="tab.title"
                   :value="tab.value"
-                  :variant="vtabGraficaSelected == tab.value ? 'tonal' : 'text'"
+                  :variant="vtabDatosFiscales == tab.value ? 'tonal' : 'text'"
                   class="text-none text-no-wrap"
                   min-width="100%"
                   style="letter-spacing: 0.5px"
@@ -393,7 +395,7 @@
               </v-tabs>
               <div class="flex-lg-grow-1 overflow-auto ml-2" :style="getCardHeight">
                 <v-form ref="formRefFiscal">
-                  <v-tabs-window v-model="vtabGraficaSelected" :mobile="smAndDown">
+                  <v-tabs-window v-model="vtabDatosFiscales" :mobile="smAndDown">
                     <!-- Principales-->
                     <v-tabs-window-item value="tab01" eager>
                       <v-row class="mx-2">
@@ -410,41 +412,15 @@
                         <v-col cols="12" lg="4">
                           <bec-text-field
                             v-model="dataModel.codigoempleado"
+                            :disabled="btnDisabled.dmCodigoEmpleado"
                             :label="'Código *'"
                             :multiple="false"
                             :placeholder="'XXXX'"
                             :prepend-icon="'mdi-barcode'"
                             :rules="[reglaMascarillaCodigo, validationRules.required]"
-                            :tooltip="'Código asignado al empleado *'"
                           >
                             <template #tooltip>
-                              <v-card
-                                :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                                class="py-3"
-                                color="transparent"
-                                elevation="0"
-                              >
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon icon="mdi-information-slab-circle-outline" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    Código único que se asigna al empleado para su identificación en
-                                    los procesos de nómina.
-                                  </v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert-outline" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold; color: #2a73c5">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empleado-tooltips name="ayudaCodigo" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -466,60 +442,7 @@
                               variant="outlined"
                             >
                               <template v-slot:prepend>
-                                <div style="pointer-events: auto; cursor: help">
-                                  <v-tooltip location="bottom">
-                                    <template #activator="{ props: tooltipProps }">
-                                      <v-icon
-                                        v-bind="tooltipProps"
-                                        icon="mdi-information-slab-circle-outline"
-                                        size="20"
-                                      />
-                                    </template>
-                                    <template #default>
-                                      <v-card
-                                        :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                                        class="py-3"
-                                        color="transparent"
-                                        elevation="0"
-                                      >
-                                        <v-row>
-                                          <v-col
-                                            cols="1"
-                                            class="d-flex align-center justify-center"
-                                          >
-                                            <v-icon icon="mdi-information-slab-circle-outline" />
-                                          </v-col>
-                                          <v-col cols="11">
-                                            fecha de ingreso del trabajador con el cliente,
-                                            utilizada para determinar su antigüedad y calcular las
-                                            prestaciones correspondientes conforme al tiempo de
-                                            servicio.
-                                          </v-col>
-                                        </v-row>
-                                        <v-divider class="border-opacity-50 my-2" />
-                                        <v-row>
-                                          <v-col
-                                            cols="1"
-                                            class="d-flex align-center justify-center"
-                                          >
-                                            <v-icon
-                                              class="mr-1"
-                                              color="white"
-                                              icon="mdi-alert-outline"
-                                            />
-                                          </v-col>
-                                          <v-col cols="11">
-                                            <span style="font-weight: bold; color: #2a73c5"
-                                              >Nota:</span
-                                            >
-                                            los campos marcados con (*) son obligatorios para
-                                            continuar con el proceso.
-                                          </v-col>
-                                        </v-row>
-                                      </v-card>
-                                    </template>
-                                  </v-tooltip>
-                                </div>
+                                <empleado-tooltips name="ayudaFechaDeAltaConGape" />
                               </template>
                             </v-date-input>
                           </v-locale-provider>
@@ -537,8 +460,11 @@
                             :prepend-icon="'mdi-draw-pen'"
                             :return-object="false"
                             :rules="[validationRules.required]"
-                            :tooltip="'Seleccione para poder ver las opciones de los tipos de contrato.'"
-                          />
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaTipoDeContrato" />
+                            </template>
+                          </bec-autocomplete>
                         </v-col>
                         <v-col cols="12" lg="4">
                           <bec-text-field
@@ -553,9 +479,12 @@
                                   max: 80,
                                 }),
                             ]"
-                            :tooltip="'Apellido paterno del empleado'"
                             @keypress="inputFilters.onlyLetters"
-                          />
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaApellidoPaterno" />
+                            </template>
+                          </bec-text-field>
                         </v-col>
 
                         <v-col cols="12" lg="4">
@@ -571,9 +500,12 @@
                                   max: 80,
                                 }),
                             ]"
-                            :tooltip="'Apellido materno del empleado'"
                             @keypress="inputFilters.onlyLetters"
-                          />
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaApellidoMaterno" />
+                            </template>
+                          </bec-text-field>
                         </v-col>
 
                         <v-col cols="12" lg="4">
@@ -589,11 +521,14 @@
                                   max: 90,
                                 }),
                             ]"
-                            :tooltip="'Nombre del empleado'"
                             clearable
                             clear-icon="mdi-close"
                             @keypress="inputFilters.onlyLetters"
-                          />
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaNombres" />
+                            </template>
+                          </bec-text-field>
                         </v-col>
 
                         <v-col cols="12" lg="4">
@@ -608,8 +543,11 @@
                             :prepend-icon="'mdi-clipboard-text-clock-outline'"
                             :return-object="false"
                             :rules="[validationRules.required]"
-                            :tooltip="'Seleccione para poder ver las opciones de los tipos de periodos'"
-                          />
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaTipoDePeriodo" />
+                            </template>
+                          </bec-autocomplete>
                         </v-col>
 
                         <v-col cols="12" lg="4">
@@ -622,11 +560,14 @@
                               (v: any) =>
                                 validationRules.validatePositiveNumber(v, { required: false }),
                             ]"
-                            :tooltip="'Sueldo diario del empleado'"
                             @keypress="
                               (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldodiario)
                             "
-                          />
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaSalarioDiario" />
+                            </template>
+                          </bec-text-field>
                         </v-col>
                         <v-col cols="12" lg="4">
                           <bec-autocomplete
@@ -640,8 +581,11 @@
                             :prepend-icon="'mdi-cash-clock'"
                             :return-object="false"
                             :rules="[validationRules.required]"
-                            :tooltip="'Seleccione para poder ver las bases de cotización'"
-                          />
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaBaseCotizacion" />
+                            </template>
+                          </bec-autocomplete>
                         </v-col>
 
                         <v-col cols="12" lg="4">
@@ -654,31 +598,42 @@
                               (v: any) =>
                                 validationRules.validatePositiveNumber(v, { required: false }),
                             ]"
-                            :tooltip="'Sueldo integrado del empleado'"
                             @keypress="
                               (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldointegrado)
                             "
-                          />
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaNombres" />
+                            </template>
+                          </bec-text-field>
                         </v-col>
 
                         <v-col cols="12" lg="4">
                           <bec-text-field
+                            v-model="dataModel.sueldovariable"
                             :label="'SBC Parte variable'"
                             :placeholder="''"
                             :prepend-icon="'mdi-currency-usd'"
-                            :tooltip="'SBC Parte variable'"
                             disabled
-                          />
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaNombres" />
+                            </template>
+                          </bec-text-field>
                         </v-col>
 
                         <v-col cols="12" lg="4">
                           <bec-text-field
+                            v-model="dataModel.sueldovariable"
                             :label="'SBC (Topado a 25 UMA)'"
                             :placeholder="''"
                             :prepend-icon="'mdi-currency-usd'"
-                            :tooltip="'SBC (Topado a 25 UMA)'"
                             disabled
-                          />
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaNombres" />
+                            </template>
+                          </bec-text-field>
                         </v-col>
                       </v-row>
                     </v-tabs-window-item>
@@ -701,8 +656,11 @@
                                 :placeholder="'Seleccione'"
                                 :prepend-icon="'mdi-toolbox-outline'"
                                 :return-object="false"
-                                :tooltip="'Identificador del <b>Departamento</b> al que pertenece el empleado.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaDepartamento" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -716,8 +674,11 @@
                                 :placeholder="'Seleccione'"
                                 :prepend-icon="'mdi-account-tie'"
                                 :return-object="false"
-                                :tooltip="'Identificador del <b>Puesto</b> al que pertenece el empleado.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaPuesto" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -732,8 +693,11 @@
                                 :prepend-icon="'mdi-cash-check'"
                                 :return-object="false"
                                 :rules="[validationRules.required]"
-                                :tooltip="'Seleccione para poder ver las opciones.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaSindicalizado" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -748,8 +712,11 @@
                                 :prepend-icon="'mdi-account-cash'"
                                 :return-object="false"
                                 :rules="[validationRules.required]"
-                                :tooltip="'Identificador del <b>Tipo de prestación</b> que fue asignado al empleado.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaTipoDePrestacion" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -764,8 +731,11 @@
                                 :prepend-icon="'mdi-account-cash'"
                                 :return-object="false"
                                 :rules="[validationRules.required]"
-                                :tooltip="'Indica el tipo de base de pago:<br /><b>S =</b> Sueldo <br /><b>C =</b> Comisión <br /><b>D =</b> Destajo <br /><b>O =</b> Sueldo/Comisión <br /><b>E =</b> Sueldo/Destajo.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaBaseDePago" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -780,8 +750,11 @@
                                 :prepend-icon="'mdi-account-credit-card'"
                                 :return-object="false"
                                 :rules="[validationRules.required]"
-                                :tooltip="'Seleccione para poder ver las opciones.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaMetodoDePago" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -796,8 +769,11 @@
                                 :prepend-icon="'mdi-briefcase-clock'"
                                 :return-object="false"
                                 :rules="[validationRules.required]"
-                                :tooltip="'Seleccione para poder ver las opciones.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaTurnoDeTrabajo" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -812,8 +788,11 @@
                                 :prepend-icon="'mdi-cash-marker'"
                                 :return-object="false"
                                 :rules="[validationRules.required]"
-                                :tooltip="'Zona del salario del empleado: <br /><b>A = </b> Zona A <br /><b>B = </b> Zona B <br /><b>C = </b> Zona C.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaTurnoDeTrabajo" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -828,8 +807,11 @@
                                 :prepend-icon="'mdi-cash-marker'"
                                 :return-object="false"
                                 :rules="[validationRules.required]"
-                                :tooltip="'Zona del salario del empleado: <br /><b>A = </b> Zona A <br /><b>B = </b> Zona B <br /><b>C = </b> Zona C.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaTurnoDeTrabajo" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -844,8 +826,11 @@
                                 :prepend-icon="'mdi-folder-key'"
                                 :return-object="false"
                                 :rules="[validationRules.required]"
-                                :tooltip="'Clave del <b>Régimen Fiscal</b> en el que tributa el contribuyente, de acuerdo con el catálogo publicado por el SAT.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaTurnoDeTrabajo" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -862,9 +847,12 @@
                                       max: 10,
                                     }),
                                 ]"
-                                :tooltip="'Número de FONACOT'"
                                 @keypress="inputFilters.onlyNumbers"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -873,8 +861,11 @@
                                 :label="'Afore'"
                                 :placeholder="'COD0001'"
                                 :prepend-icon="'mdi-piggy-bank'"
-                                :tooltip="'Número de la cuenta de AFORE del empleado.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -884,8 +875,11 @@
                                 :placeholder="'usuario@domain.com'"
                                 :prepend-icon="'mdi-email'"
                                 :rules="[validationRules.emailIfNotEmpty]"
-                                :tooltip="'Correo electrónico del empleado.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
                           </v-row>
                         </v-card-text>
@@ -913,9 +907,12 @@
                                       max: 11,
                                     }),
                                 ]"
-                                :tooltip="'Número asignado al empleado por el Seguro Social (IMSS).'"
                                 @keypress="inputFilters.onlyNumbers"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -930,8 +927,11 @@
                                 :prepend-icon="'mdi-medication-outline'"
                                 :return-object="false"
                                 :rules="[validationRules.required]"
-                                :tooltip="'Identificador del <b>Registro Patronal.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaTipoDePeriodo" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="3">
@@ -940,8 +940,11 @@
                                 :label="'U.M.F'"
                                 :placeholder="'U.M.F'"
                                 :prepend-icon="'mdi-mother-nurse'"
-                                :tooltip="'Unidad Medica Familiar.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="3">
@@ -955,8 +958,11 @@
                                 :placeholder="'Seleccione'"
                                 :prepend-icon="'mdi-human-male-female'"
                                 :return-object="false"
-                                :tooltip="'Identificador del estado civil del empleado.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaTipoDePeriodo" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
                             <v-divider></v-divider>
                             <v-col cols="12" lg="3">
@@ -971,8 +977,11 @@
                                 :prepend-icon="'mdi-human-male-female'"
                                 :return-object="false"
                                 :rules="[validationRules.required]"
-                                :tooltip="'Identificador del sexo del empleado.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaTipoDePeriodo" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
                             <v-col cols="12" lg="3">
                               <v-locale-provider locale="es-MX">
@@ -1008,8 +1017,11 @@
                                 :prepend-icon="'mdi-map-marker-radius'"
                                 :return-object="false"
                                 :rules="[validationRules.required]"
-                                :tooltip="'Identificador de la entidad federativa de nacimiento del empleado.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaTipoDePeriodo" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="3">
@@ -1025,9 +1037,12 @@
                                       max: 40,
                                     }),
                                 ]"
-                                :tooltip="'Ciudad de nacimiento'"
                                 @keypress="inputFilters.onlyLetters"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="3">
@@ -1043,9 +1058,12 @@
                                       max: 3,
                                     }),
                                 ]"
-                                :tooltip="'Homoclave de RFC.'"
                                 @keypress="inputFilters.onlyAlphanumeric"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="3">
@@ -1055,9 +1073,12 @@
                                 :placeholder="'C.U.R.P'"
                                 :prepend-icon="'mdi-file-account-outline'"
                                 :rules="[validationRules.required, validationRules.curp]"
-                                :tooltip="'Clave única de registro poblacional (18 digitos)'"
                                 @keypress="inputFilters.onlyAlphanumeric"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="6">
@@ -1082,9 +1103,12 @@
                                       max: 60,
                                     }),
                                 ]"
-                                :tooltip="'Direccion del empleado.'"
                                 @keypress="inputFilters.onlyAlphanumeric"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="3">
@@ -1100,9 +1124,12 @@
                                       max: 60,
                                     }),
                                 ]"
-                                :tooltip="'Ciudad de residencia del empleado.'"
                                 @keypress="inputFilters.onlyAlphanumeric"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="3">
@@ -1117,8 +1144,11 @@
                                 :prepend-icon="'mdi-map-marker-radius'"
                                 :return-object="false"
                                 :rules="[validationRules.required]"
-                                :tooltip="'Entidad federativa de residencia del empleado.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaTipoDePeriodo" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
 
                             <v-col cols="12" lg="3">
@@ -1134,9 +1164,12 @@
                                       max: 5,
                                     }),
                                 ]"
-                                :tooltip="'Código Postal'"
                                 @keypress="inputFilters.onlyNumbers"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="3">
@@ -1153,9 +1186,12 @@
                                       max: 10,
                                     }),
                                 ]"
-                                :tooltip="'Teléfono de contacto del empleado'"
                                 @keypress="inputFilters.onlyNumbers"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-divider />
@@ -1172,9 +1208,12 @@
                                       max: 60,
                                     }),
                                 ]"
-                                :tooltip="'Nombre del padre'"
                                 @keypress="inputFilters.onlyLetters"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="3">
@@ -1190,9 +1229,12 @@
                                       max: 60,
                                     }),
                                 ]"
-                                :tooltip="'Nombre de la madre'"
                                 @keypress="inputFilters.onlyLetters"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-divider />
@@ -1237,11 +1279,14 @@
                                   (v: any) =>
                                     validationRules.validatePositiveNumber(v, { required: false }),
                                 ]"
-                                :tooltip="'Sueldo variable.'"
                                 @keypress="
                                   (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldovariable)
                                 "
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -1253,7 +1298,6 @@
                                   color="primary"
                                   density="compact"
                                   label="Fecha salario variable"
-                                  multiple="range"
                                   prepend-icon=""
                                   prepend-inner-icon="mdi-calendar"
                                   title="Rango de fechas"
@@ -1275,7 +1319,6 @@
                                   color="primary"
                                   density="compact"
                                   label="Fecha salario diario"
-                                  multiple="range"
                                   prepend-icon=""
                                   prepend-inner-icon="mdi-calendar"
                                   title="Rango de fechas"
@@ -1299,11 +1342,14 @@
                                   (v: any) =>
                                     validationRules.validatePositiveNumber(v, { required: false }),
                                 ]"
-                                :tooltip="'Sueldo promedio.'"
                                 @keypress="
                                   (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldopromedio)
                                 "
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -1315,7 +1361,6 @@
                                   color="primary"
                                   density="compact"
                                   label="Fecha salario promedio"
-                                  multiple="range"
                                   prepend-icon=""
                                   prepend-inner-icon="mdi-calendar"
                                   title="Rango de fechas"
@@ -1337,7 +1382,6 @@
                                   color="primary"
                                   density="compact"
                                   label="Fecha salario integrado"
-                                  multiple="range"
                                   prepend-icon=""
                                   prepend-inner-icon="mdi-calendar"
                                   title="Rango de fechas"
@@ -1357,7 +1401,6 @@
                                 :label="'Salario base liquidación'"
                                 :placeholder="'Salario base liquidación'"
                                 :prepend-icon="'mdi-hospital-box-outline'"
-                                :tooltip="'Salario base liquidación.'"
                                 :rules="[
                                   (v: any) =>
                                     validationRules.validatePositiveNumber(v, { required: false }),
@@ -1366,7 +1409,11 @@
                                   (e: any) =>
                                     inputFilters.onlyDecimal(e, dataModel.sueldobaseliquidacion)
                                 "
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
                             <v-col cols="12" lg="4">
                               <bec-text-field
@@ -1378,11 +1425,14 @@
                                   (v: any) =>
                                     validationRules.validatePositiveNumber(v, { required: false }),
                                 ]"
-                                :tooltip="'Saldo del ajuste al neto.'"
                                 @keypress="
                                   (e: any) => inputFilters.onlyDecimal(e, dataModel.ajustealneto)
                                 "
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
                           </v-row>
                         </v-card-text>
@@ -1390,8 +1440,7 @@
                     </v-tabs-window-item>
 
                     <!-- Pagos y extras -->
-                    <v-tabs-window-item value="tab05" eager>Datos Cálculos</v-tabs-window-item>
-                    <v-tabs-window-item value="tab06" eager>
+                    <v-tabs-window-item value="tab05" eager>
                       <v-card>
                         <v-card-title color="primary">Datos Pagos extras</v-card-title>
                         <v-divider></v-divider>
@@ -1408,8 +1457,11 @@
                                 :placeholder="'Seleccione'"
                                 :prepend-icon="'mdi-draw-pen'"
                                 :return-object="false"
-                                :tooltip="'Seleccione para poder ver los bancos.'"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaTipoDePeriodo" />
+                                </template>
+                              </bec-autocomplete>
                             </v-col>
                             <v-col cols="12" lg="4">
                               <bec-text-field
@@ -1424,9 +1476,12 @@
                                       max: 50,
                                     }),
                                 ]"
-                                :tooltip="'Sucursal para pago electrónico.'"
                                 @keypress="inputFilters.onlyAlphanumeric"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -1442,9 +1497,12 @@
                                       max: 20,
                                     }),
                                 ]"
-                                :tooltip="'Numero de cuenta para pago electrónico.'"
                                 @keypress="inputFilters.onlyAlphanumeric"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -1461,9 +1519,12 @@
                                       max: 30,
                                     }),
                                 ]"
-                                :tooltip="'Clabe interbancaria.'"
                                 @keypress="inputFilters.onlyNumbers"
-                              />
+                              >
+                                <template #tooltip>
+                                  <empleado-tooltips name="ayudaNombres" />
+                                </template>
+                              </bec-text-field>
                             </v-col>
 
                             <v-divider></v-divider>
@@ -1471,13 +1532,354 @@
                         </v-card-text>
                       </v-card>
                     </v-tabs-window-item>
+
+                    <!-- Datos GAPE -->
+                    <v-tabs-window-item value="tab06" eager>
+                      <v-row class="mx-2">
+                        <v-col cols="12">
+                          <v-divider class="border-opacity-25 ma-0 pa-0" />
+                          <v-card-title color="primary" class="text-primary text-body-1">
+                            Datos GAPE
+                          </v-card-title>
+                          <v-divider class="border-opacity-25 ma-0 pa-0" />
+                        </v-col>
+                      </v-row>
+
+                      <v-row class="mt-1 mx-2">
+                        <!-- Fecha de alta con GAPE-->
+                        <v-col cols="12" lg="4">
+                          <v-locale-provider locale="es-MX">
+                            <v-date-input
+                              v-model="dataModel.fecha_alta_gape"
+                              :mobile="smAndDown"
+                              :rules="[validationRules.required]"
+                              clear-icon="mdi-close"
+                              color="primary"
+                              density="compact"
+                              hide-details="auto"
+                              label="Fecha de alta con GAPE *"
+                              prepend-icon=""
+                              prepend-inner-icon="mdi-calendar"
+                              title="Rango de fechas"
+                              type="chip"
+                              variant="outlined"
+                            >
+                              <template v-slot:prepend>
+                                <empleado-tooltips name="ayudaFechaDeAltaConGape" />
+                              </template>
+                            </v-date-input>
+                          </v-locale-provider>
+                        </v-col>
+
+                        <!-- Sueldo real -->
+                        <v-col cols="12" lg="4">
+                          <bec-text-field
+                            v-model="dataModel.sueldo_real"
+                            :label="'Salario real *'"
+                            :placeholder="'0.00'"
+                            :prepend-icon="'mdi-cash'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validatePositiveNumber(v, { required: false }),
+                            ]"
+                            prefix="$"
+                            @keypress="
+                              (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldo_real)
+                            "
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaSueldoReal" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+
+                        <!-- Sueldo IMMS GAPE -->
+                        <v-col cols="12" lg="4">
+                          <bec-text-field
+                            v-model="dataModel.sueldo_imss_gape"
+                            :label="'Sueldo IMMS GAPE *'"
+                            :placeholder="'0.00'"
+                            :prepend-icon="'mdi-cash-clock'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validatePositiveNumber(v, { required: false }),
+                            ]"
+                            prefix="$"
+                            @keypress="
+                              (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldo_imss_gape)
+                            "
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaSueldoIMMGGape" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-tabs-window-item>
                   </v-tabs-window>
                 </v-form>
               </div>
             </div>
           </v-tabs-window-item>
           <!-- Empresa no fiscal -->
-          <v-tabs-window-item value="tabTipoEmpresa02" eager> </v-tabs-window-item>
+          <v-tabs-window-item value="tabTipoEmpresa02" eager>
+            <div class="d-lg-flex flex-lg-row" style="height: 100%">
+              <!-- vtabDatos -->
+              <v-tabs
+                v-model="vtabDatosNoFiscales"
+                :direction="smAndDown ? 'horizontal' : 'vertical'"
+                align-tabs="center"
+                border
+                class="text-medium-emphasis tab-right border"
+                color="primary"
+                show-arrows
+                width="100px"
+              >
+                <v-tab
+                  v-for="tab in vtabDatosNoFiscalesItems"
+                  :key="tab.value"
+                  :prepend-icon="tab.icon"
+                  :text="tab.title"
+                  :value="tab.value"
+                  :variant="vtabDatosNoFiscales == tab.value ? 'tonal' : 'text'"
+                  class="text-none text-no-wrap"
+                  min-width="100%"
+                  style="letter-spacing: 0.5px"
+                />
+              </v-tabs>
+              <div class="flex-lg-grow-1 overflow-auto ml-2" :style="getCardHeight">
+                <v-form ref="formRefNoFiscal">
+                  <v-tabs-window v-model="vtabDatosNoFiscales" :mobile="smAndDown">
+                    <!-- Principales-->
+                    <v-tabs-window-item value="tabDatosNoFiscales01" eager>
+                      <v-row class="mx-2">
+                        <v-col cols="12">
+                          <v-divider class="border-opacity-25 ma-0 pa-0" />
+                          <v-card-title color="primary" class="text-primary text-body-1">
+                            Datos principales
+                          </v-card-title>
+                          <v-divider class="border-opacity-25 ma-0 pa-0" />
+                        </v-col>
+                      </v-row>
+
+                      <v-row class="mt-1 mx-2">
+                        <!-- Código -->
+                        <v-col cols="12" lg="4">
+                          <bec-text-field
+                            v-model="dataModel.codigoempleado"
+                            :label="'Código *'"
+                            :multiple="false"
+                            :placeholder="'XXXX'"
+                            :prepend-icon="'mdi-barcode'"
+                            :rules="[reglaMascarillaCodigo, validationRules.required]"
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaCodigo" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+
+                        <!-- Fecha de alta -->
+                        <v-col cols="12" lg="4">
+                          <v-locale-provider locale="es-MX">
+                            <v-date-input
+                              v-model="dataModel.fechaalta"
+                              :mobile="smAndDown"
+                              :rules="[validationRules.required]"
+                              clear-icon="mdi-close"
+                              color="primary"
+                              density="compact"
+                              hide-details="auto"
+                              label="Fecha de alta *"
+                              prepend-icon=""
+                              prepend-inner-icon="mdi-calendar"
+                              title="Rango de fechas"
+                              type="chip"
+                              variant="outlined"
+                            >
+                              <template v-slot:prepend>
+                                <empleado-tooltips name="ayudaFechaDeAlta" />
+                              </template>
+                            </v-date-input>
+                          </v-locale-provider>
+                        </v-col>
+
+                        <!-- Apellido paterno -->
+                        <v-col cols="12" lg="4">
+                          <bec-text-field
+                            v-model="dataModel.apellidopaterno"
+                            :label="'Apellido paterno *'"
+                            :placeholder="''"
+                            :prepend-icon="'mdi-badge-account-outline'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validateLettersField(v, {
+                                  required: true,
+                                  max: 80,
+                                }),
+                            ]"
+                            @keypress="inputFilters.onlyLetters"
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaApellidoPaterno" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+
+                        <!-- Apellido materno -->
+                        <v-col cols="12" lg="4">
+                          <bec-text-field
+                            v-model="dataModel.apellidomaterno"
+                            :label="'Apellido materno *'"
+                            :placeholder="'Apellido materno'"
+                            :prepend-icon="'mdi-badge-account-outline'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validateLettersField(v, {
+                                  required: true,
+                                  max: 80,
+                                }),
+                            ]"
+                            @keypress="inputFilters.onlyLetters"
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaApellidoMaterno" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+
+                        <!-- Nombre(s) -->
+                        <v-col cols="12" lg="4">
+                          <bec-text-field
+                            v-model="dataModel.nombre"
+                            :label="'Nombre(s) *'"
+                            :placeholder="''"
+                            :prepend-icon="'mdi-badge-account-outline'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validateLettersField(v, {
+                                  required: true,
+                                  max: 90,
+                                }),
+                            ]"
+                            clearable
+                            clear-icon="mdi-close"
+                            @keypress="inputFilters.onlyLetters"
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaNombres" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+
+                        <!-- RFC -->
+                        <v-col cols="12" lg="4">
+                          <bec-text-field
+                            v-model="dataModel.cuentacw"
+                            :label="'RFC *'"
+                            :placeholder="''"
+                            :prepend-icon="'mdi-badge-account-outline'"
+                            :rules="[validationRules.required, validationRules.rfc]"
+                            clear-icon="mdi-close"
+                            clearable
+                            @keypress="inputFilters.onlyRFC"
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaRFC" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-tabs-window-item>
+
+                    <!-- Datos GAPE -->
+                    <v-tabs-window-item value="tabDatosNoFiscales02" eager>
+                      <v-row class="mx-2">
+                        <v-col cols="12">
+                          <v-divider class="border-opacity-25 ma-0 pa-0" />
+                          <v-card-title color="primary" class="text-primary text-body-1">
+                            Datos GAPE
+                          </v-card-title>
+                          <v-divider class="border-opacity-25 ma-0 pa-0" />
+                        </v-col>
+                      </v-row>
+
+                      <v-row class="mt-1 mx-2">
+                        <!-- Fecha de alta con GAPE-->
+                        <v-col cols="12" lg="4">
+                          <v-locale-provider locale="es-MX">
+                            <v-date-input
+                              v-model="dataModel.fecha_alta_gape"
+                              :mobile="smAndDown"
+                              :rules="[validationRules.required]"
+                              clear-icon="mdi-close"
+                              color="primary"
+                              density="compact"
+                              hide-details="auto"
+                              label="Fecha de alta con GAPE *"
+                              prepend-icon=""
+                              prepend-inner-icon="mdi-calendar"
+                              title="Rango de fechas"
+                              type="chip"
+                              variant="outlined"
+                            >
+                              <template v-slot:prepend>
+                                <empleado-tooltips name="ayudaFechaDeAltaConGape" />
+                              </template>
+                            </v-date-input>
+                          </v-locale-provider>
+                        </v-col>
+
+                        <!-- Sueldo real -->
+                        <v-col cols="12" lg="4">
+                          <bec-text-field
+                            v-model="dataModel.sueldo_real"
+                            :label="'Salario real *'"
+                            :placeholder="'0.00'"
+                            :prepend-icon="'mdi-cash'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validatePositiveNumber(v, { required: false }),
+                            ]"
+                            prefix="$"
+                            @keypress="
+                              (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldo_real)
+                            "
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaSueldoReal" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+
+                        <!-- Sueldo IMMS GAPE -->
+                        <v-col cols="12" lg="4">
+                          <bec-text-field
+                            v-model="dataModel.sueldo_imss_gape"
+                            :label="'Sueldo IMMS GAPE *'"
+                            :placeholder="'0.00'"
+                            :prepend-icon="'mdi-cash-clock'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validatePositiveNumber(v, { required: false }),
+                            ]"
+                            prefix="$"
+                            @keypress="
+                              (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldo_imss_gape)
+                            "
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaSueldoIMMGGape" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-tabs-window-item>
+                  </v-tabs-window>
+                </v-form>
+              </div>
+            </div>
+          </v-tabs-window-item>
         </v-tabs-window>
       </v-col>
     </v-row>
@@ -1503,6 +1905,8 @@ import { useDisplay } from 'vuetify'
 // import stores
 import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
 import { useEmpresaStore } from '@/stores/modules/Nomina/gape/Empresa'
+
+import { useEmpresaNomStore } from '@/stores/modules/Nomina/default/Empresa'
 
 import { useTipoContratoStore } from '../../stores/modules/Nomina/nomGenerales/SATCatTipoContrato'
 import { useTipoPeriodoStore } from '../../stores/modules/Nomina/default/TipoPeriodo'
@@ -1539,10 +1943,14 @@ import { generarCurpExtendida } from '@/utils/curp'
 import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
 import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
 import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
+import EmpleadoTooltips from '@/components/nomina/ayudas/EmpleadoTooltips.vue'
+
+// import router
+import { useRoute, useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'EmpleadoForm',
-  components: { BecSelect, BecAutocomplete, BecTextField },
+  components: { BecSelect, BecAutocomplete, BecTextField, EmpleadoTooltips },
   props: {
     id: {
       type: Number,
@@ -1562,6 +1970,8 @@ export default defineComponent({
     // 3. Composables
     const clienteStore = useClienteStore()
     const empresasStore = useEmpresaStore()
+
+    const empresaNomStore = useEmpresaNomStore()
 
     const empleadoStore = useEmpleadoStore()
 
@@ -1585,7 +1995,14 @@ export default defineComponent({
     // 3. Composables vuetify
     const { name, mobile, smAndDown } = useDisplay()
 
+    const route = useRoute()
+    const router = useRouter()
+
     // 4. Reactive
+    const idClienteParam = Number(route.query.id_nomina_gape_cliente || 0)
+    const idEmpresaParam = Number(route.query.id_nomina_gape_empresa || 0)
+    const fiscalParam = route.query.fiscal === 'true'
+
     const formRefFiscal = ref()
     const formRefNoFiscal = ref()
     const loading = ref(false)
@@ -1611,7 +2028,7 @@ export default defineComponent({
 
     const vtabTipoEmpresaRef = ref()
     const vtabTipoEmpresa = ref<any>('tabTipoEmpresa01')
-    const vtabMenuItems = ref([
+    const vtabDatosFiscalesItems = ref([
       {
         icon: 'mdi-badge-account-horizontal',
         title: 'Principales',
@@ -1632,18 +2049,32 @@ export default defineComponent({
         title: 'Sueldos y salarios',
         value: 'tab04',
       },
-      /*{
-        icon: 'mdi-chart-line',
-        title: 'Cálculos',
-        value: 'tab05',
-      },*/
       {
         icon: 'mdi-account-credit-card',
         title: 'Pagos y extras',
+        value: 'tab05',
+      },
+      {
+        icon: 'mdi-account-file-text',
+        title: 'Datos GAPE',
         value: 'tab06',
       },
     ])
-    const vtabGraficaSelected = ref<any>('tabBarrasV')
+    const vtabDatosFiscales = ref<any>('tab01')
+    const vtabDatosNoFiscales = ref<any>('tabDatosNoFiscales01')
+
+    const vtabDatosNoFiscalesItems = ref([
+      {
+        icon: 'mdi-badge-account-horizontal',
+        title: 'Principales',
+        value: 'tabDatosNoFiscales01',
+      },
+      {
+        icon: 'mdi-account-file-text',
+        title: 'Datos GAPE',
+        value: 'tabDatosNoFiscales02',
+      },
+    ])
 
     const cardHeight = ref(0)
 
@@ -1652,12 +2083,14 @@ export default defineComponent({
       descargarFormato: true,
       eliminarRegistros: true,
       guardarCambios: false,
-      activarRegistro: false,
+      activarRegistro: true,
       crearRegistro: true,
 
       compCliente: false,
       compTipoEmp: true,
       compEmpresa: true,
+
+      dmCodigoEmpleado: false,
     })
 
     // 5. Computed properties
@@ -1700,7 +2133,7 @@ export default defineComponent({
     const itemsTipoJornadaNomina = computed(() => tipoJornadaStore.tipoJornada)
 
     const reglaMascarillaCodigo = computed(() => {
-      return validationRules.codeMask(empresaStore.empresa?.mascarillacodigo ?? '')
+      return validationRules.codeMask(empresaNomStore.empresa[0]?.mascarillacodigo ?? '')
     })
 
     const itemsClientesNomina = computed(() => clienteStore.clientes)
@@ -1717,26 +2150,50 @@ export default defineComponent({
         entidadnacimiento: dataModel.value.EntidadFederativa,
       }),
       (val) => {
-        const fecha =
+        // Normalizamos la fecha a 'YYYY-MM-DD'
+        const fechaStr =
           val.fechanacimiento instanceof Date
-            ? val.fechanacimiento.toISOString().split('T')[0] // convierte a 'YYYY-MM-DD'
+            ? val.fechanacimiento.toISOString().split('T')[0]
             : typeof val.fechanacimiento === 'string'
               ? val.fechanacimiento
-              : undefined
+              : ''
+
+        // Convierte 'YYYY-MM-DD' -> 'YYMMDD' para la CURP
+        let fechaCurp = ''
+        if (fechaStr && fechaStr.includes('-')) {
+          const [y, m, d] = fechaStr.split('-')
+          fechaCurp = `${y.slice(2)}${m}${d}` // → '970129'
+        }
 
         const sexoCurp = val.sexo === 'F' ? 'M' : 'H'
 
+        // Genera el nombre largo
+        dataModel.value.nombrelargo =
+          `${val.apellidopaterno || ''} ${val.apellidomaterno || ''} ${val.nombre || ''}`.trim()
+
+        // 🟢 Si estás EDITANDO → construir CURP con curpi + fechaCurp + curpf
+        if (props.id) {
+          const curpi = (dataModel.value.curpi || '').trim().toUpperCase()
+          const curpf = (dataModel.value.curpf || '').trim().toUpperCase()
+
+          if (curpi && fechaCurp && curpf) {
+            dataModel.value.curpCompleto = `${curpi}${fechaCurp}${curpf}`
+          }
+          return
+        }
+
+        // 🟣 Si es NUEVO registro → generar automáticamente
         const parcial = generarCurpExtendida({
           nombre: val.nombre || '',
           apellidopaterno: val.apellidopaterno || '',
           apellidomaterno: val.apellidomaterno || '',
-          fechanacimiento: fecha,
+          fechanacimiento: fechaStr,
           sexo: sexoCurp,
           entidadnacimiento: val.entidadnacimiento,
         })
 
         if (parcial) {
-          dataModel.value.curpCompleto = parcial
+          dataModel.value.curpCompleto = parcial.toUpperCase()
         }
       },
       { immediate: true, deep: true },
@@ -1749,7 +2206,7 @@ export default defineComponent({
 
         if (curp.length === 18) {
           dataModel.value.curpi = curp.slice(0, 4) // letras
-          dataModel.value.curpf = curp.slice(4) // fecha + sexo + entidad + demás
+          dataModel.value.curpf = curp.slice(-8) // fecha + sexo + entidad + demás
         } else {
           dataModel.value.curpi = ''
           dataModel.value.curpf = ''
@@ -1768,17 +2225,20 @@ export default defineComponent({
           dataModel.value.curpf = curpGenerico.slice(8)
         } else {
           // Si quieres limpiar el campo cuando se desmarca:
-          dataModel.value.curpCompleto = ''
-          dataModel.value.curpi = ''
-          dataModel.value.curpf = ''
+          //dataModel.value.curpCompleto = ''
+          //dataModel.value.curpi = ''
+          //dataModel.value.curpf = ''
         }
       },
       { immediate: true },
     )
 
     watch(
-      () => empresaStore.siguienteCodigo,
+      () => empresaNomStore.siguienteCodigo,
       (nuevoCodigo) => {
+        if (props.id !== undefined && props.id !== null) {
+          return
+        }
         if (!codigoAsignado && !dataModel.value.codigoempleado && nuevoCodigo) {
           dataModel.value.codigoempleado = nuevoCodigo
           codigoAsignado = true
@@ -1810,9 +2270,27 @@ export default defineComponent({
       nextTick(() => {})
       await fetchClientes()
 
-      const fiscal = dataModel.value.fiscal
+      if (props.id !== undefined && props.id !== null) {
+        dataModel.value.id_nomina_gape_cliente = idClienteParam
+        dataModel.value.id_nomina_gape_empresa = idEmpresaParam
+        dataModel.value.fiscal = fiscalParam
 
-      if (!fiscal) {
+        btnDisabled.value.dmCodigoEmpleado = true
+
+        const data = {
+          idEmpleado: props.id,
+          idCliente: idClienteParam,
+          idEmpresa: idEmpresaParam,
+          fiscal: fiscalParam,
+        }
+
+        buscarEmpresasNomina()
+
+        if (fiscalParam) {
+          await buscarCatalogosPorEmpresa()
+        }
+
+        await fetchDatosEmpleado(data)
       }
     })
 
@@ -1830,21 +2308,44 @@ export default defineComponent({
 
     const buscarCatalogosPorEmpresa = async () => {
       const idCliente = dataModel.value.id_nomina_gape_cliente
+      const idEmpresa = dataModel.value.id_nomina_gape_empresa
       const fiscal = dataModel.value.fiscal
+
+      const data = {
+        idCliente: idCliente,
+        idEmpresa: idEmpresa,
+      }
+
+      if (fiscal) {
+        cargarCatalogosPorEmpresa(data)
+      }
     }
 
     const buscarEmpresasNomina = async () => {
-
-      resetModel(true)
-
       const idCliente = dataModel.value.id_nomina_gape_cliente
       const fiscal = dataModel.value.fiscal
 
-      btnDisabled.value.compTipoEmp = idCliente != null ? false : true
-      btnDisabled.value.compEmpresa = idCliente != null ? false : true
+      if (props.id !== undefined && props.id !== null) {
+        btnDisabled.value.compCliente = true
+        btnDisabled.value.crearRegistro = false
+      } else {
+        resetModel(true)
+        btnDisabled.value.compTipoEmp = idCliente != null ? false : true
+        btnDisabled.value.compEmpresa = idCliente != null ? false : true
+      }
 
       // ✅ Si el cliente está seleccionado, aplicar la lógica fiscal/no fiscal
       await fetchEmpresasNominaPorClienteTipo(idCliente, fiscal)
+    }
+
+    const fetchDatosEmpleado = async (data: any) => {
+      try {
+        const datos = await empleadoStore.editEmpleado(data)
+
+        setEmpleado(datos)
+      } catch (error) {
+        console.error('Error al cargar catálogos por empresa:', error)
+      }
     }
 
     const fetchEmpresasNominaPorClienteTipo = async (idCliente: any, fiscal: boolean) => {
@@ -1860,31 +2361,43 @@ export default defineComponent({
       }
     }
 
-    const cargarCatalogosPorEmpresa = async (idEmpresa: number) => {
+    const cargarCatalogosPorEmpresa = async (data: any) => {
       await Promise.all([
-        tipoContratoStore.catalogoTipoContrato(idEmpresa),
-        tipoPeriodoStore.catalogoTipoPeriodo(idEmpresa),
-        departamentoStore.catalogoDepartamento(idEmpresa),
-        puestoStore.catalogoPuesto(idEmpresa),
-        tipoPrestacionStore.catalogoTipoPrestacion(idEmpresa),
-        turnoStore.catalogoTurno(idEmpresa),
-        tipoRegimenStore.catalogoTipoRegimen(idEmpresa),
-        registroPatronalStore.catalogoRegistroPatronal(idEmpresa),
-        entidadFederativaStore.catalogoEntidadFederativa(idEmpresa),
-        bancoStore.catalogoBanco(idEmpresa),
-        empresaStore.catalogoEmpresa(idEmpresa),
-        tipoJornadaStore.catalogoTipoJornada(idEmpresa),
+        tipoContratoStore.catalogoTipoContrato(data),
+        tipoPeriodoStore.catalogoTipoPeriodo(data),
+        departamentoStore.catalogoDepartamento(data),
+        puestoStore.catalogoPuesto(data),
+        tipoPrestacionStore.catalogoTipoPrestacion(data),
+        turnoStore.catalogoTurno(data),
+        tipoRegimenStore.catalogoTipoRegimen(data),
+        registroPatronalStore.catalogoRegistroPatronal(data),
+        entidadFederativaStore.catalogoEntidadFederativa(data),
+        bancoStore.catalogoBanco(data),
+        tipoJornadaStore.catalogoTipoJornada(data),
 
-        (dataModel.value.zonasalario = empresaStore.empresa?.zonasalariogeneral ?? ''),
+        empresaNomStore.catalogoEmpresa(data),
+
+        (dataModel.value.zonasalario = empresaNomStore.empresa[0]?.zonasalariogeneral ?? ''),
       ])
     }
 
     const onDecision = () => {
+      let mensaje = ''
+      let titulo = ''
+
+      if (props.id !== undefined && props.id !== null) {
+        titulo = 'Actualización de datos'
+        mensaje = `¿Está seguro de que desea actualizar el registro? Los cambios realizados serán guardados de forma permanente.`
+      } else {
+        titulo = 'Registro de datos'
+        mensaje = `¿Está seguro de que desea registrar los datos? Esta acción no se puede deshacer.`
+      }
+
       dialogConfirmation.onOpenDialogConfirmation(
-        '¿Estás seguro de guardar el registro?',
+        mensaje,
         validateForm, // << callback directo
         [],
-        'Confirmación',
+        titulo,
         'alert',
       )
     }
@@ -1892,9 +2405,11 @@ export default defineComponent({
     const validateForm = async () => {
       dialogConfirmation.onCloseDialogConfirmation()
 
-      const formRef = dataModel.value.fiscal ? formRefFiscal.value : formRefNoFiscal.value
+      let formRef = null
 
-      const form = await formRef.value?.validate()
+      formRef = dataModel.value.fiscal ? formRefFiscal.value : formRefNoFiscal.value
+
+      const form = await formRef.validate()
 
       if (!form) return
 
@@ -1902,21 +2417,49 @@ export default defineComponent({
         try {
           loading.value = true
 
+          let titulo = 'Registro guardado'
+          let mensaje = 'Los datos se guardaron de forma exitosa.'
+
           dataModel.value.ExtranjeroSinCURP = dataModel.value.ExtranjeroSinCURP
-          await empleadoStore.guardarEmpleado(dataModel.value)
+          if (props.id !== undefined && props.id !== null) {
+            if (dataModel.value.fiscal) {
+              await empleadoStore.actualizarEmpleado(dataModel.value)
+            } else {
+              await empleadoStore.actualizarEmpleadoNoFiscal(dataModel.value)
+            }
+
+            mensaje = 'Los datos se actualizaron de forma exitosa.'
+            titulo = 'Registro actualizado'
+          } else {
+            if (dataModel.value.fiscal) {
+              await empleadoStore.guardarEmpleado(dataModel.value)
+            } else {
+              await empleadoStore.guardarEmpleadoNoFiscal(dataModel.value)
+            }
+          }
+          dialogConfirmation.onOpenDialogInformation(mensaje, titulo, 'correct', '#438701', 2)
+          router.push({ name: 'EmpleadoList' })
 
           await form.value?.reset()
-
-          dialogConfirmation.onOpenDialogInformation(
-            'Los datos se guardarán en la base de datos.',
-            'Titulo',
-            'alert',
-            '#438701',
-            1,
-          )
-          // Snackbar o confirmación aquí
-        } catch (error) {
-          console.error('Error al guardar empleado:', error)
+        } catch (error: any) {
+          if (error.type === 'validation') {
+            const errores = Object.values(error.errors).flat().join('<br>')
+            dialogConfirmation.onOpenDialogInformation(
+              errores,
+              'Verifique los siguientes errores',
+              'incorrect',
+              '#B00000',
+              2,
+            )
+          } else {
+            dialogConfirmation.onOpenDialogInformation(
+              'Ocurrió un error inesperado al guardar.',
+              'Error',
+              'incorrect',
+              '#B00000',
+              2,
+            )
+          }
         } finally {
           loading.value = false
         }
@@ -1964,10 +2507,12 @@ export default defineComponent({
       vconPrincipalRef,
       vrowBarraDeAccionesRef,
       vrowFiltrosRef,
-      vtabGraficaSelected,
-      vtabMenuItems,
+      vtabDatosNoFiscales,
+      vtabDatosNoFiscalesItems,
       vtabTipoEmpresa,
       vtabTipoEmpresaRef,
+      vtabDatosFiscalesItems,
+      vtabDatosFiscales,
     }
   },
 })

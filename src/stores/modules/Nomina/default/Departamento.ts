@@ -18,9 +18,9 @@ export const useDepartamentoStore = defineStore({
     responseMessage: '',
   }),
   actions: {
-    async catalogoDepartamento(idEmpresa: number) {
+    async catalogoDepartamento(data: any) {
       try {
-        const response = await axios.post(`/api/nominaDepartamento/${idEmpresa}`)
+        const response = await axios.post(`/api/catalogoNomina/departamento`, data)
         this.departamento = response.data.data
       } catch (error: any) {
         console.error('Error al obtener departamento:', error)

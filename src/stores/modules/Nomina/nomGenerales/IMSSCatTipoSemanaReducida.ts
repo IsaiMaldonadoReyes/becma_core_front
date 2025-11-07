@@ -18,9 +18,9 @@ export const useTipoJornadaStore = defineStore({
     responseMessage: '',
   }),
   actions: {
-    async catalogoTipoJornada(idEmpresa: number) {
+    async catalogoTipoJornada(data: any) {
       try {
-        const response = await axios.post(`/api/nominaTipoJornada/${idEmpresa}`)
+        const response = await axios.post(`/api/catalogoNomina/tipoJornada`, data)
         this.tipoJornada = response.data.data
       } catch (error: any) {
         console.error('Error al obtener banco:', error)

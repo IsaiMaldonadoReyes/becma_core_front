@@ -993,7 +993,7 @@ export default defineComponent({
           dataModel.value.id_nomina_gape_cliente = idCliente
           dataModel.value.id_nomina_gape_empresa = idEmpresa
           dataModel.value.fiscal = fiscal
-          dataModel.value.id_tipo_periodo = idTipoPeriodo
+          dataModel.value.id_tipo_periodo = Number(idTipoPeriodo)
           dataModel.value.estado = estado
 
           if (fiscal)

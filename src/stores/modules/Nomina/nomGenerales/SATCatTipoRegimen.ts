@@ -18,9 +18,9 @@ export const useTipoRegimenStore = defineStore({
     responseMessage: '',
   }),
   actions: {
-    async catalogoTipoRegimen(idEmpresa: number) {
+    async catalogoTipoRegimen(data: any) {
       try {
-        const response = await axios.post(`/api/nominaTipoRegimen/${idEmpresa}`)
+        const response = await axios.post(`/api/catalogoNomina/tipoRegimen`, data)
         this.tipoRegimen = response.data.data
       } catch (error: any) {
         console.error('Error al obtener tipo de regimen:', error)
