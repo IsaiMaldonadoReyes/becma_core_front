@@ -21,9 +21,9 @@ export const useTipoPeriodoStore = defineStore({
     reset() {
       this.tipoPeriodo = []
     },
-    async catalogoTipoPeriodo(idEmpresa: number) {
+    async catalogoTipoPeriodo(data: any) {
       try {
-        const response = await axios.post(`/api/nominaTipoPeriodo/${idEmpresa}`)
+        const response = await axios.post(`/api/catalogoNomina/tipoPeriodo`, data)
         this.tipoPeriodo = response.data.data
       } catch (error: any) {
         console.error('Error al obtener tipo de periodo:', error)
@@ -33,7 +33,7 @@ export const useTipoPeriodoStore = defineStore({
     },
     async tipoPeriodoNGE(data: any) {
       try {
-        const response = await axios.post(`/api/catalogoNomina/tipoPeriodo`, data)
+        const response = await axios.post(`/api/catalogoNomina/tipoPeriodoNGE`, data)
         this.tipoPeriodo = response.data.data
       } catch (error: any) {
         console.error('Error al obtener tipo de periodo:', error)

@@ -500,12 +500,21 @@
                     min-width="36px"
                     width="36px"
                     variant="elevated"
+                    :to="{
+                      name: 'EmpleadoUpdateForm',
+                      params: { id: item.idempleado },
+                      query: {
+                        id_nomina_gape_cliente: dataModel.id_nomina_gape_cliente,
+                        id_nomina_gape_empresa: dataModel.id_nomina_gape_empresa,
+                        fiscal: dataModel.fiscal ? 'true' : 'false',
+                      },
+                    }"
                   >
                     <v-icon size="small" color="white" icon="mdi-pencil" />
                   </v-btn>
                 </template>
                 <span>
-                  Editar <b>{{ item.nombre }}</b>
+                  Editar <b>{{ item.rfc }}</b>
                 </span>
               </v-tooltip>
             </template>
@@ -551,14 +560,21 @@ import { useDisplay } from 'vuetify'
 
 // import interfaces
 import type { ClienteModel } from '@/interfaces/nomina/gape/ClienteModel'
+import type { EmpleadoModel } from '@/interfaces/nomina/gape/EmpleadoModel'
 
 // import composables
 
 // import stores
 import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
-import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 import { useEmpresaStore } from '@/stores/modules/Nomina/gape/Empresa'
+import { useEmpleadoStore } from '@/stores/modules/Nomina/gape/Empleado'
+
+import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
+
 import { useRouter } from 'vue-router'
+
+// import composables y utils
+import { useEmpleadoModel } from '@/composables/nomina/gape/useEmpleado'
 
 // import components
 import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
@@ -585,6 +601,7 @@ export default defineComponent({
     const router = useRouter()
     const clienteStore = useClienteStore()
     const empresasStore = useEmpresaStore()
+    const empleadoStore = useEmpleadoStore()
 
     const dialogConfirmation = useDialogManagerStore()
     const { smAndDown } = useDisplay()
@@ -638,13 +655,13 @@ export default defineComponent({
       }[]
     >([
       {
-        key: 'codigo',
+        key: 'codigoempleado',
         align: 'center',
         sortable: true,
         title: 'Código',
       },
       {
-        key: 'nombre',
+        key: 'nombrelargo',
         align: 'start',
         sortable: true,
         title: 'Nombre',
@@ -657,7 +674,7 @@ export default defineComponent({
         title: 'RFC',
       },
       {
-        key: 'fecha_alta',
+        key: 'fechaalta',
         align: 'center',
         title: 'Fecha de alta',
       },
@@ -669,7 +686,7 @@ export default defineComponent({
       },
     ])
 
-    const vdtbPrincipalItems = ref<ClienteModel[]>([])
+    const vdtbPrincipalItems = ref<EmpleadoModel[]>([])
     const vdtbPrincipalItemsPorPagina = ref(5)
     const vdtbPrincipalItemsSeleccionados = ref<string[]>([])
 
@@ -763,9 +780,9 @@ export default defineComponent({
     const fetchEmpleadosClienteEmpresa = async (data: any) => {
       vdtbPrincipalItems.value = []
       try {
-        await empresasStore.empresasNominasPorClienteTipo(data)
+        await empleadoStore.indexEmpleados(data)
 
-        vdtbPrincipalItems.value = clienteStore.clientes
+        vdtbPrincipalItems.value = empleadoStore.empleado
       } catch (error) {
         console.error('Error al cargar los empleados:', error)
       }

@@ -70,6 +70,15 @@ const router = createRouter({
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
     {
+      component: EmpleadoForm,
+      name: 'EmpleadoUpdateForm',
+      path: '/nominas/gape/empleadoForm/:id',
+      meta: { requiresAuth: true, sistema: 'nominas' },
+      props: (route) => ({
+        id: Number(route.params.id),
+      }),
+    },
+    {
       component: EmpresaForm,
       name: 'EmpresaForm',
       path: '/nominas/gape/empresaForm',

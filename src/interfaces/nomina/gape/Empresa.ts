@@ -15,4 +15,7 @@ export interface EmpresaModel {
   rfc: string | null
   codigo_interno: string | null
   correo_notificacion: string | null
+  mascara_codigo: string | null
+  codigo_inicial: string | null
+  codigo_actual: string | null
 }

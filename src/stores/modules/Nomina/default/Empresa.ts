@@ -7,22 +7,22 @@ axios.defaults.withXSRFToken = true
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL
 
 interface EmpresaState {
-  empresa: EmpresaModel | null
+  empresa: EmpresaModel[]
   responseMessage: string
   siguienteCodigo: string | null
 }
 
-export const useEmpresaStore = defineStore({
-  id: 'nominaEmpresa',
+export const useEmpresaNomStore = defineStore({
+  id: 'empresaNom',
   state: (): EmpresaState => ({
-    empresa: null,
+    empresa: [],
     responseMessage: '',
     siguienteCodigo: null,
   }),
   actions: {
-    async catalogoEmpresa(idEmpresa: number) {
+    async catalogoEmpresa(data: any) {
       try {
-        const response = await axios.post(`/api/nominaEmpresa/${idEmpresa}`)
+        const response = await axios.post(`/api/catalogoNomina/empresa`, data)
         this.empresa = response.data.data.empresa
         this.siguienteCodigo = response.data.data.siguienteCodigo
       } catch (error: any) {

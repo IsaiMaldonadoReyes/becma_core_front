@@ -18,9 +18,9 @@ export const useEntidadFederativaStore = defineStore({
     responseMessage: '',
   }),
   actions: {
-    async catalogoEntidadFederativa(idEmpresa: number) {
+    async catalogoEntidadFederativa(data: any) {
       try {
-        const response = await axios.post(`/api/nominaEntidadFederativa/${idEmpresa}`)
+        const response = await axios.post(`/api/catalogoNomina/entidadFederativa`, data)
         this.entidadFederativa = response.data.data
       } catch (error: any) {
         console.error('Error al obtener enntidad federativa:', error)
