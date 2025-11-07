@@ -18,9 +18,9 @@ export const usePuestoStore = defineStore({
     responseMessage: '',
   }),
   actions: {
-    async catalogoPuesto(idEmpresa: number) {
+    async catalogoPuesto(data: any) {
       try {
-        const response = await axios.post(`/api/nominaPuesto/${idEmpresa}`)
+        const response = await axios.post(`/api/catalogoNomina/puesto`, data)
         this.puesto = response.data.data
       } catch (error: any) {
         console.error('Error al obtener puesto:', error)

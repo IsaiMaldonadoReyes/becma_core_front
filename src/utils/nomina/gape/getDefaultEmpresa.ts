@@ -18,5 +18,8 @@ export function getDefaultEmpresa(): EmpresaModel {
     rfc: '',
     codigo_interno: '',
     correo_notificacion: '',
+    mascara_codigo: '',
+    codigo_inicial: '',
+    codigo_actual: '',
   }
 }

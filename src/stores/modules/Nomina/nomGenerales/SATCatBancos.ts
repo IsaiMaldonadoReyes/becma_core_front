@@ -18,9 +18,9 @@ export const useBancoStore = defineStore({
     responseMessage: '',
   }),
   actions: {
-    async catalogoBanco(idEmpresa: number) {
+    async catalogoBanco(data: any) {
       try {
-        const response = await axios.post(`/api/nominaBanco/${idEmpresa}`)
+        const response = await axios.post(`/api/catalogoNomina/bancos`, data)
         this.banco = response.data.data
       } catch (error: any) {
         console.error('Error al obtener banco:', error)

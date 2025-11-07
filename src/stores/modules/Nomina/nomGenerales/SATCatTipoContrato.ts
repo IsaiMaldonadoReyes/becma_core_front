@@ -18,9 +18,9 @@ export const useTipoContratoStore = defineStore({
     responseMessage: '',
   }),
   actions: {
-    async catalogoTipoContrato(idEmpresa: number) {
+    async catalogoTipoContrato(data: any) {
       try {
-        const response = await axios.post(`/api/nominaTipoContrato/${idEmpresa}`)
+        const response = await axios.post(`/api/catalogoNomina/tipoContrato`, data)
         this.tipoContrato = response.data.data
       } catch (error: any) {
         console.error('Error al obtener tipo de contrato:', error)

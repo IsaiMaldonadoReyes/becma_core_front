@@ -18,9 +18,9 @@ export const useTurnoStore = defineStore({
     responseMessage: '',
   }),
   actions: {
-    async catalogoTurno(idEmpresa: number) {
+    async catalogoTurno(data: any) {
       try {
-        const response = await axios.post(`/api/nominaTurno/${idEmpresa}`)
+        const response = await axios.post(`/api/catalogoNomina/turno`, data)
         this.turno = response.data.data
       } catch (error: any) {
         console.error('Error al obtener turno:', error)

@@ -18,9 +18,9 @@ export const useRegistroPatronalStore = defineStore({
     responseMessage: '',
   }),
   actions: {
-    async catalogoRegistroPatronal(idEmpresa: number) {
+    async catalogoRegistroPatronal(data: any) {
       try {
-        const response = await axios.post(`/api/nominaRegistroPatronal/${idEmpresa}`)
+        const response = await axios.post(`/api/catalogoNomina/registroPatronal`, data)
         this.registroPatronal = response.data.data
       } catch (error: any) {
         console.error('Error al obtener registro patronal:', error)
