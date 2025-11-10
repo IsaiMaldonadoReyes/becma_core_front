@@ -89,7 +89,9 @@ const router = createRouter({
       name: 'EmpresaUpdateForm',
       path: '/nominas/gape/empresaForm/:id',
       meta: { requiresAuth: true, sistema: 'nominas' },
-      props: true,
+      props: (route) => ({
+        id: Number(route.params.id),
+      }),
     },
     {
       component: EmpresaList,
@@ -114,7 +116,9 @@ const router = createRouter({
       name: 'ParametrizacionUpdateForm',
       path: '/nominas/gape/parametrizacionForm/:id',
       meta: { requiresAuth: true, sistema: 'nominas' },
-      props: true,
+      props: (route) => ({
+        id: Number(route.params.id),
+      }),
     },
     {
       component: LayoutDispersion,

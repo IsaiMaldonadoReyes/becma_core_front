@@ -187,25 +187,7 @@
             @update:model-value="buscarEmpresasNomina"
           >
             <template #tooltip>
-              <v-card
-                :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                class="py-3"
-                color="transparent"
-                elevation="0"
-              >
-                <v-row>
-                  <v-col cols="1" class="d-flex align-center justify-center">
-                    <v-icon icon="mdi-information-slab-circle-outline" />
-                  </v-col>
-                  <v-col cols="11">
-                    <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
-                    es necesario configurar la parametrización de la prenómina para cada una de las
-                    empresas de cada cliente.<br />
-                    Elija el <b style="color: #2a73c5"><i>CLIENTE</i></b> para después elegir la
-                    empresa a la que desea configurar su parametrización.
-                  </v-col>
-                </v-row>
-              </v-card>
+              <parametrizacion-tooltips name="ayudaCliente" />
             </template>
           </bec-autocomplete>
         </v-col>
@@ -227,34 +209,7 @@
             @update:model-value="buscarEmpresasNomina"
           >
             <template #tooltip>
-              <v-card
-                :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                class="py-3"
-                color="transparent"
-                elevation="0"
-              >
-                <v-row>
-                  <v-col cols="1" class="d-flex align-center justify-center">
-                    <v-icon icon="mdi-information-slab-circle-outline" />
-                  </v-col>
-                  <v-col cols="11">
-                    <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
-                    elija el tipo de empresa (fiscal o no fiscal) para mostrar únicamente las
-                    empresas correspondientes.
-                  </v-col>
-                </v-row>
-                <v-divider class="border-opacity-50 my-2 mx-2" />
-                <v-row>
-                  <v-col cols="1" class="d-flex align-center justify-center">
-                    <v-icon icon="mdi-cursor-default-click" />
-                  </v-col>
-                  <v-col cols="11">
-                    <span style="font-weight: bold; color: #2a73c5">Evento:</span>
-                    al seleccionar una opción en este campo, se habilitará y mostrará la información
-                    correspondiente de: <b style="color: #2a73c5"><i>EMPRESA</i></b>
-                  </v-col>
-                </v-row>
-              </v-card>
+              <parametrizacion-tooltips name="ayudaTipoEmpresa" />
             </template>
           </bec-select>
         </v-col>
@@ -276,45 +231,7 @@
             @update:model-value="buscarDatosPorEmpresa"
           >
             <template #tooltip>
-              <v-card
-                :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                class="py-3"
-                color="transparent"
-                elevation="0"
-              >
-                <v-row>
-                  <v-col cols="1" class="d-flex align-center justify-center">
-                    <v-icon icon="mdi-information-slab-circle-outline" />
-                  </v-col>
-                  <v-col cols="11">
-                    <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
-                    elija la empresa a la que desea definir los parámetros de la prenómina.
-                  </v-col>
-                </v-row>
-                <v-divider class="border-opacity-50 my-2 mx-2" />
-                <v-row>
-                  <v-col cols="1" class="d-flex align-center justify-center">
-                    <v-icon icon="mdi-file-rotate-left" />
-                  </v-col>
-                  <v-col cols="11">
-                    <span style="font-weight: bold; color: #2a73c5">Campo dependiente:</span>
-                    debe seleccionar primero
-                    <b style="color: #2a73c5"><i>TIPO DE EMPRESA</i></b> para poder habilitar este
-                    campo y mostrar las empresas correspondientes.
-                  </v-col>
-                </v-row>
-                <v-divider class="border-opacity-50 my-2 mx-2" />
-                <v-row>
-                  <v-col cols="1" class="d-flex align-center justify-center">
-                    <v-icon icon="mdi-cursor-default-click" />
-                  </v-col>
-                  <v-col cols="11">
-                    <span style="font-weight: bold; color: #2a73c5">Evento:</span>
-                    al seleccionar una opción en este campo, se habilitará y mostrará la información
-                    correspondiente de: <b style="color: #2a73c5"><i>TIPO DE PERIODO</i></b>
-                  </v-col>
-                </v-row>
-              </v-card>
+              <parametrizacion-tooltips name="ayudaEmpresa" />
             </template>
           </bec-autocomplete>
         </v-col>
@@ -333,37 +250,7 @@
             :show-chips="false"
           >
             <template #tooltip>
-              <v-card
-                :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                class="pa-3"
-                color="transparent"
-                elevation="0"
-              >
-                <v-row>
-                  <v-col cols="1" class="d-flex align-center justify-center">
-                    <v-icon class="mr-1" color="white" icon="mdi-information-slab-circle-outline" />
-                  </v-col>
-                  <v-col cols="11">
-                    <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
-                    la parametrización debe configurarse de forma independiente para cada uno de los
-                    tipos de periodo manejados dentro de la empresa. <br />Elija el tipo de periodo
-                    (periodicidad) para el cual desea definir la configuración de parametrización de
-                    prenómina.
-                  </v-col>
-                </v-row>
-                <v-divider class="border-opacity-50 my-2 mx-2" />
-                <v-row>
-                  <v-col cols="1" class="d-flex align-center justify-center">
-                    <v-icon class="mr-1" color="white" icon="mdi-file-rotate-left" />
-                  </v-col>
-                  <v-col cols="11">
-                    <span style="font-weight: bold; color: #2a73c5">Campo dependiente:</span>
-                    debe seleccionar primero una <b style="color: #2a73c5"><i>EMPRESA</i></b> fiscal
-                    para poder habilitar este campo y mostrar los tipos de periodo manejados en la
-                    empresa.
-                  </v-col>
-                </v-row>
-              </v-card>
+              <parametrizacion-tooltips name="ayudaTipoPeriodo" />
             </template>
           </bec-autocomplete>
         </v-col>
@@ -470,25 +357,7 @@
                     />
                   </template>
                   <template #default>
-                    <v-card
-                      :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                      class="py-3"
-                      color="transparent"
-                      elevation="0"
-                    >
-                      <v-row>
-                        <v-col cols="1" class="d-flex align-center justify-center">
-                          <v-icon icon="mdi-information-slab-circle-outline" />
-                        </v-col>
-                        <v-col cols="11">
-                          <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
-                          arrastre y suelte los conceptos alternativos de pago para organizarlos en
-                          el orden deseado. <br />
-                          El sistema utilizará este orden para calcular los excedentes durante el
-                          proceso de cálculo de la prenómina.
-                        </v-col>
-                      </v-row>
-                    </v-card>
+                    <parametrizacion-tooltips name="ayudaInstruccionConcepto" />
                   </template>
                 </v-tooltip>
               </div>
@@ -515,36 +384,7 @@
                 :rules="[validationRules.required]"
               >
                 <template #tooltip>
-                  <v-card
-                    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                    class="py-3"
-                    color="transparent"
-                    elevation="0"
-                  >
-                    <v-row>
-                      <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon
-                          class="mr-1"
-                          color="white"
-                          icon="mdi-information-slab-circle-outline"
-                        />
-                      </v-col>
-                      <v-col cols="11">Elija la Clase prima de riesgo.</v-col>
-                    </v-row>
-                    <v-divider class="border-opacity-50 my-2 mx-2" />
-                    <v-row>
-                      <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon class="mr-1" color="white" icon="mdi-cursor-default-click" />
-                      </v-col>
-                      <v-col cols="11">
-                        <span style="font-weight: bold; color: #2a73c5">Evento:</span>
-                        al seleccionar la opción <b style="color: #2a73c5"><i>ACTUALIZADA</i></b> en
-                        este campo, se habilitará el campo
-                        <b style="color: #2a73c5"><i>PRIMA DE RIESGO ACTUALIZADA</i></b> para que
-                        pueda capturar su valor correspondiente.
-                      </v-col>
-                    </v-row>
-                  </v-card>
+                  <parametrizacion-tooltips name="ayudaClasePrimaRiesgo" />
                 </template>
               </bec-select>
             </v-col>
@@ -560,36 +400,7 @@
                 @keypress="inputFilters.onlyNumbers"
               >
                 <template #tooltip>
-                  <v-card
-                    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                    class="py-3"
-                    color="transparent"
-                    elevation="0"
-                  >
-                    <v-row>
-                      <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon
-                          class="mr-1"
-                          color="white"
-                          icon="mdi-information-slab-circle-outline"
-                        />
-                      </v-col>
-                      <v-col cols="11">Capture el valor de la prima de riesgo actualizada.</v-col>
-                    </v-row>
-                    <v-divider class="border-opacity-50 my-2 mx-2" />
-                    <v-row>
-                      <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon class="mr-1" color="white" icon="mdi-file-rotate-left" />
-                      </v-col>
-                      <v-col cols="11">
-                        <span style="font-weight: bold; color: #2a73c5">Campo dependiente:</span>
-                        debe seleccionar primero la opción:
-                        <b style="color: #2a73c5"><i>ACTUALIZADA</i></b> del campo
-                        <b style="color: #2a73c5"><i>CLASE PRIMA DE RIESGO</i></b> para poder
-                        habilitar este campo.
-                      </v-col>
-                    </v-row>
-                  </v-card>
+                  <parametrizacion-tooltips name="ayudaClasePrimaRiesgoValor" />
                 </template>
               </bec-text-field>
             </v-col>
@@ -604,23 +415,7 @@
                 @keypress="inputFilters.onlyNumbers"
               >
                 <template #tooltip>
-                  <v-card
-                    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                    class="pa-3"
-                    color="transparent"
-                    elevation="0"
-                  >
-                    <v-row>
-                      <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon
-                          class="mr-1"
-                          color="white"
-                          icon="mdi-information-slab-circle-outline"
-                        />
-                      </v-col>
-                      <v-col cols="11">Porcentaje de comisión que se aplicará al cliente.</v-col>
-                    </v-row>
-                  </v-card>
+                  <parametrizacion-tooltips name="ayudaFee" />
                 </template>
               </bec-text-field>
             </v-col>
@@ -638,27 +433,7 @@
                 :rules="[validationRules.required]"
               >
                 <template #tooltip>
-                  <v-card
-                    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                    class="pa-3"
-                    color="transparent"
-                    elevation="0"
-                  >
-                    <v-row>
-                      <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon
-                          class="mr-1"
-                          color="white"
-                          icon="mdi-information-slab-circle-outline"
-                        />
-                      </v-col>
-                      <v-col cols="11">
-                        <span style="font-weight: bold; color: #2a73c5">Instrucción:</span> indique
-                        la base de cálculo que se utilizará para determinar la comisión aplicada al
-                        cliente.
-                      </v-col>
-                    </v-row>
-                  </v-card>
+                  <parametrizacion-tooltips name="ayudaBaseFee" />
                 </template>
               </bec-select>
             </v-col>
@@ -676,27 +451,7 @@
                 :rules="[validationRules.required]"
               >
                 <template #tooltip>
-                  <v-card
-                    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                    class="pa-3"
-                    color="transparent"
-                    elevation="0"
-                  >
-                    <v-row>
-                      <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon
-                          class="mr-1"
-                          color="white"
-                          icon="mdi-information-slab-circle-outline"
-                        />
-                      </v-col>
-                      <v-col cols="11">
-                        Corresponde a las provisiones de las prestaciones de ley, como aguinaldo y
-                        prima vacacional, que deberán calcularse y provisionarse conforme a cada
-                        periodo de pago, cuando aplique.
-                      </v-col>
-                    </v-row>
-                  </v-card>
+                  <parametrizacion-tooltips name="ayudaProvisiones" />
                 </template>
               </bec-select>
             </v-col>
@@ -712,25 +467,7 @@
                 @keypress="inputFilters.onlyNumbers"
               >
                 <template #tooltip>
-                  <v-card
-                    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                    class="pa-3"
-                    color="transparent"
-                    elevation="0"
-                  >
-                    <v-row>
-                      <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon
-                          class="mr-1"
-                          color="white"
-                          icon="mdi-information-slab-circle-outline"
-                        />
-                      </v-col>
-                      <v-col cols="11">
-                        Capture el porcentaje correspondiente al Impuesto Sobre Nómina (ISN).
-                      </v-col>
-                    </v-row>
-                  </v-card>
+                  <parametrizacion-tooltips name="ayudaIsn" />
                 </template>
               </bec-text-field>
             </v-col>
@@ -748,22 +485,7 @@
                 :rules="[validationRules.required]"
               >
                 <template #tooltip>
-                  <v-card
-                    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-                    class="pa-3"
-                    color="transparent"
-                    elevation="0"
-                  >
-                    <v-row>
-                      <v-col cols="1" class="d-flex align-center justify-center">
-                        <v-icon color="white" icon="mdi-information-slab-circle-outline" />
-                      </v-col>
-                      <v-col cols="11">
-                        Corresponde al porcentaje de retención que se aplicará en la nómina fiscal a
-                        los trabajadores agremiados, tomando como base su sueldo o percepción bruta.
-                      </v-col>
-                    </v-row>
-                  </v-card>
+                  <parametrizacion-tooltips name="ayudaCuotaSindical" />
                 </template>
               </bec-select>
             </v-col>
@@ -814,6 +536,7 @@ import { getDefaultClasePrimaRiesgo } from '@/utils/nomina/gape/getDefaultClaseP
 import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
 import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
 import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
+import ParametrizacionTooltips from '@/components/nomina/ayudas/ParametrizacionTooltips.vue'
 
 import { validationRules } from '@/utils/validationRules'
 import { inputFilters } from '@/utils/inputFilters'
@@ -823,7 +546,7 @@ import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'ParametrizacionForm',
-  components: { BecSelect, BecAutocomplete, BecTextField },
+  components: { BecSelect, BecAutocomplete, BecTextField, ParametrizacionTooltips },
   props: {
     id: {
       type: Number,
@@ -846,7 +569,7 @@ export default defineComponent({
     const { dataModel, setConceptoPagoParametrizacion, resetModel } =
       useConceptoPagoParametrizacionModel()
 
-    const { dataModel: parametrizacionModel } = useParametrizacionModel()
+    const { dataModel: parametrizacionModel, setParametrizacion } = useParametrizacionModel()
 
     const tipoPeriodoStore = useTipoPeriodoStore()
     const clienteStore = useClienteStore()
@@ -987,14 +710,10 @@ export default defineComponent({
           const fiscal = conceptoParametrizacionStore.data.id_tipo_periodo == null ? false : true
           const idEmpresa = conceptoParametrizacionStore.data.id_nomina_gape_empresa
           const idTipoPeriodo = conceptoParametrizacionStore.data.id_tipo_periodo ?? null
-          const estado = conceptoParametrizacionStore.data.estado
           await fetchEmpresasNominaPorClienteTipo(idCliente, fiscal)
 
-          dataModel.value.id_nomina_gape_cliente = idCliente
-          dataModel.value.id_nomina_gape_empresa = idEmpresa
+          setConceptoPagoParametrizacion(conceptoParametrizacionStore.data)
           dataModel.value.fiscal = fiscal
-          dataModel.value.id_tipo_periodo = Number(idTipoPeriodo)
-          dataModel.value.estado = estado
 
           if (fiscal)
             tipoPeriodoStore.tipoPeriodoNGE({
@@ -1011,15 +730,7 @@ export default defineComponent({
           await fetchParametrizacion(idCliente, idEmpresa, idTipoPeriodo)
 
           if (parametrizacionStore.data && !Array.isArray(parametrizacionStore.data)) {
-            parametrizacionModel.value.clase_prima_riesgo =
-              parametrizacionStore.data.clase_prima_riesgo
-            parametrizacionModel.value.clase_prima_riesgo_valor =
-              parametrizacionStore.data.clase_prima_riesgo_valor
-            parametrizacionModel.value.fee = parametrizacionStore.data.fee
-            parametrizacionModel.value.base_fee = parametrizacionStore.data.base_fee
-            parametrizacionModel.value.provisiones = parametrizacionStore.data.provisiones
-            parametrizacionModel.value.isn = parametrizacionStore.data.isn
-            parametrizacionModel.value.cuota_sindical = parametrizacionStore.data.cuota_sindical
+            setParametrizacion(parametrizacionStore.data)
           }
         }
       } catch (error) {

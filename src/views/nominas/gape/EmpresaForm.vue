@@ -368,29 +368,7 @@
                             :rules="[validationRules.required]"
                           >
                             <template #tooltip>
-                              <v-card color="transparent" elevation="0" class="py-3">
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon
-                                      class="mr-1"
-                                      color="white"
-                                      icon="mdi-card-account-details"
-                                    />
-                                  </v-col>
-                                  <v-col cols="11">Ingrese la razón social de la empresa.</v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2 mx-2" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empresa-tooltips name="ayudaRazonSocial" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -403,32 +381,7 @@
                             :rules="[validationRules.required]"
                           >
                             <template #tooltip>
-                              <v-card color="transparent" elevation="0" class="py-3">
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon
-                                      class="mr-1"
-                                      color="white"
-                                      icon="mdi-card-account-details"
-                                    />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    Capture el RFC correspondiente a la empresa fiscal registrada
-                                    ante el SAT.
-                                  </v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2 mx-2" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empresa-tooltips name="ayudaRfc" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -441,25 +394,7 @@
                             :rules="[validationRules.required, validationRules.emailIfNotEmpty]"
                           >
                             <template #tooltip>
-                              <v-card color="transparent" elevation="0" class="py-3">
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-email" />
-                                  </v-col>
-                                  <v-col cols="11"> Ingrese un correo electrónico válido. </v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2 mx-4" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empresa-tooltips name="ayudaCorreoNotificacion" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -469,31 +404,18 @@
                             :disabled="btnDisabled.compCodigo"
                             :label="'Código interno'"
                             :prepend-icon="'mdi-barcode'"
-                            :rules="[validationRules.required]"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validateAlphanumericField(v, {
+                                  required: true,
+                                  min: 3,
+                                  max: 10,
+                                }),
+                            ]"
                             @keypress="inputFilters.onlyAlphanumeric"
                           >
                             <template #tooltip>
-                              <v-card color="transparent" elevation="0" class="py-3">
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-barcode" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    Ingrese un código de identificación del cliente/empresa.
-                                  </v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2 mx-4" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso de facturación.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empresa-tooltips name="ayudaCodigoInterno" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -1281,33 +1203,13 @@
                           <bec-text-field
                             v-model="dataModel.razon_social"
                             :disabled="btnDisabled.compNoFisRazonSocial"
-                            :label="'Razón Social'"
+                            :label="'Razón Social *'"
                             :prepend-icon="'mdi-briefcase-account'"
                             :rules="[validationRules.required]"
                             @keypress="inputFilters.onlyAlphanumericWithSpaces"
                           >
                             <template #tooltip>
-                              <v-card color="transparent" elevation="0" class="py-3">
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-account-box" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    Seleccione la empresa a la que quiere relacionar el cliente.
-                                  </v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2 mx-2" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empresa-tooltips name="ayudaRazonSocial" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -1315,33 +1217,13 @@
                           <bec-text-field
                             v-model="dataModel.rfc"
                             :disabled="btnDisabled.compNoFisRfc"
-                            :label="'RFC'"
+                            :label="'RFC *'"
                             :prepend-icon="'mdi-briefcase-account'"
                             :rules="[validationRules.required, validationRules.rfc]"
                             @keypress="inputFilters.onlyRFC"
                           >
                             <template #tooltip>
-                              <v-card color="transparent" elevation="0" class="py-3">
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-account-box" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    Seleccione la empresa a la que quiere relacionar el cliente.
-                                  </v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2 mx-2" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empresa-tooltips name="ayudaRfc" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -1354,25 +1236,7 @@
                             :rules="[validationRules.required, validationRules.emailIfNotEmpty]"
                           >
                             <template #tooltip>
-                              <v-card color="transparent" elevation="0" class="py-3">
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-email" />
-                                  </v-col>
-                                  <v-col cols="11"> Ingrese un correo electrónico válido. </v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2 mx-4" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso de facturación.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empresa-tooltips name="ayudaCorreoNotificacion" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -1380,33 +1244,20 @@
                           <bec-text-field
                             v-model="dataModel.codigo_interno"
                             :disabled="btnDisabled.compNoFisCodigo"
-                            :label="'Código interno'"
+                            :label="'Código interno *'"
                             :prepend-icon="'mdi-barcode'"
-                            :rules="[validationRules.required]"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validateAlphanumericField(v, {
+                                  required: true,
+                                  min: 3,
+                                  max: 10,
+                                }),
+                            ]"
                             @keypress="inputFilters.onlyAlphanumeric"
                           >
                             <template #tooltip>
-                              <v-card color="transparent" elevation="0" class="py-3">
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-email" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    Ingrese un código de identificación del cliente/empresa.
-                                  </v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2 mx-4" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso de facturación.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empresa-tooltips name="ayudaCodigoInterno" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -1414,31 +1265,22 @@
                           <bec-text-field
                             v-model="dataModel.mascara_codigo"
                             :disabled="btnDisabled.compNoFiscMascara"
-                            :label="'Mascara del código'"
-                            :prepend-icon="'mdi-email'"
-                            :rules="[validationRules.required]"
+                            :label="'Mascara del código *'"
+                            :prepend-icon="'mdi-barcode'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validateLettersField(v, {
+                                  required: true,
+                                  min: 3,
+                                  max: 10,
+                                }),
+                              (v: string) =>
+                                /^[Xx]{3,10}$/.test(v) || 'Debe contener entre 3 y 10 X',
+                            ]"
                             @keypress="inputFilters.onlyLetters"
                           >
                             <template #tooltip>
-                              <v-card color="transparent" elevation="0" class="py-3">
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-email" />
-                                  </v-col>
-                                  <v-col cols="11"> Ingrese un correo electrónico válido. </v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2 mx-4" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso de facturación.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empresa-tooltips name="ayudaMascara" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -1446,30 +1288,24 @@
                           <bec-text-field
                             v-model="dataModel.codigo_inicial"
                             :disabled="btnDisabled.compNoFiscCodigoInicial"
-                            :label="'Código inicial'"
-                            :prepend-icon="'mdi-email'"
-                            :rules="[validationRules.required]"
+                            :label="'Código inicial *'"
+                            :prepend-icon="'mdi-barcode'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validateNumericField(v, {
+                                  required: true,
+                                  min: 3,
+                                  max: 10,
+                                }),
+                              (v: string) =>
+                                new RegExp(`^\\d{${dataModel.mascara_codigo?.length ?? 0}}$`).test(
+                                  v,
+                                ) || `Debe tener ${dataModel.mascara_codigo?.length ?? 0} dígitos`,
+                            ]"
+                            @keypress="inputFilters.onlyNumbers"
                           >
                             <template #tooltip>
-                              <v-card color="transparent" elevation="0" class="py-3">
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-email" />
-                                  </v-col>
-                                  <v-col cols="11"> Ingrese un correo electrónico válido. </v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2 mx-4" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso de facturación.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empresa-tooltips name="ayudaCodigoInicial" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -1477,30 +1313,11 @@
                           <bec-text-field
                             v-model="dataModel.codigo_actual"
                             :disabled="btnDisabled.compNoFiscCodigoActual"
-                            :label="'Código actual'"
-                            :prepend-icon="'mdi-email'"
-                            :rules="[validationRules.required]"
+                            :label="'Código actual *'"
+                            :prepend-icon="'mdi-barcode'"
                           >
                             <template #tooltip>
-                              <v-card color="transparent" elevation="0" class="py-3">
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-email" />
-                                  </v-col>
-                                  <v-col cols="11"> Ingrese un correo electrónico válido. </v-col>
-                                </v-row>
-                                <v-divider class="border-opacity-50 my-2 mx-4" />
-                                <v-row>
-                                  <v-col cols="1" class="d-flex align-center justify-center">
-                                    <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                  </v-col>
-                                  <v-col cols="11">
-                                    <span style="font-weight: bold">Nota:</span>
-                                    los campos marcados con (*) son obligatorios para continuar con
-                                    el proceso de facturación.
-                                  </v-col>
-                                </v-row>
-                              </v-card>
+                              <empresa-tooltips name="ayudaCodigoActual" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -2637,6 +2454,13 @@ export default defineComponent({
       { immediate: true },
     )
 
+    watch(
+      () => dataModel.value.mascara_codigo,
+      (nuevaMascara) => {
+        if (props.id !== undefined && props.id !== null) return
+        validarMascaraYActualizarCampos(nuevaMascara)
+      },
+    )
     // 7. Lifecycle hooks (onMounted, mounted)
     onMounted(async () => {
       nextTick(() => {
@@ -2666,6 +2490,7 @@ export default defineComponent({
 
         btnDisabled.value.crearRegistro = false
         btnDisabled.value.compNoFiscMascara = true
+        btnDisabled.value.compNoFiscCodigoInicial = true
 
         await fetchDatosEmpresasNominaPorClienteId(props.id)
 
@@ -2689,6 +2514,17 @@ export default defineComponent({
           vrowFiltrosRef.value.$el.clientHeight -
           vtabTipoEmpresaRef.value.$el.clientHeight -
           15
+      }
+    }
+
+    const validarMascaraYActualizarCampos = (mascara: string) => {
+      const regexMascara = /^[Xx]{3,10}$/ // solo X o x, entre 3 y 10
+      const esValida = regexMascara.test(mascara)
+
+      btnDisabled.value.compNoFiscCodigoInicial = !esValida
+
+      if (!esValida) {
+        dataModel.value.codigo_inicial = ''
       }
     }
 
@@ -2736,18 +2572,7 @@ export default defineComponent({
 
           await fetchEmpresasNominaPorClienteAsignadas(idClienteEdit)
 
-          dataModel.value.id_nomina_gape_cliente = Number(
-            empresaStore.empresa.id_nomina_gape_cliente,
-          )
-          dataModel.value.id_empresa_database = empresaStore.empresa.id_empresa_database
-          dataModel.value.razon_social = empresaStore.empresa.razon_social ?? ''
-          dataModel.value.rfc = empresaStore.empresa.rfc ?? ''
-          dataModel.value.correo_notificacion = empresaStore.empresa.correo_notificacion ?? ''
-          dataModel.value.codigo_interno = empresaStore.empresa.codigo_interno ?? ''
-          dataModel.value.id = Number(props.id)
-          dataModel.value.estado = estado
-
-          dataModel.value.fiscal = (empresaStore.empresa.fiscal as any) === '1'
+          setEmpresa(empresaStore.empresa)
         }
       } catch (error) {
         console.error('Error al cargar datps catálogos por empresa:', error)
@@ -2898,6 +2723,7 @@ export default defineComponent({
 
           router.push({ name: 'EmpresaList' })
         } else {
+          dataModel.value.codigo_actual = dataModel.value.codigo_inicial
           const response = await empresaStore.storeNominaGapeEmpresa(dataModel.value)
 
           idEmpresaCreada = response.id

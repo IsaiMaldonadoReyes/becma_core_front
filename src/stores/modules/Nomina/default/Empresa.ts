@@ -31,5 +31,16 @@ export const useEmpresaNomStore = defineStore({
         throw error
       }
     },
+    async catalogoEmpresaNoFiscal(data: any) {
+      try {
+        const response = await axios.post(`/api/catalogoNomina/sigCodigoPorEmpresa`, data)
+        this.empresa = response.data.data.empresa
+        this.siguienteCodigo = response.data.data.siguienteCodigo
+      } catch (error: any) {
+        console.error('Error al obtener empresa:', error)
+        this.responseMessage = error.message
+        throw error
+      }
+    },
   },
 })
