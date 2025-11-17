@@ -1,4 +1,110 @@
 <template>
+  <!-- Filtros -->
+  <!-- ayudaFiltroCliente -->
+  <v-card
+    v-if="name === 'ayudaFiltroCliente'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="py-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
+        Seleccione el <b style="color: #2a73c5"><i>CLIENTE</i></b> para el que desea registrar
+        nuevos empleados.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2 mx-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-cursor-default-click" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Evento:</span>
+        al seleccionar una opción en este campo, se habilitará:
+        <b style="color: #2a73c5"><i>TIPO DE EMPRESA</i></b>
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaFiltroTipoEmpresa -->
+  <v-card
+    v-if="name === 'ayudaFiltroTipoEmpresa'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Instruccións:</span>
+        elija el tipo de empresa (fiscal o no fiscal) para mostrar únicamente las empresas
+        correspondientes.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2 mx-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-file-rotate-left" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Campo dependiente:</span>
+        debe seleccionar primero
+        <b style="color: #2a73c5"><i>CLIENTE</i></b> para poder habilitar este campo.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2 mx-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-cursor-default-click" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Evento:</span>
+        al seleccionar una opción en este campo, se habilitará y mostrará la información
+        correspondiente de:
+        <b style="color: #2a73c5"><i>EMPRESA</i></b>
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaFiltroEmpresa -->
+  <v-card
+    v-if="name === 'ayudaFiltroEmpresa'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
+        seleccione la empresa donde se registrarán los nuevos empleados.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2 mx-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-file-rotate-left" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Campo dependiente:</span>
+        debe seleccionar primero
+        <b style="color: #2a73c5"><i>TIPO DE EMPRESA</i></b> para poder habilitar este campo y
+        mostrar las empresas correspondientes.
+      </v-col>
+    </v-row>
+  </v-card>
+
   <!-- Principales -->
   <!-- ayudaCodigo -->
   <v-card
@@ -287,7 +393,7 @@
         <v-icon icon="mdi-file-rotate-left" />
       </v-col>
       <v-col cols="11">
-        <span style="font-weight: bold; color: #2a73c5"> Campo dependiente: </span>
+        <span style="font-weight: bold; color: #2a73c5">Campo dependiente:</span>
         debe seleccionar primero la opción
         <b style="color: #2a73c5"><i>Fijo</i></b> del campo
         <b style="color: #2a73c5"><i>BASE DE COTIZACIÓN</i></b> para poder habilitar este campo.
@@ -944,6 +1050,513 @@
     </v-row>
   </v-card>
 
+  <!-- ayudaCURP -->
+  <v-card
+    v-if="name === 'ayudaCURP'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Capture la CURP correspondiente al empleado, conforme a su documentación oficial.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2 mx-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-file-rotate-left" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Campo dependiente:</span>
+        desactive casilla de verificación de
+        <b style="color: #2a73c5"><i>Extranjero sin CURP</i></b> del campo
+        <b style="color: #2a73c5"><i>BASE DE COTIZACIÓN</i></b> para poder habilitar este campo.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon class="mr-1" color="white" icon="mdi-alert-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Advertencia:</span>
+        los campos marcados con (*) son obligatorios para continuar con el proceso.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaExtranjeroSinCurp -->
+  <v-card
+    v-if="name === 'ayudaExtranjeroSinCurp'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Active esta casilla cuando el empleado sea extranjero y no tenga CURP, de acuerdo con su
+        situación migratoria. Esta opción permitirá registrar al empleado sin dicho requisito.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaDireccion -->
+  <v-card
+    v-if="name === 'ayudaDireccion'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Active esta casilla cuando el empleado sea extranjero y no tenga CURP, de acuerdo con su
+        situación migratoria. Esta opción permitirá registrar al empleado sin dicho requisito.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaPoblacion -->
+  <v-card
+    v-if="name === 'ayudaPoblacion'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Ingrese la población o localidad que forma parte de la dirección del empleado, conforme al
+        comprobante de domicilio.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaEntidadFederativaDomicilio -->
+  <v-card
+    v-if="name === 'ayudaEntidadFederativaDomicilio'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Seleccione la entidad federativa asociada al domicilio del empleado, conforme a su
+        comprobante de domicilio.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaCodigoPostal -->
+  <v-card
+    v-if="name === 'ayudaCodigoPostal'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Capture el código postal del domicilio del empleado, conforme al comprobante de domicilio.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaTelefono -->
+  <v-card
+    v-if="name === 'ayudaTelefono'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Ingrese el número de teléfono del empleado (fijo o móvil). Este dato se utiliza para fines
+        de contacto y registro administrativo.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaPadre -->
+  <v-card
+    v-if="name === 'ayudaPadre'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Ingrese el nombre del padre del empleado. Este dato se utiliza para complementar la
+        información personal y de identificación del trabajador.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaMadre -->
+  <v-card
+    v-if="name === 'ayudaMadre'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Ingrese el nombre de la madre del empleado. Este dato se utiliza para completar la
+        información personal y documental del trabajador.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- Sueldos y salarios -->
+  <!-- ayudaSueldoVariable -->
+  <v-card
+    v-if="name === 'ayudaSueldoVariable'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Indica el importe actual del sueldo variable correspondiente al empleado.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaFechaSueldoVariable -->
+  <div v-if="name === 'ayudaFechaSueldoVariable'" style="pointer-events: auto; cursor: help">
+    <v-tooltip location="bottom">
+      <template #activator="{ props: tooltipProps }">
+        <v-icon v-bind="tooltipProps" icon="mdi-information-slab-circle-outline" size="20" />
+      </template>
+      <template #default>
+        <v-card
+          :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+          class="pa-3"
+          color="transparent"
+          elevation="0"
+        >
+          <v-row>
+            <v-col cols="1" class="d-flex align-center justify-center">
+              <v-icon icon="mdi-information-slab-circle-outline" />
+            </v-col>
+            <v-col cols="11">
+              Registre la fecha en que comenzó a aplicarse el sueldo variable del empleado. Este
+              dato se utiliza para el control de movimientos salariales y el cálculo de percepciones
+              en nómina.
+            </v-col>
+          </v-row>
+          <v-divider class="border-opacity-50 my-2" />
+          <v-row>
+            <v-col cols="1" class="d-flex align-center justify-center">
+              <v-icon class="mr-1" color="white" icon="mdi-alert-outline" />
+            </v-col>
+            <v-col cols="11">
+              <span style="font-weight: bold; color: #2a73c5">Advertencia:</span>
+              los campos marcados con (*) son obligatorios para continuar con el proceso.
+            </v-col>
+          </v-row>
+        </v-card>
+      </template>
+    </v-tooltip>
+  </div>
+
+  <!-- ayudaFechaSueldoDiario -->
+  <div v-if="name === 'ayudaFechaSueldoDiario'" style="pointer-events: auto; cursor: help">
+    <v-tooltip location="bottom">
+      <template #activator="{ props: tooltipProps }">
+        <v-icon v-bind="tooltipProps" icon="mdi-information-slab-circle-outline" size="20" />
+      </template>
+      <template #default>
+        <v-card
+          :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+          class="pa-3"
+          color="transparent"
+          elevation="0"
+        >
+          <v-row>
+            <v-col cols="1" class="d-flex align-center justify-center">
+              <v-icon icon="mdi-information-slab-circle-outline" />
+            </v-col>
+            <v-col cols="11">
+              Ingrese la fecha de nacimiento del empleado. Asegúrese de que coincida con la
+              registrada en su documentación oficial.
+            </v-col>
+          </v-row>
+          <v-divider class="border-opacity-50 my-2" />
+          <v-row>
+            <v-col cols="1" class="d-flex align-center justify-center">
+              <v-icon class="mr-1" color="white" icon="mdi-alert-outline" />
+            </v-col>
+            <v-col cols="11">
+              <span style="font-weight: bold; color: #2a73c5">Advertencia:</span>
+              los campos marcados con (*) son obligatorios para continuar con el proceso.
+            </v-col>
+          </v-row>
+        </v-card>
+      </template>
+    </v-tooltip>
+  </div>
+
+  <!-- ayudaSueldoPromedio -->
+  <v-card
+    v-if="name === 'ayudaSueldoPromedio'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">Capture el monto correspondiente al salario promedio del empleado.</v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaFechaSueldoPromedio -->
+  <div v-if="name === 'ayudaFechaSueldoPromedio'" style="pointer-events: auto; cursor: help">
+    <v-tooltip location="bottom">
+      <template #activator="{ props: tooltipProps }">
+        <v-icon v-bind="tooltipProps" icon="mdi-information-slab-circle-outline" size="20" />
+      </template>
+      <template #default>
+        <v-card
+          :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+          class="pa-3"
+          color="transparent"
+          elevation="0"
+        >
+          <v-row>
+            <v-col cols="1" class="d-flex align-center justify-center">
+              <v-icon icon="mdi-information-slab-circle-outline" />
+            </v-col>
+            <v-col cols="11">
+              Capture la fecha de inicio de vigencia del salario promedio correspondiente al
+              empleado.
+            </v-col>
+          </v-row>
+        </v-card>
+      </template>
+    </v-tooltip>
+  </div>
+
+  <!-- ayudaFechaSueldoIntegrado -->
+  <div v-if="name === 'ayudaFechaSueldoIntegrado'" style="pointer-events: auto; cursor: help">
+    <v-tooltip location="bottom">
+      <template #activator="{ props: tooltipProps }">
+        <v-icon v-bind="tooltipProps" icon="mdi-information-slab-circle-outline" size="20" />
+      </template>
+      <template #default>
+        <v-card
+          :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+          class="pa-3"
+          color="transparent"
+          elevation="0"
+        >
+          <v-row>
+            <v-col cols="1" class="d-flex align-center justify-center">
+              <v-icon icon="mdi-information-slab-circle-outline" />
+            </v-col>
+            <v-col cols="11">
+              Capture la fecha de inicio de vigencia del sueldo integrado correspondiente al
+              empleado.
+            </v-col>
+          </v-row>
+        </v-card>
+      </template>
+    </v-tooltip>
+  </div>
+
+  <!-- ayudaSueldoBaseLiquidacion -->
+  <v-card
+    v-if="name === 'ayudaSueldoBaseLiquidacion'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11"
+        >Corresponde al monto del sueldo base considerado para el cálculo de la liquidación.</v-col
+      >
+    </v-row>
+  </v-card>
+
+  <!-- ayudaSueldoDelAjusteAlNeto -->
+  <v-card
+    v-if="name === 'ayudaSueldoDelAjusteAlNeto'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Corresponde al monto ajustado que puede resultar a favor o en contra del empleado tras
+        aplicar el ajuste a neto.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- Pagos y extras -->
+  <!-- ayudaBancoParaPagoElectronico -->
+  <v-card
+    v-if="name === 'ayudaBancoParaPagoElectronico'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Número de banco para el pago electrónico, conforme al catálogo publicado por el SAT. El
+        valor debe contener <b style="color: #2a73c5"><i>3 caracteres</i></b
+        >.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon class="mr-1" color="white" icon="mdi-alert-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Advertencia:</span>
+        los campos marcados con (*) son obligatorios para continuar con el proceso.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaSucursalParaPagoElectronico -->
+  <v-card
+    v-if="name === 'ayudaSucursalParaPagoElectronico'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Indique la sucursal bancaria correspondiente al pago electrónico del empleado.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon class="mr-1" color="white" icon="mdi-alert-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Advertencia:</span>
+        los campos marcados con (*) son obligatorios para continuar con el proceso.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaNumeroDeCuentaParaPagoElectronico -->
+  <v-card
+    v-if="name === 'ayudaNumeroDeCuentaParaPagoElectronico'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Capture el número de cuenta bancaria correspondiente al método de pago electrónico.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon class="mr-1" color="white" icon="mdi-alert-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Advertencia:</span>
+        los campos marcados con (*) son obligatorios para continuar con el proceso.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaCLABEInterbancaria -->
+  <v-card
+    v-if="name === 'ayudaCLABEInterbancaria'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Capture la CLABE Interbancaria correspondiente a la cuenta del empleado.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon class="mr-1" color="white" icon="mdi-alert-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Advertencia:</span>
+        los campos marcados con (*) son obligatorios para continuar con el proceso.
+      </v-col>
+    </v-row>
+  </v-card>
+
   <!-- Datos GAPE -->
   <!-- ayudaFechaDeAltaConGape -->
   <div v-if="name === 'ayudaFechaDeAltaConGape'" style="pointer-events: auto; cursor: help">
@@ -994,6 +1607,66 @@
       </template>
     </v-tooltip>
   </div>
+
+  <!-- ayudaSueldoReal -->
+  <v-card
+    v-if="name === 'ayudaSueldoReal'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Es el sueldo mensual y la cuota diaria neta real del empleado, equivalente al total del
+        ingreso que recibe, sin descuentos ni ajustes. Representa el 100% del ingreso neto que
+        percibe el trabajador en su jornada regular.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon class="mr-1" color="white" icon="mdi-alert-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Advertencia:</span>
+        los campos marcados con (*) son obligatorios para continuar con el proceso.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaSueldoIMSSGape  -->
+  <v-card
+    v-if="name === 'ayudaSueldoIMSSGape'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        Corresponde al sueldo mensual bruto y a la cuota diaria bruta registrada ante el IMSS,
+        utilizada para determinar las cuotas obrero-patronales y demás obligaciones de seguridad
+        social.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon class="mr-1" color="white" icon="mdi-alert-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Advertencia:</span>
+        los campos marcados con (*) son obligatorios para continuar con el proceso.
+      </v-col>
+    </v-row>
+  </v-card>
 </template>
 
 <script lang="ts">
