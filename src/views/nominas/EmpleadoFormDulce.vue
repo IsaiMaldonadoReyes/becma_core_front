@@ -338,7 +338,7 @@
                             :multiple="false"
                             :placeholder="'XXXX'"
                             :prepend-icon="'mdi-barcode'"
-                            :rules="[validationRules.required]"
+                            :rules="[reglaMascarillaCodigo, validationRules.required]"
                           >
                             <template #tooltip>
                               <empleado-tooltips name="ayudaCodigo" />
@@ -1637,6 +1637,7 @@
                           <v-locale-provider locale="es-MX">
                             <v-date-input
                               v-model="dataModel.fecha_alta_gape"
+                              :clearable="true"
                               :mobile="smAndDown"
                               :rules="[validationRules.required]"
                               clear-icon="mdi-close"
@@ -1753,12 +1754,11 @@
                         <v-col cols="12" lg="4">
                           <bec-text-field
                             v-model="dataModel.codigoempleado"
-                            :disabled="btnDisabled.dmCodigoEmpleado"
                             :label="'Código *'"
                             :multiple="false"
                             :placeholder="'XXXX'"
                             :prepend-icon="'mdi-barcode'"
-                            :rules="[validationRules.required]"
+                            :rules="[reglaMascarillaCodigo, validationRules.required]"
                           >
                             <template #tooltip>
                               <empleado-tooltips name="ayudaCodigo" />
@@ -1876,50 +1876,6 @@
                             </template>
                           </bec-text-field>
                         </v-col>
-
-                        <!-- Código postal -->
-                        <v-col cols="12" lg="4">
-                          <bec-text-field
-                            v-model="dataModel.codigopostal"
-                            :label="'C.P. *'"
-                            :placeholder="'Código postal'"
-                            :prepend-icon="'mdi-file-account-outline'"
-                            :rules="[
-                              (v: any) =>
-                                validationRules.validateNumericField(v, {
-                                  required: true,
-                                  max: 5,
-                                }),
-                            ]"
-                            @keypress="inputFilters.onlyNumbers"
-                          >
-                            <template #tooltip>
-                              <empleado-tooltips name="ayudaCodigoPostal" />
-                            </template>
-                          </bec-text-field>
-                        </v-col>
-
-                        <v-col cols="12" lg="4">
-                          <bec-text-field
-                            v-model="dataModel.ClabeInterbancaria"
-                            :label="'Clabe interbancaria'"
-                            :placeholder="'Clabe interbancaria'"
-                            :prepend-icon="'mdi-hospital-box-outline'"
-                            :rules="[
-                              (v: any) =>
-                                validationRules.validateNumericField(v, {
-                                  required: true,
-                                  min: 10,
-                                  max: 30,
-                                }),
-                            ]"
-                            @keypress="inputFilters.onlyNumbers"
-                          >
-                            <template #tooltip>
-                              <empleado-tooltips name="ayudaCLABEInterbancaria" />
-                            </template>
-                          </bec-text-field>
-                        </v-col>
                       </v-row>
                     </v-tabs-window-item>
 
@@ -1987,7 +1943,7 @@
                         <v-col cols="12" lg="4">
                           <bec-text-field
                             v-model="dataModel.sueldo_imss_gape"
-                            :label="'Sueldo IMSS GAPE *'"
+                            :label="'Sueldo IMMS GAPE *'"
                             :placeholder="'0.00'"
                             :prepend-icon="'mdi-cash-clock'"
                             :rules="[
@@ -2000,7 +1956,7 @@
                             "
                           >
                             <template #tooltip>
-                              <empleado-tooltips name="ayudaSueldoIMSSGape" />
+                              <empleado-tooltips name="ayudaSueldoIMMGGape" />
                             </template>
                           </bec-text-field>
                         </v-col>
@@ -2138,6 +2094,8 @@ export default defineComponent({
     const formRefNoFiscal = ref()
     const loading = ref(false)
 
+    let codigoAsignado = false
+
     // breadcrumbs
     const vbrePrincipalItems = ref([
       {
@@ -2219,7 +2177,7 @@ export default defineComponent({
       compTipoEmp: true,
       compEmpresa: true,
 
-      dmCodigoEmpleado: true,
+      dmCodigoEmpleado: false,
     })
 
     // 5. Computed properties
@@ -2260,6 +2218,10 @@ export default defineComponent({
     const itemsEntidadFederativaNomina = computed(() => entidadFederativaStore.entidadFederativa)
     const itemsBancoNomina = computed(() => bancoStore.banco)
     const itemsTipoJornadaNomina = computed(() => tipoJornadaStore.tipoJornada)
+
+    const reglaMascarillaCodigo = computed(() => {
+      return validationRules.codeMask(empresaNomStore.empresa[0]?.mascarillacodigo ?? '')
+    })
 
     const itemsClientesNomina = computed(() => clienteStore.clientes)
     const itemsEmpresaDatabase = computed(() => empresasStore.empresasList)
@@ -2360,6 +2322,20 @@ export default defineComponent({
     )
 
     watch(
+      () => empresaNomStore.siguienteCodigo,
+      (nuevoCodigo) => {
+        if (props.id !== undefined && props.id !== null) {
+          return
+        }
+        if (!codigoAsignado && !dataModel.value.codigoempleado && nuevoCodigo) {
+          dataModel.value.codigoempleado = nuevoCodigo
+          codigoAsignado = true
+        }
+      },
+      { immediate: true },
+    )
+
+    watch(
       () => dataModel.value.fiscal,
       async (nuevoValor) => {
         vtabTipoEmpresa.value = nuevoValor ? 'tabTipoEmpresa01' : 'tabTipoEmpresa02'
@@ -2380,13 +2356,14 @@ export default defineComponent({
 
     onMounted(async () => {
       nextTick(() => {})
-      resetModel(false)
       await fetchClientes()
 
       if (props.id !== undefined && props.id !== null) {
         dataModel.value.id_nomina_gape_cliente = idClienteParam
         dataModel.value.id_nomina_gape_empresa = idEmpresaParam
         dataModel.value.fiscal = fiscalParam
+
+        btnDisabled.value.dmCodigoEmpleado = true
 
         const data = {
           idEmpleado: props.id,
@@ -2417,10 +2394,6 @@ export default defineComponent({
       }
     }
 
-    const informacionEmpresaNoFiscal = async (data: any) => {
-      await empresaNomStore.catalogoEmpresaNoFiscal(data)
-    }
-
     const buscarCatalogosPorEmpresa = async () => {
       const idCliente = dataModel.value.id_nomina_gape_cliente
       const idEmpresa = dataModel.value.id_nomina_gape_empresa
@@ -2429,16 +2402,10 @@ export default defineComponent({
       const data = {
         idCliente: idCliente,
         idEmpresa: idEmpresa,
-        fiscal: fiscal,
       }
 
       if (fiscal) {
         cargarCatalogosPorEmpresa(data)
-      } else {
-        await informacionEmpresaNoFiscal(data)
-        if (props.id === undefined) {
-          dataModel.value.codigoempleado = empresaNomStore.siguienteCodigo ?? ''
-        }
       }
     }
 
@@ -2497,19 +2464,12 @@ export default defineComponent({
         tipoJornadaStore.catalogoTipoJornada(data),
 
         empresaNomStore.catalogoEmpresa(data),
+
+        (dataModel.value.zonasalario = empresaNomStore.empresa[0]?.zonasalariogeneral ?? ''),
       ])
-
-      if (empresaNomStore.empresa && !Array.isArray(empresaNomStore.empresa)) {
-        dataModel.value.zonasalario = empresaNomStore.empresa.zonasalariogeneral ?? ''
-
-        if (props.id === undefined) {
-          dataModel.value.codigoempleado = empresaNomStore.siguienteCodigo ?? ''
-        }
-      }
     }
 
     const onDecision = () => {
-      console.log(dataModel.value.zonasalario)
       let mensaje = ''
       let titulo = ''
 
@@ -2565,8 +2525,6 @@ export default defineComponent({
               await empleadoStore.guardarEmpleadoNoFiscal(dataModel.value)
             }
           }
-
-          empresaNomStore.siguienteCodigo = null
           dialogConfirmation.onOpenDialogInformation(mensaje, titulo, 'correct', '#438701', 2)
           router.push({ name: 'EmpleadoList' })
 
@@ -2630,6 +2588,7 @@ export default defineComponent({
       mergeProps,
       name,
       onDecision,
+      reglaMascarillaCodigo,
       smAndDown,
       validationRules,
       vbrePrincipalItems,

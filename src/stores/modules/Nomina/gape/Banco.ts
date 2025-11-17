@@ -1,13 +1,9 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 
 import type { BancoAztecaModel } from '@/interfaces/nomina/gape/BancoAztecaModel'
 import type { BancoBanorteModel } from '@/interfaces/nomina/gape/BancoBanorteModel'
 import type { BancoFondeadoraModel } from '@/interfaces/nomina/gape/BancoFondeadoraModel'
-
-axios.defaults.withCredentials = true
-axios.defaults.withXSRFToken = true
-axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL
 
 export const useBancoStore = defineStore('bancoStore', {
   state: () => ({
@@ -60,7 +56,6 @@ export const useBancoStore = defineStore('bancoStore', {
           activo_dispersion: parseBoolean(item.activo_dispersion),
         }))
       } catch (error: any) {
-        console.error(error)
         this.responseMessage = error.message
       }
     },
@@ -70,8 +65,8 @@ export const useBancoStore = defineStore('bancoStore', {
         const response = await axios.post('/api/bancos/upsertBancoDispersion', data)
         this.responseMessage = response.data.message
       } catch (error: any) {
-        this._handleError(error)
-        throw error
+        this.responseMessage = error.message
+        if (error.type === 'validation') throw error
       }
     },
 
@@ -80,8 +75,8 @@ export const useBancoStore = defineStore('bancoStore', {
         const response = await axios.post('/api/bancos/storeBancoAzteca', data)
         this.aztecaBancario = response.data
       } catch (error: any) {
-        this._handleError(error)
-        throw error
+        this.responseMessage = error.message
+        if (error.type === 'validation') throw error
       }
     },
     async updateBancoAzteca(data: any, id: number) {
@@ -89,8 +84,8 @@ export const useBancoStore = defineStore('bancoStore', {
         const response = await axios.put(`/api/bancos/updateBancoAzteca/${id}`, data)
         this.aztecaBancario = response.data
       } catch (error: any) {
-        this._handleError(error)
-        throw error
+        this.responseMessage = error.message
+        if (error.type === 'validation') throw error
       }
     },
     async deleteBancoAzteca(id: any) {
@@ -98,8 +93,8 @@ export const useBancoStore = defineStore('bancoStore', {
         const response = await axios.delete(`/api/bancos/deleteBancoAzteca/${id}`)
         this.responseMessage = response.data.message
       } catch (error: any) {
-        this._handleError(error)
-        throw error
+        this.responseMessage = error.message
+        if (error.type === 'validation') throw error
       }
     },
 
@@ -108,8 +103,8 @@ export const useBancoStore = defineStore('bancoStore', {
         const response = await axios.post('/api/bancos/storeBancoBanorte', data)
         this.banorte = response.data
       } catch (error: any) {
-        this._handleError(error)
-        throw error
+        this.responseMessage = error.message
+        if (error.type === 'validation') throw error
       }
     },
     async updateBancoBanorte(data: any, id: number) {
@@ -117,8 +112,8 @@ export const useBancoStore = defineStore('bancoStore', {
         const response = await axios.put(`/api/bancos/updateBancoBanorte/${id}`, data)
         this.banorte = response.data
       } catch (error: any) {
-        this._handleError(error)
-        throw error
+        this.responseMessage = error.message
+        if (error.type === 'validation') throw error
       }
     },
     async deleteBancoBanorte(id: any) {
@@ -126,25 +121,8 @@ export const useBancoStore = defineStore('bancoStore', {
         const response = await axios.delete(`/api/bancos/deleteBancoBanorte/${id}`)
         this.responseMessage = response.data.message
       } catch (error: any) {
-        this._handleError(error)
-        throw error
-      }
-    },
-
-    _handleError(error: any) {
-      if (error.response) {
-        const status = error.response.status
-        if (status === 422) {
-          this.responseMessage = 'Error de validación'
-          throw {
-            type: 'validation',
-            errors: error.response.data.errors,
-            message: error.response.data.message,
-          }
-        }
-        this.responseMessage = error.response.data.message || 'Error en la petición'
-      } else {
-        this.responseMessage = error.message || 'Error desconocido'
+        this.responseMessage = error.message
+        if (error.type === 'validation') throw error
       }
     },
   },

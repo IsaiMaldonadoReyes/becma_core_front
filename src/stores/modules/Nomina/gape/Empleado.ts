@@ -1,10 +1,6 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import type { EmpleadoModel } from '@/interfaces/nomina/gape/EmpleadoModel'
-
-axios.defaults.withCredentials = true
-axios.defaults.withXSRFToken = true
-axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL
 
 interface EmpleadoState {
   empleado: EmpleadoModel[]
@@ -25,9 +21,8 @@ export const useEmpleadoStore = defineStore({
         const response = await axios.post(`/api/nominaGapeEmpleado/store`, empleado)
         this.object = response.data
       } catch (error: any) {
-        console.error('Error al obtener departamento:', error)
         this.responseMessage = error.message
-        throw error
+        if (error.type === 'validation') throw error
       }
     },
     async actualizarEmpleado(empleado: EmpleadoModel) {
@@ -35,19 +30,19 @@ export const useEmpleadoStore = defineStore({
         const response = await axios.put(`/api/nominaGapeEmpleado/update`, empleado)
         this.object = response.data
       } catch (error: any) {
-        console.error('Error al obtener departamento:', error)
         this.responseMessage = error.message
-        throw error
+        if (error.type === 'validation') throw error
       }
     },
     async guardarEmpleadoNoFiscal(empleado: EmpleadoModel) {
       try {
         const response = await axios.post(`/api/nominaGapeEmpleado/storeNoFiscal`, empleado)
         this.object = response.data
+
+        return response.data
       } catch (error: any) {
-        console.error('Error al obtener departamento:', error)
         this.responseMessage = error.message
-        throw error
+        if (error.type === 'validation') throw error
       }
     },
     async actualizarEmpleadoNoFiscal(empleado: EmpleadoModel) {
@@ -55,9 +50,8 @@ export const useEmpleadoStore = defineStore({
         const response = await axios.put(`/api/nominaGapeEmpleado/updateNoFiscal`, empleado)
         this.object = response.data
       } catch (error: any) {
-        console.error('Error al obtener departamento:', error)
         this.responseMessage = error.message
-        throw error
+        if (error.type === 'validation') throw error
       }
     },
     async indexEmpleados(data: any) {
@@ -65,7 +59,6 @@ export const useEmpleadoStore = defineStore({
         const response = await axios.post('/api/nominaGapeEmpleado/index', data)
         this.empleado = response.data.data
       } catch (error: any) {
-        console.error(error)
         this.responseMessage = error.message
       }
     },
@@ -75,7 +68,6 @@ export const useEmpleadoStore = defineStore({
         this.empleado = response.data.data
         return response.data.data
       } catch (error: any) {
-        console.error(error)
         this.responseMessage = error.message
       }
     },

@@ -1,13 +1,9 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import type { EmpresaModel } from '@/interfaces/nomina/default/nom10000'
 
-axios.defaults.withCredentials = true
-axios.defaults.withXSRFToken = true
-axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL
-
 interface EmpresaState {
-  empresa: EmpresaModel[]
+  empresa: EmpresaModel | EmpresaModel[] | null
   responseMessage: string
   siguienteCodigo: string | null
 }
@@ -15,9 +11,9 @@ interface EmpresaState {
 export const useEmpresaNomStore = defineStore({
   id: 'empresaNom',
   state: (): EmpresaState => ({
-    empresa: [],
+    empresa: null,
     responseMessage: '',
-    siguienteCodigo: null,
+    siguienteCodigo: '',
   }),
   actions: {
     async catalogoEmpresa(data: any) {
