@@ -16,6 +16,7 @@ import LayoutDispersion from '@/views/nominas/gape/LayoutDispersion.vue'
 import IncidenciasForm from '@/views/nominas/gape/IncidenciasForm.vue'
 import ClienteModalForm from '@/views/nominas/gape/ClienteModalForm.vue'
 import ClienteList from '@/views/nominas/gape/ClienteList.vue'
+import PrenominaForm from '@/views/nominas/gape/PrenominaForm.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -130,6 +131,12 @@ const router = createRouter({
       component: IncidenciasForm,
       name: 'IncidenciasForm',
       path: '/nominas/gape/incidenciasForm',
+      meta: { requiresAuth: true, sistema: 'nominas' },
+    },
+    {
+      component: PrenominaForm,
+      name: 'PrenominaForm',
+      path: '/nominas/gape/prenominaForm',
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
     {

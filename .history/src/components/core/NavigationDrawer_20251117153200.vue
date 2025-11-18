@@ -351,7 +351,7 @@ export default defineComponent({
             nombre: 'prenomina',
             descripcion: 'Prenomina',
             etiqueta: 'Prenomina',
-            ruta: '/nominas/gape/prenominaForm',
+            ruta: '/nominas/gape/parametrizacionForm',
             icono: 'mdi-calculator',
             orden: 2,
           },

@@ -340,7 +340,7 @@ export default defineComponent({
             descripcion: 'Importador de incidencias',
             etiqueta: 'Incidencias',
             ruta: '/nominas/gape/incidenciasForm',
-            icono: 'mdi-account-injury',
+            icono: 'mdi-calendar-cursor',
             orden: 2,
           },
           {
@@ -351,7 +351,7 @@ export default defineComponent({
             nombre: 'prenomina',
             descripcion: 'Prenomina',
             etiqueta: 'Prenomina',
-            ruta: '/nominas/gape/prenominaForm',
+            ruta: '/nominas/gape/parametrizacionForm',
             icono: 'mdi-calculator',
             orden: 2,
           },

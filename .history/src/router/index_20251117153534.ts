@@ -16,6 +16,7 @@ import LayoutDispersion from '@/views/nominas/gape/LayoutDispersion.vue'
 import IncidenciasForm from '@/views/nominas/gape/IncidenciasForm.vue'
 import ClienteModalForm from '@/views/nominas/gape/ClienteModalForm.vue'
 import ClienteList from '@/views/nominas/gape/ClienteList.vue'
+import PrenominaForm from '@/views/nominas/gape/PrenominaForm.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -60,20 +61,38 @@ const router = createRouter({
     {
       component: EmpleadoList,
       name: 'EmpleadoList',
-      path: '/nominas/empleadoList',
+      path: '/nominas/gape/empleadoList',
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
     {
       component: EmpleadoForm,
       name: 'EmpleadoForm',
-      path: '/nominas/empleadoForm',
+      path: '/nominas/gape/empleadoForm',
       meta: { requiresAuth: true, sistema: 'nominas' },
+    },
+    {
+      component: EmpleadoForm,
+      name: 'EmpleadoUpdateForm',
+      path: '/nominas/gape/empleadoForm/:id',
+      meta: { requiresAuth: true, sistema: 'nominas' },
+      props: (route) => ({
+        id: Number(route.params.id),
+      }),
     },
     {
       component: EmpresaForm,
       name: 'EmpresaForm',
       path: '/nominas/gape/empresaForm',
       meta: { requiresAuth: true, sistema: 'nominas' },
+    },
+    {
+      component: EmpresaForm,
+      name: 'EmpresaUpdateForm',
+      path: '/nominas/gape/empresaForm/:id',
+      meta: { requiresAuth: true, sistema: 'nominas' },
+      props: (route) => ({
+        id: Number(route.params.id),
+      }),
     },
     {
       component: EmpresaList,
@@ -94,6 +113,15 @@ const router = createRouter({
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
     {
+      component: ParametrizacionForm,
+      name: 'ParametrizacionUpdateForm',
+      path: '/nominas/gape/parametrizacionForm/:id',
+      meta: { requiresAuth: true, sistema: 'nominas' },
+      props: (route) => ({
+        id: Number(route.params.id),
+      }),
+    },
+    {
       component: LayoutDispersion,
       name: 'LayoutDispersion',
       path: '/nominas/gape/layoutDispersion',
@@ -103,6 +131,12 @@ const router = createRouter({
       component: IncidenciasForm,
       name: 'IncidenciasForm',
       path: '/nominas/gape/incidenciasForm',
+      meta: { requiresAuth: true, sistema: 'nominas' },
+    },
+    {
+      component: PrenominaForm,
+      name: 'PrenominaForm',
+      path: '/nominas/gape/prenominaForm',
       meta: { requiresAuth: true, sistema: 'nominas' },
     },
     {
