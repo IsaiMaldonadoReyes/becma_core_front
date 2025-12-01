@@ -1,0 +1,326 @@
+Listado de rutas de carpetas
+El número de serie del volumen es 8C42-B3A5
+
++---public
+¦       favicon.ico
+¦       
++---src
+    ¦   App.vue
+    ¦   main.ts
+    ¦   
+    +---assets
+    ¦   ¦   base.css
+    ¦   ¦   logo.svg
+    ¦   ¦   main.css
+    ¦   ¦   
+    ¦   +---images
+    ¦           alert.json
+    ¦           animacion.json
+    ¦           animacion_mantenimiento_light.json
+    ¦           
+    +---components
+    ¦   +---core
+    ¦   ¦   ¦   Avatar.vue
+    ¦   ¦   ¦   NavigationDrawer.vue
+    ¦   ¦   ¦   Notification.vue
+    ¦   ¦   ¦   VistaDeMantenimiento.vue
+    ¦   ¦   ¦   
+    ¦   ¦   +---becmaComponents
+    ¦   ¦   ¦       BecAutocomplete.vue
+    ¦   ¦   ¦       BecSelect.vue
+    ¦   ¦   ¦       BecTextArea.vue
+    ¦   ¦   ¦       BecTextField.vue
+    ¦   ¦   ¦       
+    ¦   ¦   +---dialogForm
+    ¦   ¦   ¦       DialogCuenta.vue
+    ¦   ¦   ¦       
+    ¦   ¦   +---dialogManager
+    ¦   ¦   ¦       DialogConfirmation.vue
+    ¦   ¦   ¦       DialogInformation.vue
+    ¦   ¦   ¦       
+    ¦   ¦   +---dialogMessage
+    ¦   ¦           DialogConfirmation.vue
+    ¦   ¦           DialogInformation.vue
+    ¦   ¦           
+    ¦   +---icons
+    ¦   ¦       IconCommunity.vue
+    ¦   ¦       IconDocumentation.vue
+    ¦   ¦       IconEcosystem.vue
+    ¦   ¦       IconSupport.vue
+    ¦   ¦       IconTooling.vue
+    ¦   ¦       
+    ¦   +---nomina
+    ¦       +---ayudas
+    ¦               EmpleadoTooltips.vue
+    ¦               EmpresaTooltips.vue
+    ¦               ParametrizacionTooltips.vue
+    ¦               PrenominaTooltips.vue
+    ¦               
+    +---composables
+    ¦   +---core
+    ¦   ¦       useConexion.ts
+    ¦   ¦       useEmpresaDatabase.ts
+    ¦   ¦       useEmpresaUsuario.ts
+    ¦   ¦       useSistema.ts
+    ¦   ¦       
+    ¦   +---nomina
+    ¦       +---default
+    ¦       ¦       useDepartamento.ts
+    ¦       ¦       useEmpresa.ts
+    ¦       ¦       usePeriodo.ts
+    ¦       ¦       usePuesto.ts
+    ¦       ¦       useRegistroPatronal.ts
+    ¦       ¦       useTipoPeriodo.ts
+    ¦       ¦       useTipoPrestacion.ts
+    ¦       ¦       useTurno.ts
+    ¦       ¦       
+    ¦       +---gape
+    ¦       ¦       useCliente.ts
+    ¦       ¦       useConceptoPagoParametrizacion.ts
+    ¦       ¦       useEmpleado.ts
+    ¦       ¦       useEmpresa.ts
+    ¦       ¦       useParametrizacion.ts
+    ¦       ¦       usePrenomina.ts
+    ¦       ¦       usePrenominaDisableRules.ts
+    ¦       ¦       
+    ¦       +---nomGenerales
+    ¦               useIMSSCatTipoSemanaReducida.ts
+    ¦               useNominaEmpresa.ts
+    ¦               useSATCatBancos.ts
+    ¦               useSATCatBaseCotizacion.ts
+    ¦               useSATCatBasePago.ts
+    ¦               useSATCatClaveEntidadFederativa.ts
+    ¦               useSATCatEntidadFederativa.ts
+    ¦               useSATCatEstadoCivil.ts
+    ¦               useSATCatFormaPago.ts
+    ¦               useSATCatSexo.ts
+    ¦               useSATCatTipoContrato.ts
+    ¦               useSATCatTipoEmpleado.ts
+    ¦               useSATCatTipoRegimen.ts
+    ¦               useSATCatZonaSalario.ts
+    ¦               
+    +---helpers
+    +---interfaces
+    ¦   +---comercial
+    ¦   +---core
+    ¦   ¦       Conexion.ts
+    ¦   ¦       Dialog.ts
+    ¦   ¦       EmpresaDatabase.ts
+    ¦   ¦       EmpresaUsuario.ts
+    ¦   ¦       Sistema.ts
+    ¦   ¦       
+    ¦   +---nomina
+    ¦       +---default
+    ¦       ¦       nom10000.ts
+    ¦       ¦       nom10002.ts
+    ¦       ¦       nom10003.ts
+    ¦       ¦       nom10006.ts
+    ¦       ¦       nom10023.ts
+    ¦       ¦       nom10032.ts
+    ¦       ¦       nom10035.ts
+    ¦       ¦       nom10050.ts
+    ¦       ¦       
+    ¦       +---gape
+    ¦       ¦       BancoAztecaModel.ts
+    ¦       ¦       BancoBanorteModel.ts
+    ¦       ¦       BancoFondeadoraModel.ts
+    ¦       ¦       BancosDispersionModel.ts
+    ¦       ¦       BaseFeeModel.ts
+    ¦       ¦       ClasePrimaRiesgoModel.ts
+    ¦       ¦       ClienteModel.ts
+    ¦       ¦       ConceptoPagoParametrizacionModel.ts
+    ¦       ¦       ConceptosPagoModel.ts
+    ¦       ¦       EmpleadoModel.ts
+    ¦       ¦       Empresa.ts
+    ¦       ¦       ParametrizacionModel.ts
+    ¦       ¦       PrenominaModel.ts
+    ¦       ¦       
+    ¦       +---nomGenerales
+    ¦               IMSSCatTipoSemanaReducida.ts
+    ¦               nom10000.ts
+    ¦               SATCatBancos.ts
+    ¦               SATCatBaseCotizacion.ts
+    ¦               SATCatBasePago.ts
+    ¦               SATCatClaveEntidadFederativa.ts
+    ¦               SATCatEntidadFederativa.ts
+    ¦               SATCatEstadoCivil.ts
+    ¦               SATCatFormaPago.ts
+    ¦               SATCatSexo.ts
+    ¦               SATCatTipoContrato.ts
+    ¦               SATCatTipoEmpleado.ts
+    ¦               SATCatTipoRegimen.ts
+    ¦               SATCatZonaSalario.ts
+    ¦               
+    +---plugins
+    ¦       axios.ts
+    ¦       vuetify.js
+    ¦       
+    +---router
+    ¦       index.ts
+    ¦       
+    +---stores
+    ¦   +---modules
+    ¦       +---Comercial
+    ¦       ¦       rpt2VentasPorMarcas.ts
+    ¦       ¦       rptPresupuestos.ts
+    ¦       ¦       rptVentasPorConcepto.ts
+    ¦       ¦       
+    ¦       +---Core
+    ¦       ¦       dialog.ts
+    ¦       ¦       empresas.ts
+    ¦       ¦       kiosko.ts
+    ¦       ¦       sesion.ts
+    ¦       ¦       sistema.ts
+    ¦       ¦       
+    ¦       +---Nomina
+    ¦           +---default
+    ¦           ¦       Departamento.ts
+    ¦           ¦       Empresa.ts
+    ¦           ¦       Periodo.ts
+    ¦           ¦       Puesto.ts
+    ¦           ¦       RegistroPatronal.ts
+    ¦           ¦       TipoPeriodo.ts
+    ¦           ¦       TipoPrestacion.ts
+    ¦           ¦       Turno.ts
+    ¦           ¦       
+    ¦           +---gape
+    ¦           ¦       Banco.ts
+    ¦           ¦       Cliente.ts
+    ¦           ¦       ConceptoPagoParametrizacion.ts
+    ¦           ¦       Dispersion.ts
+    ¦           ¦       Empleado.ts
+    ¦           ¦       Empresa.ts
+    ¦           ¦       Parametrizacion.ts
+    ¦           ¦       Prenomina.ts
+    ¦           ¦       
+    ¦           +---nomGenerales
+    ¦                   IMSSCatTipoSemanaReducida.ts
+    ¦                   nomGenerales.ts
+    ¦                   SATCatBancos.ts
+    ¦                   SATCatEntidadFederativa.ts
+    ¦                   SATCatTipoContrato.ts
+    ¦                   SATCatTipoRegimen.ts
+    ¦                   
+    +---styles
+    ¦   ¦   app-bar.css
+    ¦   ¦   app.css
+    ¦   ¦   background.css
+    ¦   ¦   main.scss
+    ¦   ¦   navigation-drawer.css
+    ¦   ¦   
+    ¦   +---fonts
+    ¦       ¦   Poppins.zip
+    ¦       ¦   
+    ¦       +---Poppins
+    ¦               OFL.txt
+    ¦               Poppins-Black.ttf
+    ¦               Poppins-BlackItalic.ttf
+    ¦               Poppins-Bold.ttf
+    ¦               Poppins-BoldItalic.ttf
+    ¦               Poppins-ExtraBold.ttf
+    ¦               Poppins-ExtraBoldItalic.ttf
+    ¦               Poppins-ExtraLight.ttf
+    ¦               Poppins-ExtraLightItalic.ttf
+    ¦               Poppins-Italic.ttf
+    ¦               Poppins-Light.ttf
+    ¦               Poppins-LightItalic.ttf
+    ¦               Poppins-Medium.ttf
+    ¦               Poppins-MediumItalic.ttf
+    ¦               Poppins-Regular.ttf
+    ¦               Poppins-SemiBold.ttf
+    ¦               Poppins-SemiBoldItalic.ttf
+    ¦               Poppins-Thin.ttf
+    ¦               Poppins-ThinItalic.ttf
+    ¦               
+    +---utils
+    ¦   ¦   curp.ts
+    ¦   ¦   handleError.ts
+    ¦   ¦   inputFilters.ts
+    ¦   ¦   validationRules.ts
+    ¦   ¦   
+    ¦   +---core
+    ¦   ¦       getDefaultConexion.ts
+    ¦   ¦       getDefaultEmpresaDatabase.ts
+    ¦   ¦       getDefaultEmpresaUsuario.ts
+    ¦   ¦       getDefaultSistema.ts
+    ¦   ¦       
+    ¦   +---nomina
+    ¦       +---default
+    ¦       ¦       getDefaultDepartamento.ts
+    ¦       ¦       getDefaultEmpresa.ts
+    ¦       ¦       getDefaultPeriodo.ts
+    ¦       ¦       getDefaultPuesto.ts
+    ¦       ¦       getDefaultRegistroPatronal.ts
+    ¦       ¦       getDefaultTipoPeriodo.ts
+    ¦       ¦       getDefaultTipoPrestacion.ts
+    ¦       ¦       getDefaultTurno.ts
+    ¦       ¦       
+    ¦       +---gape
+    ¦       ¦       getDefaultBancosDispersion.ts
+    ¦       ¦       getDefaultBaseFee.ts
+    ¦       ¦       getDefaultClasePrimaRiesgo.ts
+    ¦       ¦       getDefaultCliente.ts
+    ¦       ¦       getDefaultConceptoPagoPaarametrizacion.ts
+    ¦       ¦       getDefaultConceptosPago.ts
+    ¦       ¦       getDefaultEmpleado.ts
+    ¦       ¦       getDefaultEmpresa.ts
+    ¦       ¦       getDefaultParametrizacion.ts
+    ¦       ¦       getDefaultPrenomina.ts
+    ¦       ¦       
+    ¦       +---nomGenerales
+    ¦               getDefaultIMSSCatTipoSemanaReducida.ts
+    ¦               getDefaultNominaEmpresa.ts
+    ¦               getDefaultSATCatBancos.ts
+    ¦               getDefaultSATCatBaseCotizacion.ts
+    ¦               getDefaultSATCatBasePago.ts
+    ¦               getDefaultSATCatClaveEntidadFederativa.ts
+    ¦               getDefaultSATCatEntidadFederativa.ts
+    ¦               getDefaultSATCatEstadoCivil.ts
+    ¦               getDefaultSATCatFormaPago.ts
+    ¦               getDefaultSATCatSexo.ts
+    ¦               getDefaultSATCatTipoContrato.ts
+    ¦               getDefaultSATCatTipoEmpleado.ts
+    ¦               getDefaultSATCatTipoRegimen.ts
+    ¦               getDefaultSATCatZonaSalario.ts
+    ¦               
+    +---views
+        ¦   AboutView.vue
+        ¦   HomeView.vue
+        ¦   Kiosko.vue
+        ¦   KioskoModalForm.vue
+        ¦   LoginView.vue
+        ¦   LoginView_becma.vue
+        ¦   LoginView_salorma.vue
+        ¦   
+        +---comercial
+        ¦       PresupuestosChart.vue
+        ¦       PresupuestosModalChart.vue
+        ¦       VentaPorConceptoChart.vue
+        ¦       VentasPorAgentesChart.vue
+        ¦       VentasPorClientesChart.vue
+        ¦       VentasPorMarcasChart.vue
+        ¦       
+        +---core
+        ¦       SistemaList.vue
+        ¦       SistemaModalForm.vue
+        ¦       
+        +---nominas
+            ¦   EmpleadoForm.vue
+            ¦   EmpleadoFormDulce.vue
+            ¦   EmpleadoList.vue
+            ¦   
+            +---gape
+                    BancoAztecaBancarioModalForm.vue
+                    BancoAztecaInterbancarioModalForm.vue
+                    BancoBanorteTercerosModalForm.vue
+                    ClienteList.vue
+                    ClienteModalForm.vue
+                    EmpresaForm.vue
+                    EmpresaForm_copy.vue
+                    EmpresaList.vue
+                    IncidenciasForm.vue
+                    LayoutDispersion.vue
+                    ParametrizacionForm.vue
+                    ParametrizacionList.vue
+                    PrenominaForm.vue
+                    

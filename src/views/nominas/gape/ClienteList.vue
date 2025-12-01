@@ -334,15 +334,16 @@ import { ref, defineComponent, mergeProps, computed, onMounted, watch } from 'vu
 
 import { useDisplay } from 'vuetify'
 
+// import components
+import { BecTextField } from '@/components/core/becmaComponents'
+
 // import interfaces
-import type { ClienteModel } from '@/interfaces/nomina/gape/ClienteModel'
+import type { ClienteModel } from '@/interfaces/nomina/gape'
 
 // import stores
-import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
-import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
+import { useClienteStore } from '@/stores/modules/Nomina/gape'
 
-// import components
-import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
+import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 
 // import views
 import ClienteModalForm from '@/views/nominas/gape/ClienteModalForm.vue'

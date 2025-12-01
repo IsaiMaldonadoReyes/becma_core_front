@@ -324,13 +324,15 @@ import { ref, defineComponent, mergeProps, computed, onMounted } from 'vue'
 
 import { useDisplay } from 'vuetify'
 
+// import components
+import { BecTextField } from '@/components/core/becmaComponents'
+
 // import interfaces
-import type { EmpresaModel } from '@/interfaces/nomina/gape/Empresa'
+import type { EmpresaModel } from '@/interfaces/nomina/gape'
 
 // import stores
-import { useEmpresaStore } from '@/stores/modules/Nomina/gape/Empresa'
+import { useEmpresaStore } from '@/stores/modules/Nomina/gape'
 
-import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
 
 export default defineComponent({
   name: 'EmpresaList',

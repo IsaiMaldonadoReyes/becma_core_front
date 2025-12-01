@@ -510,33 +510,36 @@ import {
 
 import { useDisplay } from 'vuetify'
 
-// import interface
-import type { ConceptosPagoModel } from '@/interfaces/nomina/gape/ConceptosPagoModel'
-import type { BaseFeeModel } from '@/interfaces/nomina/gape/BaseFeeModel'
-import type { ClasePrimaRiesgoModel } from '@/interfaces/nomina/gape/ClasePrimaRiesgoModel'
+// import components
+import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becmaComponents'
+import ParametrizacionTooltips from '@/components/nomina/ayudas/ParametrizacionTooltips.vue'
 
 // import composables
-import { useConceptoPagoParametrizacionModel } from '@/composables/nomina/gape/useConceptoPagoParametrizacion'
-import { useParametrizacionModel } from '@/composables/nomina/gape/useParametrizacion'
+import {
+  useConceptoPagoParametrizacionModel,
+  useParametrizacionModel,
+} from '@/composables/nomina/gape'
+
+// import interface
+import type { ConceptosPagoModel } from '@/interfaces/nomina/gape'
+import type { BaseFeeModel, ClasePrimaRiesgoModel } from '@/interfaces/nomina/gape'
 
 // import stores
-import { useEmpresaStore } from '@/stores/modules/Nomina/gape/Empresa'
-import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
+import {
+  useEmpresaStore,
+  useClienteStore,
+  useParametrizacionStore,
+  useConceptoPagoParametrizacionStore,
+} from '@/stores/modules/Nomina/gape'
+import { useTipoPeriodoStore } from '@/stores/modules/Nomina/default'
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
-import { useTipoPeriodoStore } from '@/stores/modules/Nomina/default/TipoPeriodo'
-import { useConceptoPagoParametrizacionStore } from '@/stores/modules/Nomina/gape/ConceptoPagoParametrizacion'
-import { useParametrizacionStore } from '@/stores/modules/Nomina/gape/Parametrizacion'
 
 // import utils
-import { getDefaultConceptosPago } from '@/utils/nomina/gape/getDefaultConceptosPago'
-import { getDefaultBaseFee } from '@/utils/nomina/gape/getDefaultBaseFee'
-import { getDefaultClasePrimaRiesgo } from '@/utils/nomina/gape/getDefaultClasePrimaRiesgo'
-
-// import components
-import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
-import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
-import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
-import ParametrizacionTooltips from '@/components/nomina/ayudas/ParametrizacionTooltips.vue'
+import {
+  getDefaultConceptosPago,
+  getDefaultBaseFee,
+  getDefaultClasePrimaRiesgo,
+} from '@/utils/nomina/gape'
 
 import { validationRules } from '@/utils/validationRules'
 import { inputFilters } from '@/utils/inputFilters'

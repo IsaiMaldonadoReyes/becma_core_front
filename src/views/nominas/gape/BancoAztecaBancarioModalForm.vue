@@ -96,22 +96,22 @@
 import { ref, computed, defineComponent, mergeProps, onMounted, onUnmounted, watch } from 'vue'
 import type { PropType } from 'vue'
 
+import { useDisplay } from 'vuetify'
+
+// import components
+import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becmaComponents'
+
 //import interface
 import type { AztecaBancario } from '@/views/nominas/gape/EmpresaForm.vue'
 
-//import composable
-import { useDisplay } from 'vuetify'
-
 // import stores
-import { useBancoStore } from '@/stores/modules/Nomina/gape/Banco'
+import { useBancoStore } from '@/stores/modules/Nomina/gape'
+
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
+
+// import utils
 import { validationRules } from '@/utils/validationRules'
 import { inputFilters } from '@/utils/inputFilters'
-
-// import components
-import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
-import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
-import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
 
 export default defineComponent({
   name: 'BancoAztecaBancarioModalForm',

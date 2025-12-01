@@ -71,5 +71,21 @@ export const useEmpleadoStore = defineStore({
         this.responseMessage = error.message
       }
     },
+    async listEmpleadosNoFiscales(data: any) {
+      try {
+        const response = await axios.post('/api/nominaGapeEmpleado/noFiscalesEmpresaCliente', data)
+        this.empleado = response.data.data
+      } catch (error: any) {
+        this.responseMessage = error.message
+      }
+    },
+    async listEmpleadosFiscales(data: any) {
+      try {
+        const response = await axios.post('/api/nominaGapeEmpleado/fiscalesEmpresaCliente', data)
+        this.empleado = response.data.data
+      } catch (error: any) {
+        this.responseMessage = error.message
+      }
+    },
   },
 })

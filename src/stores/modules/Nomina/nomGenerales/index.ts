@@ -1,0 +1,6 @@
+export * from './IMSSCatTipoSemanaReducida'
+export * from './nomGenerales'
+export * from './SATCatBancos'
+export * from './SATCatEntidadFederativa'
+export * from './SATCatTipoContrato'
+export * from './SATCatTipoRegimen'

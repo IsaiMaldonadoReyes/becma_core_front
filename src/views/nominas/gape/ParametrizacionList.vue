@@ -281,7 +281,7 @@
                   </v-btn>
                 </template>
                 <span>
-                  Editar <b>{{ item.nombre }}</b>
+                  Editar <b>{{ item.cliente }}</b>
                 </span>
               </v-tooltip>
             </template>
@@ -334,15 +334,16 @@ import { ref, defineComponent, mergeProps, computed, onMounted, watch } from 'vu
 
 import { useDisplay } from 'vuetify'
 
+// import components
+import { BecTextField } from '@/components/core/becmaComponents'
+
 // import interfaces
-import type { ConceptoPagoParametrizacionModel } from '@/interfaces/nomina/gape/ConceptoPagoParametrizacionModel'
+import type { ConceptoPagoParametrizacionModel } from '@/interfaces/nomina/gape'
 
 // import stores
-import { useConceptoPagoParametrizacionStore } from '@/stores/modules/Nomina/gape/ConceptoPagoParametrizacion'
-import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
+import { useConceptoPagoParametrizacionStore } from '@/stores/modules/Nomina/gape'
 
-// import components
-import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
+import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 
 // import views
 import ClienteModalForm from '@/views/nominas/gape/ClienteModalForm.vue'
