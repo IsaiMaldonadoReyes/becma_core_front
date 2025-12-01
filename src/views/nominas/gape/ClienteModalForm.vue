@@ -173,25 +173,25 @@
 </template>
 <script lang="ts">
 import { ref, computed, defineComponent, mergeProps, onMounted, onUnmounted, watch } from 'vue'
-
-//import interface
-
-import type { ClienteModel } from '@/interfaces/nomina/gape/ClienteModel'
-
-//import composable
-import { useClienteModel } from '@/composables/nomina/gape/useCliente'
 import { useDisplay } from 'vuetify'
 
+// import components
+import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becmaComponents'
+
+//import composable
+import { useClienteModel } from '@/composables/nomina/gape'
+
+// import interface
+import type { ClienteModel } from '@/interfaces/nomina/gape'
+
 // import stores
-import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
+import { useClienteStore } from '@/stores/modules/Nomina/gape'
+
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
+
+// utils
 import { validationRules } from '@/utils/validationRules'
 import { inputFilters } from '@/utils/inputFilters'
-
-// import components
-import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
-import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
-import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
 
 export default defineComponent({
   name: 'ClienteModalForm',

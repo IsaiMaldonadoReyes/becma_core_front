@@ -2102,14 +2102,17 @@ import {
 
 import { useDisplay } from 'vuetify'
 
+// import components
+import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becmaComponents'
+import { EmpresaTooltips } from '@/components/nomina/ayudas'
+
 // import composables
 import { useEmpresaModel } from '@/composables/nomina/gape/useEmpresa'
 
 // import stores
-import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
-import { useEmpresasStore } from '@/stores/modules/Core/empresas'
-import { useEmpresaStore } from '@/stores/modules/Nomina/gape/Empresa'
-import { useBancoStore } from '@/stores/modules/Nomina/gape/Banco'
+import { useClienteStore, useEmpresaStore, useBancoStore } from '@/stores/modules/Nomina/gape'
+
+import { useEmpresasStore } from '@/stores/modules/Core'
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 
 // import utils
@@ -2117,11 +2120,6 @@ import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 import { validationRules } from '@/utils/validationRules'
 import { inputFilters } from '@/utils/inputFilters'
 
-// import components
-import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
-import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
-import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
-import EmpresaTooltips from '@/components/nomina/ayudas/EmpresaTooltips.vue'
 // import router
 import { useRouter } from 'vue-router'
 

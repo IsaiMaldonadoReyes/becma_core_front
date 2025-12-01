@@ -101,7 +101,7 @@ export interface EmpleadoModel {
   curpCompleto?: string
   id_nomina_gape_cliente?: number | null
   fiscal: boolean
-  fecha_alta_gape?: Date
+  fecha_alta_gape?: string
   sueldo_real?: number
   sueldo_imss_gape?: number
 }

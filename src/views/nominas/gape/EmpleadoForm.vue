@@ -820,7 +820,7 @@
                               (v: any) =>
                                 validationRules.validateNumericField(v, {
                                   required: false,
-                                  min: 10,
+                                  min: 1,
                                   max: 10,
                                 }),
                             ]"
@@ -883,7 +883,7 @@
                           <bec-text-field
                             v-model="dataModel.numerosegurosocial"
                             :clearable="true"
-                            :label="'Número de seguridad sociales *'"
+                            :label="'Número de seguridad social *'"
                             :placeholder="'Código de 11 caracteres'"
                             :prepend-icon="'mdi-hospital-box-outline'"
                             :rules="[
@@ -1346,7 +1346,6 @@
                               v-model="dataModel.fechasueldovariable"
                               :clearable="true"
                               :mobile="smAndDown"
-                              :rules="[validationRules.required]"
                               clear-icon="mdi-close"
                               color="primary"
                               density="compact"
@@ -1372,7 +1371,6 @@
                               v-model="dataModel.fechasueldodiario"
                               :clearable="true"
                               :mobile="smAndDown"
-                              :rules="[validationRules.required]"
                               clear-icon="mdi-close"
                               color="primary"
                               density="compact"
@@ -1660,17 +1658,18 @@
                         <!-- Sueldo real -->
                         <v-col cols="12" lg="4">
                           <bec-text-field
-                            v-model="dataModel.sueldo_real"
+                            v-model="dataModel.ccampoextranumerico1"
                             :label="'Salario real *'"
                             :placeholder="'0.00'"
                             :prepend-icon="'mdi-cash'"
                             :rules="[
                               (v: any) =>
-                                validationRules.validatePositiveNumber(v, { required: false }),
+                                validationRules.validatePositiveNumber(v, { required: true }),
                             ]"
                             prefix="$"
                             @keypress="
-                              (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldo_real)
+                              (e: any) =>
+                                inputFilters.onlyDecimal(e, dataModel.ccampoextranumerico1)
                             "
                           >
                             <template #tooltip>
@@ -1682,17 +1681,18 @@
                         <!-- Sueldo IMMS GAPE -->
                         <v-col cols="12" lg="4">
                           <bec-text-field
-                            v-model="dataModel.sueldo_imss_gape"
+                            v-model="dataModel.ccampoextranumerico2"
                             :label="'Sueldo IMSS GAPE *'"
                             :placeholder="'0.00'"
                             :prepend-icon="'mdi-cash-clock'"
                             :rules="[
                               (v: any) =>
-                                validationRules.validatePositiveNumber(v, { required: false }),
+                                validationRules.validatePositiveNumber(v, { required: true }),
                             ]"
                             prefix="$"
                             @keypress="
-                              (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldo_imss_gape)
+                              (e: any) =>
+                                inputFilters.onlyDecimal(e, dataModel.ccampoextranumerico2)
                             "
                           >
                             <template #tooltip>
@@ -1964,17 +1964,18 @@
                         <!-- Sueldo real -->
                         <v-col cols="12" lg="4">
                           <bec-text-field
-                            v-model="dataModel.sueldo_real"
+                            v-model="dataModel.ccampoextranumerico1"
                             :label="'Salario real *'"
                             :placeholder="'0.00'"
                             :prepend-icon="'mdi-cash'"
                             :rules="[
                               (v: any) =>
-                                validationRules.validatePositiveNumber(v, { required: false }),
+                                validationRules.validatePositiveNumber(v, { required: true }),
                             ]"
                             prefix="$"
                             @keypress="
-                              (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldo_real)
+                              (e: any) =>
+                                inputFilters.onlyDecimal(e, dataModel.ccampoextranumerico1)
                             "
                           >
                             <template #tooltip>
@@ -1986,17 +1987,18 @@
                         <!-- Sueldo IMMS GAPE -->
                         <v-col cols="12" lg="4">
                           <bec-text-field
-                            v-model="dataModel.sueldo_imss_gape"
+                            v-model="dataModel.ccampoextranumerico2"
                             :label="'Sueldo IMSS GAPE *'"
                             :placeholder="'0.00'"
                             :prepend-icon="'mdi-cash-clock'"
                             :rules="[
                               (v: any) =>
-                                validationRules.validatePositiveNumber(v, { required: false }),
+                                validationRules.validatePositiveNumber(v, { required: true }),
                             ]"
                             prefix="$"
                             @keypress="
-                              (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldo_imss_gape)
+                              (e: any) =>
+                                inputFilters.onlyDecimal(e, dataModel.ccampoextranumerico2)
                             "
                           >
                             <template #tooltip>
@@ -2027,54 +2029,55 @@ import {
   nextTick,
   onBeforeUnmount,
   watch,
-  readonly,
 } from 'vue'
 
 import { useDisplay } from 'vuetify'
-//import { useNomGeneralesStore } from '../../stores/modules/Nomina/nomGenerales'
+
+// import components
+import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becmaComponents'
+import { EmpleadoTooltips } from '@/components/nomina/ayudas'
+
+// import composables
+import { useEmpleadoModel } from '@/composables/nomina/gape'
 
 // import stores
-import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
-import { useEmpresaStore } from '@/stores/modules/Nomina/gape/Empresa'
+import { useClienteStore, useEmpresaStore, useEmpleadoStore } from '@/stores/modules/Nomina/gape'
 
-import { useEmpresaNomStore } from '@/stores/modules/Nomina/default/Empresa'
+import {
+  useEmpresaNomStore,
+  useTipoPeriodoStore,
+  useDepartamentoStore,
+  usePuestoStore,
+  useTipoPrestacionStore,
+  useTurnoStore,
+  useRegistroPatronalStore,
+} from '@/stores/modules/Nomina/default'
 
-import { useTipoContratoStore } from '../../stores/modules/Nomina/nomGenerales/SATCatTipoContrato'
-import { useTipoPeriodoStore } from '../../stores/modules/Nomina/default/TipoPeriodo'
-import { useDepartamentoStore } from '../../stores/modules/Nomina/default/Departamento'
-import { usePuestoStore } from '../../stores/modules/Nomina/default/Puesto'
-import { useTipoPrestacionStore } from '../../stores/modules/Nomina/default/TipoPrestacion'
-import { useTurnoStore } from '../../stores/modules/Nomina/default/Turno'
-import { useRegistroPatronalStore } from '../../stores/modules/Nomina/default/RegistroPatronal'
-import { useEntidadFederativaStore } from '../../stores/modules/Nomina/nomGenerales/SATCatEntidadFederativa'
-import { useBancoStore } from '../../stores/modules/Nomina/nomGenerales/SATCatBancos'
-import { useTipoJornadaStore } from '../../stores/modules/Nomina/nomGenerales/IMSSCatTipoSemanaReducida'
-import { useEmpleadoStore } from '../../stores/modules/Nomina/gape/Empleado'
-import { useTipoRegimenStore } from '../../stores/modules/Nomina/nomGenerales/SATCatTipoRegimen'
+import {
+  useTipoContratoStore,
+  useEntidadFederativaStore,
+  useBancoStore,
+  useTipoJornadaStore,
+  useTipoRegimenStore,
+} from '@/stores/modules/Nomina/nomGenerales'
+
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 
 // import utils
-import { getDefaultSATCatBaseCotizacion } from '@/utils/nomina/nomGenerales/getDefaultSATCatBaseCotizacion'
-import { getDefaultSATCatTipoEmpleado } from '@/utils/nomina/nomGenerales/getDefaultSATCatTipoEmpleado'
-import { getDefaultSATCatBasePago } from '@/utils/nomina/nomGenerales/getDefaultSATCatBasePago'
-import { getDefaultSATCatFormaPago } from '@/utils/nomina/nomGenerales/getDefaultSATCatFormaPago'
-import { getDefaultSATCatZonaSalario } from '@/utils/nomina/nomGenerales/getDefaultSATCatZonaSalario'
-import { getDefaultSATCatEstadoCivil } from '@/utils/nomina/nomGenerales/getDefaultSATCatEstadoCivil'
-import { getDefaultSATCatSexo } from '@/utils/nomina/nomGenerales/getDefaultSATCatSexo'
-import { getDefaultSATCatClaveEntidadFederativa } from '@/utils/nomina/nomGenerales/getDefaultSATCatClaveEntidadFederativa'
-
-// import composables y utils
-import { useEmpleadoModel } from '@/composables/nomina/gape/useEmpleado'
+import {
+  getDefaultSATCatBaseCotizacion,
+  getDefaultSATCatTipoEmpleado,
+  getDefaultSATCatBasePago,
+  getDefaultSATCatFormaPago,
+  getDefaultSATCatZonaSalario,
+  getDefaultSATCatEstadoCivil,
+  getDefaultSATCatSexo,
+  getDefaultSATCatClaveEntidadFederativa,
+} from '@/utils/nomina/nomGenerales'
 
 import { validationRules } from '@/utils/validationRules'
 import { inputFilters } from '@/utils/inputFilters'
 import { generarCurpExtendida } from '@/utils/curp'
-
-// import components
-import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
-import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
-import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
-import EmpleadoTooltips from '@/components/nomina/ayudas/EmpleadoTooltips.vue'
 
 // import router
 import { useRoute, useRouter } from 'vue-router'
@@ -2110,7 +2113,6 @@ export default defineComponent({
     const departamentoStore = useDepartamentoStore()
     const dialogConfirmation = useDialogManagerStore()
 
-    const empresaStore = useEmpresaStore()
     const entidadFederativaStore = useEntidadFederativaStore()
     const puestoStore = usePuestoStore()
     const registroPatronalStore = useRegistroPatronalStore()
@@ -2464,6 +2466,7 @@ export default defineComponent({
         const datos = await empleadoStore.editEmpleado(data)
 
         setEmpleado(datos)
+        dataModel.value.fecha_alta_gape = dataModel.value.campoextra1
       } catch (error) {
         console.error('Error al cargar catálogos por empresa:', error)
       }
@@ -2480,6 +2483,11 @@ export default defineComponent({
       } catch (error) {
         console.error('Error al cargar catálogos por empresa:', error)
       }
+    }
+
+    const sanitizeDate = (date: any) => {
+      if (!date) return null
+      return new Date(date).toISOString().split('T')[0]
     }
 
     const cargarCatalogosPorEmpresa = async (data: any) => {
@@ -2509,7 +2517,6 @@ export default defineComponent({
     }
 
     const onDecision = () => {
-      console.log(dataModel.value.zonasalario)
       let mensaje = ''
       let titulo = ''
 
@@ -2549,6 +2556,8 @@ export default defineComponent({
           let mensaje = 'Los datos se guardaron de forma exitosa.'
 
           dataModel.value.ExtranjeroSinCURP = dataModel.value.ExtranjeroSinCURP
+          dataModel.value.campoextra1 = sanitizeDate(dataModel.value.fecha_alta_gape) ?? ''
+
           if (props.id !== undefined && props.id !== null) {
             if (dataModel.value.fiscal) {
               await empleadoStore.actualizarEmpleado(dataModel.value)

@@ -558,30 +558,18 @@ import { ref, defineComponent, mergeProps, computed, onMounted, watch } from 'vu
 
 import { useDisplay } from 'vuetify'
 
-// import interfaces
-import type { ClienteModel } from '@/interfaces/nomina/gape/ClienteModel'
-import type { EmpleadoModel } from '@/interfaces/nomina/gape/EmpleadoModel'
+// import components
+import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becmaComponents'
 
-// import composables
+// import interfaces
+import type { EmpleadoModel } from '@/interfaces/nomina/gape'
 
 // import stores
-import { useClienteStore } from '@/stores/modules/Nomina/gape/Cliente'
-import { useEmpresaStore } from '@/stores/modules/Nomina/gape/Empresa'
-import { useEmpleadoStore } from '@/stores/modules/Nomina/gape/Empleado'
+import { useClienteStore, useEmpresaStore, useEmpleadoStore } from '@/stores/modules/Nomina/gape'
 
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 
 import { useRouter } from 'vue-router'
-
-// import composables y utils
-import { useEmpleadoModel } from '@/composables/nomina/gape/useEmpleado'
-
-// import components
-import BecAutocomplete from '@/components/core/becmaComponents/BecAutocomplete.vue'
-import BecSelect from '@/components/core/becmaComponents/BecSelect.vue'
-import BecTextField from '@/components/core/becmaComponents/BecTextField.vue'
-
-// import views
 
 export default defineComponent({
   name: 'EmpleadoList',
