@@ -3,7 +3,7 @@ import type { SATCatZonaSalarioModel } from '@/interfaces/nomina/nomGenerales/SA
 import { getDefaultSATCatZonaSalario } from '@/utils/nomina/nomGenerales/getDefaultSATCatZonaSalario'
 
 export function useSATCatZonaSalario() {
-  const dataModel = ref<SATCatZonaSalarioModel>(getDefaultSATCatZonaSalario())
+  const dataModel = ref<SATCatZonaSalarioModel[]>(getDefaultSATCatZonaSalario())
 
   const resetModel = () => {
     dataModel.value = getDefaultSATCatZonaSalario()

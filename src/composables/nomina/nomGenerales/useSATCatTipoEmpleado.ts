@@ -3,7 +3,7 @@ import type { SATCatTipoEmpleadoModel } from '@/interfaces/nomina/nomGenerales/S
 import { getDefaultSATCatTipoEmpleado } from '@/utils/nomina/nomGenerales/getDefaultSATCatTipoEmpleado'
 
 export function useSATCatTipoEmpleado() {
-  const dataModel = ref<SATCatTipoEmpleadoModel>(getDefaultSATCatTipoEmpleado())
+  const dataModel = ref<SATCatTipoEmpleadoModel[]>(getDefaultSATCatTipoEmpleado())
 
   const resetModel = () => {
     dataModel.value = getDefaultSATCatTipoEmpleado()

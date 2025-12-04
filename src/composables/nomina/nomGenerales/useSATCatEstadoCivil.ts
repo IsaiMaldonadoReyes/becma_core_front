@@ -3,7 +3,7 @@ import type { SATCatEstadoCivilModel } from '@/interfaces/nomina/nomGenerales/SA
 import { getDefaultSATCatEstadoCivil } from '@/utils/nomina/nomGenerales/getDefaultSATCatEstadoCivil'
 
 export function useSATCatEstadoCivil() {
-  const dataModel = ref<SATCatEstadoCivilModel>(getDefaultSATCatEstadoCivil())
+  const dataModel = ref<SATCatEstadoCivilModel[]>(getDefaultSATCatEstadoCivil())
 
   const resetModel = () => {
     dataModel.value = getDefaultSATCatEstadoCivil()

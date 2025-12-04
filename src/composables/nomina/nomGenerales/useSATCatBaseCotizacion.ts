@@ -3,7 +3,7 @@ import type { SATCatBaseCotizacionModel } from '@/interfaces/nomina/nomGenerales
 import { getDefaultSATCatBaseCotizacion } from '@/utils/nomina/nomGenerales/getDefaultSATCatBaseCotizacion'
 
 export function useSATCatBaseCotizacion() {
-  const dataModel = ref<SATCatBaseCotizacionModel>(getDefaultSATCatBaseCotizacion())
+  const dataModel = ref<SATCatBaseCotizacionModel[]>(getDefaultSATCatBaseCotizacion())
 
   const resetModel = () => {
     dataModel.value = getDefaultSATCatBaseCotizacion()

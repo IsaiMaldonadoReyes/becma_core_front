@@ -3,7 +3,7 @@ import type { SATCatFormaPagoModel } from '@/interfaces/nomina/nomGenerales/SATC
 import { getDefaultSATCatFormaPago } from '@/utils/nomina/nomGenerales/getDefaultSATCatFormaPago'
 
 export function useSATCatFormaPago() {
-  const dataModel = ref<SATCatFormaPagoModel>(getDefaultSATCatFormaPago())
+  const dataModel = ref<SATCatFormaPagoModel[]>(getDefaultSATCatFormaPago())
 
   const resetModel = () => {
     dataModel.value = getDefaultSATCatFormaPago()

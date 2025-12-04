@@ -543,8 +543,10 @@ export default defineComponent({
         let titulo = 'Eliminar registro(s)'
         let mensaje = 'Esta acción eliminará los clientes seleccionados. ¿Desea continuar?'
 
-        const itemsSeleccionados = vdtbPrincipalItems.value.filter((item) =>
-          vdtbPrincipalItemsSeleccionados.value.includes(item.codigo),
+        const itemsSeleccionados = vdtbPrincipalItems.value.filter(
+          (item) =>
+            item.codigo !== undefined &&
+            vdtbPrincipalItemsSeleccionados.value.includes(item.codigo),
         )
 
         dialogConfirmation.onOpenDialogConfirmation(
