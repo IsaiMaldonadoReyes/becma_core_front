@@ -43,7 +43,7 @@ export const useConceptoPagoParametrizacionStore = defineStore({
         return response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
 
@@ -55,7 +55,7 @@ export const useConceptoPagoParametrizacionStore = defineStore({
         return response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
   },

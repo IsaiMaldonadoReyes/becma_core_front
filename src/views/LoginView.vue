@@ -6,24 +6,20 @@
       <div class="line"></div>
     </div>
 
-    <v-card color="#001F32" elevation="16" width="55%">
+    <v-card color="#F0F0F0" elevation="16" width="55%">
       <v-row>
         <v-col cols="12" lg="6">
-          <v-card color="#F0F0F0" elevation="0" class="rainbow">
+          <v-card color="#F0F0F0" elevation="0">
             <vue3-lottie
               width="100%"
-              :animation-link="'/src/assets/images/login_gape_animacion_1.json'"
+              :animation-link="'/src/assets/images/recursos_humano.json'"
             />
           </v-card>
         </v-col>
         <v-col cols="12" lg="6" class="d-flex align-stretch justify-stretch">
-          <v-card color="#001F32" elevation="0" width="100%">
+          <v-card elevation="0" width="100%">
             <v-row class="d-flex align-center justify-center" style="height: 30%">
-              <v-img
-                src="https://static.wixstatic.com/media/b39cbd_eff5ff2e532f46a481354452f7c7e138~mv2.png/v1/fill/w_440,h_156,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/LOGO%20GAPE%20BLANCO%202024.png"
-                contain
-                height="40%"
-              />
+              <v-img src="/src/assets/images/adelta.png" contain height="80%" />
               <!--div class="pt-10">
                 <div class="containe-x">
                   <div class="box">
@@ -47,8 +43,7 @@
                       v-model="datosForm.email"
                       :rules="[rules.email, rules.required]"
                       clearable
-                      color="white"
-                      dark
+                      color="#19A4B3"
                       label="Email"
                       variant="outlined"
                       clear-icon="mdi-close"
@@ -61,7 +56,7 @@
                       :type="visiblePassword ? 'text' : 'password'"
                       class="custom-text-field"
                       clearable
-                      color="white"
+                      color="#19A4B3"
                       counter
                       hint="Ingresa al menos 8 caracteres"
                       label="Contraseña"
@@ -75,14 +70,14 @@
                   <v-card-actions>
                     <v-btn
                       class="primary--text"
-                      color="white"
+                      color="#19A4B3"
                       variant="elevated"
                       @click="login()"
                       block
                     >
                       ENTRAR
                       <template v-slot:append>
-                        <v-icon color="#001F32">mdi-arrow-right-circle</v-icon>
+                        <v-icon color="white">mdi-arrow-right-circle</v-icon>
                       </template>
                     </v-btn>
                   </v-card-actions>
@@ -93,7 +88,7 @@
               <v-divider class="border-opacity-25" color="white" width="60%"></v-divider>
 
               <a href="https://solucionesbecma.com" target="_blank">
-                <v-img class="ml-1" src="/src/assets/images/becma_logo.png" width="50"></v-img>
+                <v-img class="ml-1" src="/src/assets/images/becma_logo_color.png" width="50"></v-img>
               </a>
               <span class="text-body-2"> &nbsp;&#169; {{ new Date().getFullYear() }} </span>
             </v-row>

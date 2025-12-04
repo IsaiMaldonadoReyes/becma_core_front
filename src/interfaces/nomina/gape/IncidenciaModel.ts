@@ -6,4 +6,5 @@ export interface IncidenciaModel {
   id_ejercicio?: number
   id_tipo_periodo?: number
   periodo_inicial?: number
+  archivo?: File | File[]
 }

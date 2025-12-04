@@ -6,11 +6,10 @@ axios.defaults.withXSRFToken = true
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL
 
 axios.interceptors.response.use(
-  (response) => response, // pasa las respuestas exitosas
+  (response) => response,
   (error) => {
-    const err = handleApiError(error)
-
-    return Promise.reject(err)
+    const parsedError = handleApiError(error)
+    return Promise.reject(parsedError)
   },
 )
 

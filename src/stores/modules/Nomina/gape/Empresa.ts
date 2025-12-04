@@ -36,7 +36,7 @@ export const useEmpresaStore = defineStore({
         return response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
     async updateNominaGapeEmpresa(data: EmpresaModel, id: number) {
@@ -45,7 +45,7 @@ export const useEmpresaStore = defineStore({
         this.empresa = response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
     async empresasDatosNominasPorClienteId(id: number) {

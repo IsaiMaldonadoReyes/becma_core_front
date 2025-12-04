@@ -66,7 +66,7 @@ export const useBancoStore = defineStore('bancoStore', {
         this.responseMessage = response.data.message
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
 
@@ -76,7 +76,7 @@ export const useBancoStore = defineStore('bancoStore', {
         this.aztecaBancario = response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
     async updateBancoAzteca(data: any, id: number) {
@@ -85,7 +85,7 @@ export const useBancoStore = defineStore('bancoStore', {
         this.aztecaBancario = response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
     async deleteBancoAzteca(id: any) {
@@ -94,7 +94,7 @@ export const useBancoStore = defineStore('bancoStore', {
         this.responseMessage = response.data.message
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
 
@@ -104,7 +104,7 @@ export const useBancoStore = defineStore('bancoStore', {
         this.banorte = response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
     async updateBancoBanorte(data: any, id: number) {
@@ -113,7 +113,7 @@ export const useBancoStore = defineStore('bancoStore', {
         this.banorte = response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
     async deleteBancoBanorte(id: any) {
@@ -122,7 +122,7 @@ export const useBancoStore = defineStore('bancoStore', {
         this.responseMessage = response.data.message
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
   },
