@@ -3,7 +3,9 @@ import type { SATCatClaveEntidadFederativaModel } from '@/interfaces/nomina/nomG
 import { getDefaultSATCatClaveEntidadFederativa } from '@/utils/nomina/nomGenerales/getDefaultSATCatClaveEntidadFederativa'
 
 export function useSATCatClaveEntidadFederativa() {
-  const dataModel = ref<SATCatClaveEntidadFederativaModel>(getDefaultSATCatClaveEntidadFederativa())
+  const dataModel = ref<SATCatClaveEntidadFederativaModel[]>(
+    getDefaultSATCatClaveEntidadFederativa(),
+  )
 
   const resetModel = () => {
     dataModel.value = getDefaultSATCatClaveEntidadFederativa()

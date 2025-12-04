@@ -411,6 +411,8 @@ import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becm
 import prenominaTooltips from '@/components/nomina/ayudas/PrenominaTooltips.vue'
 import IncidenciaModalLog from '@/views/nominas/gape/IncidenciaModalLog.vue'
 
+import type { ItemError } from '@/interfaces/nomina/gape/IncidenciaItemError'
+
 // import stores
 import {
   useClienteStore,
@@ -540,7 +542,12 @@ export default defineComponent({
       }
     }
 
-    const modalLogIncidencia = ref({
+    const modalLogIncidencia = ref<{
+      dialog: boolean
+      evento: string
+      items: ItemError[]
+      titulo: string
+    }>({
       dialog: false,
       evento: '',
       items: [],
@@ -703,7 +710,6 @@ export default defineComponent({
         dialogConfirmation.onOpenDialogInformation(mensaje, titulo, 'correct', '#438701', 2)
       } catch (error: any) {
         if (error.type === 'validation') {
-
           modalLogIncidencia.value = {
             dialog: true,
             evento: '',
@@ -789,21 +795,8 @@ export default defineComponent({
 
     const onCloseModalLogIncidencia = async () => {
       modalLogIncidencia.value.dialog = false
-      //await buscarDatosBancosPorId(props.id)
     }
-
-    const onOpenModalLogInicidencia = () => {
-      console.log('Hola')
-      modalLogIncidencia.value = {
-        dialog: true,
-        evento: '',
-        items: '',
-        titulo: 'hola',
-      }
-    }
-
     return {
-      onOpenModalLogInicidencia,
       onCloseModalLogIncidencia,
       modalLogIncidencia,
       btnDisabled,

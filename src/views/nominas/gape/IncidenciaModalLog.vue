@@ -96,6 +96,8 @@ import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 import { validationRules } from '@/utils/validationRules'
 import { inputFilters } from '@/utils/inputFilters'
 
+import type { ItemError } from '@/interfaces/nomina/gape/IncidenciaItemError'
+
 export default defineComponent({
   name: 'IncidenciaModalLog',
   components: {},
@@ -184,7 +186,7 @@ export default defineComponent({
 
     const dialogPropiedades = ref({
       dialog: ref(props.dialogView),
-      elementos: ref(props.dialogItems || []),
+      elementos: ref<ItemError[]>((props.dialogItems as ItemError[]) || []),
       evento: ref(props.dialogEvent),
       titulo: ref(props.dialogTitle),
     })
@@ -205,7 +207,7 @@ export default defineComponent({
       (newDialogView) => {
         dialogPropiedades.value = {
           dialog: newDialogView,
-          elementos: props.dialogItems || [],
+          elementos: (props.dialogItems as ItemError[]) || [],
           evento: props.dialogEvent,
           titulo: props.dialogTitle,
         }

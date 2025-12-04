@@ -3,7 +3,7 @@ import type { SATCatSexoModel } from '@/interfaces/nomina/nomGenerales/SATCatSex
 import { getDefaultSATCatSexo } from '@/utils/nomina/nomGenerales/getDefaultSATCatSexo'
 
 export function useSATCatSexo() {
-  const dataModel = ref<SATCatSexoModel>(getDefaultSATCatSexo())
+  const dataModel = ref<SATCatSexoModel[]>(getDefaultSATCatSexo())
 
   const resetModel = () => {
     dataModel.value = getDefaultSATCatSexo()
