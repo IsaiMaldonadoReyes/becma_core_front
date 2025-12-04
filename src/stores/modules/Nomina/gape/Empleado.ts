@@ -22,7 +22,7 @@ export const useEmpleadoStore = defineStore({
         this.object = response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
     async actualizarEmpleado(empleado: EmpleadoModel) {
@@ -31,7 +31,7 @@ export const useEmpleadoStore = defineStore({
         this.object = response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
     async guardarEmpleadoNoFiscal(empleado: EmpleadoModel) {
@@ -42,7 +42,7 @@ export const useEmpleadoStore = defineStore({
         return response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
     async actualizarEmpleadoNoFiscal(empleado: EmpleadoModel) {
@@ -51,7 +51,7 @@ export const useEmpleadoStore = defineStore({
         this.object = response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
     async indexEmpleados(data: any) {

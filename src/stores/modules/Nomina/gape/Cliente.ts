@@ -29,7 +29,7 @@ export const useClienteStore = defineStore({
         this.responseMessage = response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
 
@@ -38,8 +38,7 @@ export const useClienteStore = defineStore({
         const response = await axios.post('/api/nominaGapeCliente/store', data)
         this.clientes = response.data
       } catch (error: any) {
-        this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
 
@@ -49,7 +48,7 @@ export const useClienteStore = defineStore({
         this.clientes = response.data
       } catch (error: any) {
         this.responseMessage = error.message
-        if (error.type === 'validation') throw error
+        throw error
       }
     },
 

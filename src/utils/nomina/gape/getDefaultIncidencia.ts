@@ -10,5 +10,6 @@ export function getDefaultIncidencia(): IncidenciaModel {
     id_tipo_periodo: undefined,
 
     periodo_inicial: undefined,
+    archivo: undefined,
   }
 }

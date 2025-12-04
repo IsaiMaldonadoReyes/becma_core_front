@@ -259,8 +259,6 @@ export default defineComponent({
     }
 
     const validateForm = async () => {
-      dialogConfirmation.onCloseDialogConfirmation()
-
       const form = await formRef.value?.validate()
 
       if (!form) return
@@ -280,7 +278,7 @@ export default defineComponent({
             await clienteStore.storeCliente(dataModel.value)
           }
 
-          await form.value?.reset()
+          formRef.value?.reset()
 
           dialogConfirmation.onOpenDialogInformation(
             'Los datos se guardaron de forma exitosa.',
