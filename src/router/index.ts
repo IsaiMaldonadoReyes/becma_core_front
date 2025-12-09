@@ -161,6 +161,8 @@ router.beforeEach(async (to, from, next) => {
     await session.authUserInformation()
   }
 
+  /*
+
   const isAuthenticated = session.authRoutes
   const userRoutes = session.userRoutes
 
@@ -178,6 +180,7 @@ router.beforeEach(async (to, from, next) => {
   } else {
     next() // Si todo está bien, deja que navegue normalmente
   }
+  */
 
   next()
 })
