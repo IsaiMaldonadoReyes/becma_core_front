@@ -13,7 +13,7 @@
         <v-btn @click.stop="onClickDrawerChildren" :icon="iconChildren" />
       </v-btn-group>
       <v-toolbar-title>
-        <v-img :src="logoSrcGape" contain height="50" />
+        <v-img :src="logoSrcAdelta" contain height="50" />
       </v-toolbar-title>
 
       <!--v-btn @click="changePrimaryColor('#FD720D')">Cambiar a Rojo</v-btn-->
@@ -26,7 +26,7 @@
           true-icon="mdi-white-balance-sunny"
           @change="onChageTheme"
         />
-        <notificacion />
+        <!--notificacion  /-->
         <v-divider class="mx-2" vertical></v-divider>
         <avatar />
       </template>
@@ -140,6 +140,12 @@ export default defineComponent({
         : 'https://giefbsa.com/wp-content/uploads/2024/12/Logo-GIEFBSA-001.png'
     })
 
+    const logoSrcAdelta = computed(() => {
+      return theme.global.current.value.dark
+        ? '/src/assets/images/adelta.png'
+        : '/src/assets/images/adelta.png'
+    })
+
     const abrirSitio = () => {
       window.open('https://solucionesbecma.com', '_blank')
     }
@@ -220,6 +226,7 @@ export default defineComponent({
       onClickDrawerParent,
       sessionUsuario,
       logoSrcGape,
+      logoSrcAdelta,
     }
   },
 })

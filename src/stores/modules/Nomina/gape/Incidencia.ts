@@ -25,6 +25,17 @@ export const useIncidenciaStore = defineStore({
         this.responseMessage = error.message
       }
     },
+    async uploadIncidencias(data: any) {
+      try {
+        const response = await axios.post('/api/incidencia/uploadIncidenciasFiscales', data, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        this.data = response.data.data
+      } catch (error: any) {
+        this.responseMessage = error.message
+        throw error
+      }
+    },
     async formatoIncidencias(data: any) {
       try {
         const now = new Date()

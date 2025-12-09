@@ -3,6 +3,9 @@ import { defineStore } from 'pinia'
 import type { DialogConfirmationData, DialogInformationData } from '@/interfaces/core/Dialog'
 
 export const useDialogManagerStore = defineStore('dialogManager', () => {
+  // ----------------------
+  // STATE
+  // ----------------------
   const dialogConfirmation = ref<DialogConfirmationData>({
     dialog: false,
     cuerpo: '',
@@ -21,16 +24,21 @@ export const useDialogManagerStore = defineStore('dialogManager', () => {
     color: 'info',
   })
 
-  const dialogCallback = ref<(() => void) | null>(null)
+  // Callback real almacenado
+  const dialogCallback = ref<null | (() => any)>(null)
 
+  // ----------------------
+  // OPEN CONFIRMATION DIALOG
+  // ----------------------
   const onOpenDialogConfirmation = (
     cuerpo: string,
-    onConfirm: () => void,
+    onConfirm: () => any, // soporta async también
     items: any[] = [],
     titulo = 'Confirmación',
     icono = 'mdi-help-circle',
   ) => {
     dialogCallback.value = onConfirm
+
     dialogConfirmation.value = {
       dialog: true,
       cuerpo,
@@ -41,16 +49,34 @@ export const useDialogManagerStore = defineStore('dialogManager', () => {
     }
   }
 
+  // ----------------------
+  // CLOSE CONFIRMATION DIALOG
+  // ----------------------
   const onCloseDialogConfirmation = () => {
-    dialogCallback.value = null
     dialogConfirmation.value.dialog = false
+
+    // Limpiar callback solo después de cerrar
+    setTimeout(() => {
+      dialogCallback.value = null
+    }, 150)
   }
 
-  const onConfirmDialog = () => {
-    dialogCallback.value?.()
-    onCloseDialogConfirmation()
+  // ----------------------
+  // CONFIRM HANDLER (EJECUTA CALLBACK)
+  // ----------------------
+  const onConfirmDialog = async () => {
+    try {
+      if (dialogCallback.value) {
+        await dialogCallback.value() // soporte async/await ✔
+      }
+    } finally {
+      onCloseDialogConfirmation() // cierre seguro del modal
+    }
   }
 
+  // ----------------------
+  // INFORMATION DIALOG
+  // ----------------------
   const onOpenDialogInformation = (
     cuerpo: string,
     titulo = 'Información',
@@ -72,6 +98,7 @@ export const useDialogManagerStore = defineStore('dialogManager', () => {
     dialogInformation.value.dialog = false
   }
 
+  // ----------------------
   return {
     dialogConfirmation,
     dialogInformation,

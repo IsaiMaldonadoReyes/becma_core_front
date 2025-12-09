@@ -3,7 +3,7 @@ import type { SATCatBasePagoModel } from '@/interfaces/nomina/nomGenerales/SATCa
 import { getDefaultSATCatBasePago } from '@/utils/nomina/nomGenerales/getDefaultSATCatBasePago'
 
 export function useSATCatBasePago() {
-  const dataModel = ref<SATCatBasePagoModel>(getDefaultSATCatBasePago())
+  const dataModel = ref<SATCatBasePagoModel[]>(getDefaultSATCatBasePago())
 
   const resetModel = () => {
     dataModel.value = getDefaultSATCatBasePago()

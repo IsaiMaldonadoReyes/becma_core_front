@@ -2,7 +2,7 @@ import type { IMSSCatTipoSemanaReducidaModel } from '@/interfaces/nomina/nomGene
 
 export function getDefaultIMSSCatTipoSemanaReducida(): IMSSCatTipoSemanaReducidaModel {
   return {
-    tipoSemanaReducida: undefined,
+    TipoSemanaReducida: undefined,
     descripcion: '',
   }
 }

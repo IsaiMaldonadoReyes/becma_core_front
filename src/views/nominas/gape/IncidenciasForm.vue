@@ -43,6 +43,8 @@
               min-width="40px"
               width="40px"
               :disabled="btnDisabled.importarRegistros"
+              :loading="loadingUpload"
+              @click="onDecisionUpload"
             >
               <v-icon color="white" icon="mdi-upload" size="24px" />
             </v-btn>
@@ -349,6 +351,13 @@
                     </template>
                   </bec-autocomplete>
                 </v-col>
+                <v-col cols="12" lg="12">
+                  <v-file-upload
+                    v-model="dataModel.archivo"
+                    density="compact"
+                    variant="compact"
+                  ></v-file-upload>
+                </v-col>
               </v-row>
             </v-form>
           </v-tabs-window-item>
@@ -361,6 +370,15 @@
         </v-tabs-window>
       </v-col>
     </v-row>
+
+    <incidencia-modal-log
+      :dialog-event="modalLogIncidencia.evento"
+      :dialog-items="modalLogIncidencia.items"
+      :dialog-title="modalLogIncidencia.titulo"
+      :dialog-view="modalLogIncidencia.dialog"
+      @close="onCloseModalLogIncidencia"
+      @cancel="onCloseModalLogIncidencia"
+    />
   </v-container>
 </template>
 
@@ -379,6 +397,8 @@ import {
 
 import { useDisplay } from 'vuetify'
 
+import { VFileUpload } from 'vuetify/labs/VFileUpload'
+
 // import composables
 import {
   useEmpleadoModel,
@@ -389,6 +409,9 @@ import {
 // import components
 import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becmaComponents'
 import prenominaTooltips from '@/components/nomina/ayudas/PrenominaTooltips.vue'
+import IncidenciaModalLog from '@/views/nominas/gape/IncidenciaModalLog.vue'
+
+import type { ItemError } from '@/interfaces/nomina/gape/IncidenciaItemError'
 
 // import stores
 import {
@@ -413,7 +436,14 @@ import { useRoute, useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'IncidenciaForm',
-  components: { BecSelect, BecAutocomplete, BecTextField, prenominaTooltips },
+  components: {
+    BecSelect,
+    BecAutocomplete,
+    BecTextField,
+    prenominaTooltips,
+    VFileUpload,
+    IncidenciaModalLog,
+  },
   setup() {
     // 1. Imports
     // 2. Props y Emits
@@ -452,6 +482,7 @@ export default defineComponent({
     const formRefFiscal = ref()
     const formRefNoFiscal = ref()
     const loading = ref(false)
+    const loadingUpload = ref(false)
 
     // breadcrumbs
     const vbrePrincipalItems = ref([
@@ -511,6 +542,18 @@ export default defineComponent({
       }
     }
 
+    const modalLogIncidencia = ref<{
+      dialog: boolean
+      evento: string
+      items: ItemError[]
+      titulo: string
+    }>({
+      dialog: false,
+      evento: '',
+      items: [],
+      titulo: '',
+    })
+
     // 6. Watchers
     watch(
       () => dataModel.value.fiscal,
@@ -564,7 +607,6 @@ export default defineComponent({
 
       if (tipoPeriodoStore.ejercicios.length > 0) {
         dataModel.value.id_ejercicio = tipoPeriodoStore.ejercicios[0].ejercicio
-        console.log(tipoPeriodoStore.ejercicios)
         await buscarPeriodosPorEjercicio()
       } else {
         dataModel.value.id_ejercicio = undefined // O lo que requieras
@@ -588,6 +630,103 @@ export default defineComponent({
         await empresasStore.empresasNominasPorClienteTipo(data)
       } catch (error) {
         console.error('Error al cargar catálogos por empresa:', error)
+      }
+    }
+
+    const buildFormData = (extras: any = {}) => {
+      return {
+        idCliente: dataModel.value.id_nomina_gape_cliente,
+        idEmpresa: dataModel.value.id_nomina_gape_empresa,
+        fiscal: dataModel.value.fiscal,
+        idTipoPeriodo: dataModel.value.id_tipo_periodo,
+        idPeriodo: dataModel.value.periodo_inicial,
+      }
+    }
+
+    function objectToFormData(obj: any): FormData {
+      const formData = new FormData()
+
+      Object.keys(obj).forEach((key) => {
+        const value = obj[key]
+
+        // Ignorar null o undefined
+        if (value === null || value === undefined) return
+
+        // Convertir booleanos a string para Laravel
+        if (typeof value === 'boolean') {
+          formData.append(key, value ? '1' : '0')
+          return
+        }
+
+        formData.append(key, value)
+      })
+
+      return formData
+    }
+
+    const onDecisionUpload = async () => {
+      let mensaje = ''
+      let titulo = ''
+
+      titulo = 'Carga de incidencias'
+      mensaje = `¿Está seguro de que desea subir las incidencias mediante el archivo seleccionado?`
+
+      dialogConfirmation.onOpenDialogConfirmation(
+        mensaje,
+        validateUpload, // << callback directo
+        [],
+        titulo,
+        'alert',
+      )
+    }
+
+    const validateUpload = async () => {
+      dialogConfirmation.onCloseDialogConfirmation()
+
+      try {
+        loadingUpload.value = true
+
+        let titulo = 'Carga de incidencias'
+        let mensaje =
+          'Los datos se guardaron de forma exitosa, revisar en el sistema de nóminas para confirmar.'
+
+        const data = buildFormData()
+        const formData = objectToFormData(data)
+
+        // 3. Agregas el archivo
+
+        const archivo = dataModel.value.archivo
+
+        if (archivo instanceof File) {
+          // v-file-upload devuelve un solo File
+          formData.append('file', archivo)
+        } else if (Array.isArray(archivo) && archivo.length > 0) {
+          // v-file-upload devuelve File[]
+          formData.append('file', archivo[0])
+        }
+
+        await incidenciaStore.uploadIncidencias(formData)
+
+        dialogConfirmation.onOpenDialogInformation(mensaje, titulo, 'correct', '#438701', 2)
+      } catch (error: any) {
+        if (error.type === 'validation') {
+          modalLogIncidencia.value = {
+            dialog: true,
+            evento: '',
+            items: error.errors,
+            titulo: 'hola',
+          }
+        } else {
+          dialogConfirmation.onOpenDialogInformation(
+            'Ocurrió un error inesperado al guardar.',
+            'Error',
+            'incorrect',
+            '#B00000',
+            2,
+          )
+        }
+      } finally {
+        loadingUpload.value = false
       }
     }
 
@@ -654,7 +793,12 @@ export default defineComponent({
       }
     }
 
+    const onCloseModalLogIncidencia = async () => {
+      modalLogIncidencia.value.dialog = false
+    }
     return {
+      onCloseModalLogIncidencia,
+      modalLogIncidencia,
       btnDisabled,
       buscarCatalogosPorEmpresa,
       buscarEjerciciosPorTipoPeriodo,
@@ -673,6 +817,7 @@ export default defineComponent({
       itemsPeriodos,
       itemsTipoPeriodoNomina,
       loading,
+      loadingUpload,
       mergeProps,
       name,
       onDecisionDownload,
@@ -684,6 +829,7 @@ export default defineComponent({
       vrowFiltrosRef,
       vtabTipoEmpresa,
       vtabTipoEmpresaRef,
+      onDecisionUpload,
     }
   },
 })
