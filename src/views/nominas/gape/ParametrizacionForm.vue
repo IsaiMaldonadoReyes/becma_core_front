@@ -341,19 +341,20 @@
             </template>
 
             <!-- sobrescribes la columna 'drag' -->
-            <template v-slot:item.drag="{ index }">
-              <div style="pointer-events: auto; cursor: help">
-                <v-tooltip location="bottom">
+            <template v-slot:item.drag="{ index, item }">
+              <div style="pointer-events: auto">
+                <v-tooltip location="bottom" :disabled="isDragging">
                   <template #activator="{ props: tooltipProps }">
                     <v-icon
                       v-bind="mergeProps(tooltipProps)"
                       class="draggable-row"
-                      color="primary"
-                      draggable="true"
+                      :color="esFilaFija(item) ? 'grey' : 'primary'"
+                      :draggable="!esFilaFija(item)"
                       icon="mdi-drag"
-                      @dragover.prevent
-                      @dragstart="onDragStart(index)"
-                      @drop="onDrop(index)"
+                      @dragover.prevent="!esFilaFija(item)"
+                      @dragstart="!esFilaFija(item) && onDragStart(index)"
+                      @drop="!esFilaFija(item) && onDrop(index)"
+                      style="cursor: grab"
                     />
                   </template>
                   <template #default>
@@ -370,40 +371,6 @@
           </v-card-title>
           <v-divider class="border-opacity-25 ma-0 pa-0" />
           <v-row class="mt-3">
-            <v-col cols="12">
-              <bec-select
-                v-model="parametrizacionModel.clase_prima_riesgo"
-                :items="itemsClasePrimaRiesgo"
-                :item-title="'concepto'"
-                :item-value="'codigo'"
-                :label="'Clase de Prima de Riesgo'"
-                :multiple="false"
-                :placeholder="'Seleccione'"
-                :prepend-icon="'mdi-account-key'"
-                :tooltip="'Clase de Prima de Riesgo'"
-                :rules="[validationRules.required]"
-              >
-                <template #tooltip>
-                  <parametrizacion-tooltips name="ayudaClasePrimaRiesgo" />
-                </template>
-              </bec-select>
-            </v-col>
-            <v-col v-if="parametrizacionModel.clase_prima_riesgo === 'media'" cols="12">
-              <bec-text-field
-                v-model="parametrizacionModel.clase_prima_riesgo_valor"
-                :label="'Clase Valor'"
-                :placeholder="'0.00'"
-                :prefix="'%'"
-                :prepend-icon="'mdi-account-key'"
-                :tooltip="'Base FEE'"
-                :rules="[validationRules.required]"
-                @keypress="inputFilters.onlyNumbers"
-              >
-                <template #tooltip>
-                  <parametrizacion-tooltips name="ayudaClasePrimaRiesgoValor" />
-                </template>
-              </bec-text-field>
-            </v-col>
             <v-col cols="12">
               <bec-text-field
                 v-model="parametrizacionModel.fee"
@@ -452,40 +419,6 @@
               >
                 <template #tooltip>
                   <parametrizacion-tooltips name="ayudaProvisiones" />
-                </template>
-              </bec-select>
-            </v-col>
-            <v-col cols="12">
-              <bec-text-field
-                v-model="parametrizacionModel.isn"
-                :label="'ISN'"
-                :placeholder="'0.00'"
-                :prefix="'%'"
-                :prepend-icon="'mdi-bank-transfer-out'"
-                :tooltip="'Se requiere reporte de ISN mensual.<br><br>Fecha creación: 01/02/2025 14:56<br>Fecha modificación: 01/02/2025 14:56'"
-                :rules="[validationRules.required]"
-                @keypress="inputFilters.onlyNumbers"
-              >
-                <template #tooltip>
-                  <parametrizacion-tooltips name="ayudaIsn" />
-                </template>
-              </bec-text-field>
-            </v-col>
-            <v-col cols="12">
-              <bec-select
-                v-model="parametrizacionModel.cuota_sindical"
-                :items="itemsComprobacion"
-                :item-title="'concepto'"
-                :item-value="'codigo'"
-                :label="'Cuota sindical'"
-                :multiple="false"
-                :placeholder="'Seleccione'"
-                :prepend-icon="'mdi-cash-refund'"
-                :tooltip="'Es el % de retención que se tiene que se tiene que realizar a en la nómina fiscal, sobre sueldo o percepción bruta a los trabajadores agremiados.'"
-                :rules="[validationRules.required]"
-              >
-                <template #tooltip>
-                  <parametrizacion-tooltips name="ayudaCuotaSindical" />
                 </template>
               </bec-select>
             </v-col>
@@ -971,17 +904,44 @@ export default defineComponent({
       return payload
     }
 
-    let dragIndex = -1
+    const isDragging = ref(false)
 
-    function onDragStart(index: number) {
+    let dragIndex: number | null = null
+
+    const esFilaFija = (item: any) => item.concepto === 'Sueldo IMSS' // 👈 AQUÍ defines tu criterio
+
+    const onDragStart = (index: any) => {
+      if (esFilaFija(itemsConceptos.value[index])) return // 🚫 No arrastrar fila fija
       dragIndex = index
+      isDragging.value = true // ⬅️ Deshabilita tooltips
     }
 
-    function onDrop(dropIndex: number) {
-      if (dragIndex === -1 || dragIndex === dropIndex) return
-      const moved = itemsConceptos.value.splice(dragIndex, 1)[0]
-      itemsConceptos.value.splice(dropIndex, 0, moved)
-      dragIndex = -1
+    const onDrop = (index: any) => {
+      if (dragIndex === null) return
+
+      const dragged = itemsConceptos.value[dragIndex]
+      const target = itemsConceptos.value[index]
+
+      if (esFilaFija(dragged) || esFilaFija(target)) {
+        isDragging.value = false
+        return
+      }
+
+      const item = itemsConceptos.value.splice(dragIndex, 1)[0]
+      itemsConceptos.value.splice(index, 0, item)
+
+      dragIndex = null
+      isDragging.value = false // ⬅️ Reactiva los tooltips
+
+      // Mantener la fila fija arriba
+      fixFixedRowPosition()
+    }
+
+    // Mantener la fila fija arriba
+    const fixFixedRowPosition = () => {
+      const fijos = itemsConceptos.value.filter((i) => esFilaFija(i))
+      const normales = itemsConceptos.value.filter((i) => !esFilaFija(i))
+      itemsConceptos.value = [...fijos, ...normales]
     }
 
     return {
@@ -989,10 +949,12 @@ export default defineComponent({
       buscarDatosPorEmpresa,
       buscarEmpresasNomina,
       dataModel,
+      esFilaFija,
       formRefParametrizacion,
       getCardHeight,
       headers,
       inputFilters,
+      isDragging,
       isFormValid,
       itemsBaseFEE,
       itemsClasePrimaRiesgo,
