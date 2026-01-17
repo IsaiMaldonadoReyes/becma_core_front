@@ -11,4 +11,5 @@ export interface PrenominaModel {
   departamento_final?: number
   empleado_inicial?: number
   empleado_final?: number
+  id_esquema?: number[] | undefined
 }

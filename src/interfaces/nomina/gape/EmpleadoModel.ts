@@ -104,4 +104,5 @@ export interface EmpleadoModel {
   fecha_alta_gape?: string
   sueldo_real?: number
   sueldo_imss_gape?: number
+  id_nomina_gape_esquema?: number
 }

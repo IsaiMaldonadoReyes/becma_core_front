@@ -192,29 +192,7 @@
           </template>
         </bec-autocomplete>
       </v-col>
-      <v-col cols="12" md="3">
-        <bec-select
-          v-model="dataModel.fiscal"
-          :clearable="false"
-          :disabled="btnDisabled.compTipoEmp"
-          :item-title="'title'"
-          :item-value="'value'"
-          :items="[
-            { title: 'Empresa fiscal', value: true },
-            { title: 'Empresa no fiscal', value: false },
-          ]"
-          :label="'Tipo de empresa'"
-          :multiple="false"
-          :placeholder="'Seleccione'"
-          :prepend-icon="'mdi-briefcase-account'"
-          @update:model-value="buscarEmpresasNomina"
-        >
-          <template #tooltip>
-            <empleado-tooltips name="ayudaFiltroTipoEmpresa" />
-          </template>
-        </bec-select>
-      </v-col>
-      <v-col cols="12" md="9">
+      <v-col cols="12" md="6">
         <bec-autocomplete
           v-model="dataModel.id_nomina_gape_empresa"
           :clearable="false"
@@ -229,10 +207,31 @@
           :return-object="false"
           :rules="[validationRules.required2]"
           :show-chips="false"
-          @update:model-value="buscarCatalogosPorEmpresa"
+          @update:model-value="buscarEsquemasPorEmpresa"
         >
           <template #tooltip>
             <empleado-tooltips name="ayudaFiltroEmpresa" />
+          </template>
+        </bec-autocomplete>
+      </v-col>
+      <v-col cols="12" lg="6">
+        <bec-autocomplete
+          v-model="dataModel.id_nomina_gape_esquema"
+          :clearable="false"
+          :disabled="btnDisabled.compEsquema"
+          :item-title="'esquema'"
+          :item-value="'id'"
+          :items="itemsEsquemas"
+          :label="'Esquema *'"
+          :multiple="false"
+          :placeholder="'Seleccione'"
+          :prepend-icon="'mdi-calendar-month'"
+          :return-object="false"
+          :rules="[validationRules.required]"
+          @update:model-value="buscarCatalogosPorEmpresa"
+        >
+          <template #tooltip>
+            <empleado-tooltips name="ayudaFiltroTipoEmpresa" />
           </template>
         </bec-autocomplete>
       </v-col>
@@ -254,24 +253,24 @@
           height="40px"
         >
           <v-tab
-            :disabled="dataModel.fiscal ? false : true"
+            :disabled="!esEsquemaContpaq"
             class="text-none text-no-wrap"
             prepend-icon="mdi-bank"
             style="letter-spacing: 0.5px"
             value="tabTipoEmpresa01"
             variant="tonal"
           >
-            Fiscal
+            Contpaq
           </v-tab>
           <v-tab
-            :disabled="!dataModel.fiscal ? false : true"
+            :disabled="esEsquemaContpaq"
             class="text-none text-no-wrap"
             prepend-icon="mdi-bank-off"
             style="letter-spacing: 0.5px"
             value="tabTipoEmpresa02"
             variant="tonal"
           >
-            No fiscal
+            Excedente
           </v-tab>
         </v-tabs>
       </v-col>
@@ -2038,10 +2037,15 @@ import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becm
 import { EmpleadoTooltips } from '@/components/nomina/ayudas'
 
 // import composables
-import { useEmpleadoModel } from '@/composables/nomina/gape'
+import { useEmpleadoModel, useEmpleadoDisableRules } from '@/composables/nomina/gape'
 
 // import stores
-import { useClienteStore, useEmpresaStore, useEmpleadoStore } from '@/stores/modules/Nomina/gape'
+import {
+  useClienteStore,
+  useEmpresaStore,
+  useEmpleadoStore,
+  useEsquemaStore,
+} from '@/stores/modules/Nomina/gape'
 
 import {
   useEmpresaNomStore,
@@ -2123,7 +2127,11 @@ export default defineComponent({
     const tipoRegimenStore = useTipoRegimenStore()
     const turnoStore = useTurnoStore()
 
+    const esquemaStore = useEsquemaStore()
+
     const { dataModel, setEmpleado, resetModel } = useEmpleadoModel()
+
+    const { btnDisabled } = useEmpleadoDisableRules(dataModel)
 
     // 3. Composables vuetify
     const { name, mobile, smAndDown } = useDisplay()
@@ -2158,7 +2166,7 @@ export default defineComponent({
     const vrowFiltrosRef = ref()
 
     const vtabTipoEmpresaRef = ref()
-    const vtabTipoEmpresa = ref<any>('tabTipoEmpresa01')
+    const vtabTipoEmpresa = ref<any>('tabTipoEmpresa02')
     const vtabDatosFiscalesItems = ref([
       {
         icon: 'mdi-badge-account-horizontal',
@@ -2209,21 +2217,6 @@ export default defineComponent({
 
     const cardHeight = ref(0)
 
-    const btnDisabled = ref({
-      importarRegistros: true,
-      descargarFormato: true,
-      eliminarRegistros: true,
-      guardarCambios: false,
-      activarRegistro: true,
-      crearRegistro: true,
-
-      compCliente: false,
-      compTipoEmp: true,
-      compEmpresa: true,
-
-      dmCodigoEmpleado: true,
-    })
-
     // 5. Computed properties
     const getCardHeight = computed(() => {
       const alto = ref(0)
@@ -2265,6 +2258,20 @@ export default defineComponent({
 
     const itemsClientesNomina = computed(() => clienteStore.clientes)
     const itemsEmpresaDatabase = computed(() => empresasStore.empresasList)
+
+    const itemsEsquemas = computed(() => esquemaStore.esquemas)
+
+    const esquemaSeleccionado = computed(() => {
+      const id = dataModel.value.id_nomina_gape_esquema
+
+      if (!id) return null
+
+      return itemsEsquemas.value.find((e) => e.id === id) ?? null
+    })
+
+    const esEsquemaContpaq = computed<boolean>(() => {
+      return esquemaSeleccionado.value?.contpaq === true
+    })
 
     // 6. Watchers
     watch(
@@ -2361,23 +2368,6 @@ export default defineComponent({
       { immediate: true },
     )
 
-    watch(
-      () => dataModel.value.fiscal,
-      async (nuevoValor) => {
-        vtabTipoEmpresa.value = nuevoValor ? 'tabTipoEmpresa01' : 'tabTipoEmpresa02'
-
-        let formRef = nuevoValor ? formRefFiscal.value : formRefNoFiscal.value
-
-        if (props.id !== undefined && props.id !== null) {
-        } else {
-          if (formRef) {
-            await formRef.reset() // ✅ ahora sí puedes usar await
-          }
-        }
-      },
-      { immediate: true },
-    )
-
     // 7. Lifecycle hooks | onMounted, onBeforeUnmount
 
     onMounted(async () => {
@@ -2424,20 +2414,26 @@ export default defineComponent({
     }
 
     const buscarCatalogosPorEmpresa = async () => {
-      const idCliente = dataModel.value.id_nomina_gape_cliente
-      const idEmpresa = dataModel.value.id_nomina_gape_empresa
-      const fiscal = dataModel.value.fiscal
+      const idEsquema = dataModel.value.id_nomina_gape_esquema
+      if (!idEsquema) return
 
-      const data = {
-        idCliente: idCliente,
-        idEmpresa: idEmpresa,
-        fiscal: fiscal,
-      }
+      // obtener esquema real
+      const esquema = itemsEsquemas.value.find((e) => e.id === idEsquema)
+      if (!esquema) return
 
-      if (fiscal) {
-        cargarCatalogosPorEmpresa(data)
+      const esFiscal = esquema.contpaq === true
+
+      // 🔥 sincronizar estado
+      dataModel.value.fiscal = esFiscal
+
+      // 🔥 sincronizar tabs
+      vtabTipoEmpresa.value = esFiscal ? 'tabTipoEmpresa01' : 'tabTipoEmpresa02'
+
+      if (esFiscal) {
+        await cargarCatalogosPorEmpresa(buildData())
       } else {
-        await informacionEmpresaNoFiscal(data)
+        await informacionEmpresaNoFiscal(buildData())
+
         if (props.id === undefined) {
           dataModel.value.codigoempleado = empresaNomStore.siguienteCodigo ?? ''
         }
@@ -2446,19 +2442,35 @@ export default defineComponent({
 
     const buscarEmpresasNomina = async () => {
       const idCliente = dataModel.value.id_nomina_gape_cliente
-      const fiscal = dataModel.value.fiscal
 
       if (props.id !== undefined && props.id !== null) {
         btnDisabled.value.compCliente = true
         btnDisabled.value.crearRegistro = false
       } else {
         resetModel(true)
-        btnDisabled.value.compTipoEmp = idCliente != null ? false : true
         btnDisabled.value.compEmpresa = idCliente != null ? false : true
       }
 
       // ✅ Si el cliente está seleccionado, aplicar la lógica fiscal/no fiscal
-      await fetchEmpresasNominaPorClienteTipo(idCliente, fiscal)
+      await fetchEmpresasNominaPorClienteTipo(buildData())
+    }
+
+    const fetchEmpresasNominaPorClienteTipo = async (data: any) => {
+      empresasStore.reset()
+      try {
+        await empresasStore.empresasNominasPorClienteTipo(data)
+      } catch (error) {
+        console.error('Error al cargar catálogos por empresa:', error)
+      }
+    }
+
+    const buscarEsquemasPorEmpresa = async () => {
+      //tipoPeriodoStore.reset()
+      await buscarEsquemas()
+    }
+
+    const buscarEsquemas = async () => {
+      await esquemaStore.esquemasPorEmpresa(buildData())
     }
 
     const fetchDatosEmpleado = async (data: any) => {
@@ -2467,19 +2479,6 @@ export default defineComponent({
 
         setEmpleado(datos)
         dataModel.value.fecha_alta_gape = dataModel.value.campoextra1
-      } catch (error) {
-        console.error('Error al cargar catálogos por empresa:', error)
-      }
-    }
-
-    const fetchEmpresasNominaPorClienteTipo = async (idCliente: any, fiscal: boolean) => {
-      empresasStore.reset()
-      try {
-        const data = {
-          idCliente: idCliente,
-          fiscal: fiscal,
-        }
-        await empresasStore.empresasNominasPorClienteTipo(data)
       } catch (error) {
         console.error('Error al cargar catálogos por empresa:', error)
       }
@@ -2513,6 +2512,14 @@ export default defineComponent({
         if (props.id === undefined) {
           dataModel.value.codigoempleado = empresaNomStore.siguienteCodigo ?? ''
         }
+      }
+    }
+
+    const buildData = (extras: any = {}) => {
+      return {
+        idCliente: dataModel.value.id_nomina_gape_cliente,
+        idEmpresa: dataModel.value.id_nomina_gape_empresa,
+        ...extras, // añade valores adicionales dinámicamente
       }
     }
 
@@ -2606,6 +2613,9 @@ export default defineComponent({
     }
 
     return {
+      esEsquemaContpaq,
+      buscarEsquemasPorEmpresa,
+      itemsEsquemas,
       btnDisabled,
       buscarCatalogosPorEmpresa,
       buscarEmpresasNomina,

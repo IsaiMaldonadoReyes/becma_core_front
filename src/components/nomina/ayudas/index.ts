@@ -1,4 +1,5 @@
 export { default as EmpleadoTooltips } from './EmpleadoTooltips.vue'
+export { default as EmpleadoListTooltips } from './EmpleadoListTooltips.vue'
 export { default as EmpresaTooltips } from './EmpresaTooltips.vue'
 export { default as ParametrizacionTooltips } from './ParametrizacionTooltips.vue'
 export { default as PrenominaTooltips } from './PrenominaTooltips.vue'

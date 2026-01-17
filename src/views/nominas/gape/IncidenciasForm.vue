@@ -1,5 +1,6 @@
 <template>
   <v-container fluid ref="vconPrincipalRef" class="h-100">
+    <v-form ref="formRefFiscal" v-model="isFormValid" lazy-validation></v-form>
     <!--vrowBarraDeAccionesRef -->
     <v-row ref="vrowBarraDeAccionesRef" dense>
       <v-col cols="12" md="6" class="d-flex align-center">
@@ -161,8 +162,8 @@
       <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
     </v-row>
 
-    <!-- vrowFiltrosRef -->
     <v-row ref="vrowFiltrosRef">
+      <!-- Principales-->
       <v-col cols="12">
         <bec-autocomplete
           v-model="dataModel.id_nomina_gape_cliente"
@@ -185,29 +186,7 @@
           </template>
         </bec-autocomplete>
       </v-col>
-      <v-col cols="12" md="3">
-        <bec-select
-          v-model="dataModel.fiscal"
-          :clearable="false"
-          :disabled="btnDisabled.compTipoEmp"
-          :item-title="'title'"
-          :item-value="'value'"
-          :items="[
-            { title: 'Empresa fiscal', value: true },
-            { title: 'Empresa no fiscal', value: false },
-          ]"
-          :label="'Tipo de empresa'"
-          :multiple="false"
-          :placeholder="'Seleccione'"
-          :prepend-icon="'mdi-briefcase-account'"
-          @update:model-value="buscarEmpresasNomina"
-        >
-          <template #tooltip>
-            <prenomina-tooltips name="ayudaFiltroTipoEmpresa" />
-          </template>
-        </bec-select>
-      </v-col>
-      <v-col cols="12" md="9">
+      <v-col cols="12" md="6">
         <bec-autocomplete
           v-model="dataModel.id_nomina_gape_empresa"
           :clearable="false"
@@ -222,154 +201,117 @@
           :return-object="false"
           :rules="[validationRules.required2]"
           :show-chips="false"
-          @update:model-value="buscarCatalogosPorEmpresa"
+          @update:model-value="buscarTipoPeriodoPorEmpresa"
         >
           <template #tooltip>
             <prenomina-tooltips name="ayudaFiltroEmpresa" />
           </template>
         </bec-autocomplete>
       </v-col>
-    </v-row>
-    <v-row>
-      <v-col class="my-0 py-0">
-        <v-divider class="border-opacity-25 ma-0 pa-0" />
-      </v-col>
-    </v-row>
 
-    <!-- vtabTipoEmpresaRef -->
-    <v-row ref="vtabTipoEmpresaRef">
-      <v-col class="my-0 py-0">
-        <v-tabs
-          v-model="vtabTipoEmpresa"
-          class="text-medium-emphasis"
-          color="primary"
-          grow
-          height="40px"
+      <v-col cols="12" lg="6">
+        <bec-autocomplete
+          v-model="dataModel.id_tipo_periodo"
+          :clearable="false"
+          :disabled="btnDisabled.compTipoPeriodo"
+          :item-title="'nombretipoperiodo'"
+          :item-value="'idtipoperiodo'"
+          :items="itemsTipoPeriodoNomina"
+          :label="'Tipo de periodo *'"
+          :multiple="false"
+          :placeholder="'Seleccione'"
+          :prepend-icon="'mdi-calendar-month'"
+          :return-object="false"
+          :rules="[validationRules.required]"
+          @update:model-value="buscarEsquemasPorTipoPeriodo"
         >
-          <v-tab
-            :disabled="dataModel.fiscal ? false : true"
-            class="text-none text-no-wrap"
-            prepend-icon="mdi-bank"
-            style="letter-spacing: 0.5px"
-            value="tabTipoEmpresa01"
-            variant="tonal"
-          >
-            Fiscal
-          </v-tab>
-          <v-tab
-            :disabled="!dataModel.fiscal ? false : true"
-            class="text-none text-no-wrap"
-            prepend-icon="mdi-bank-off"
-            style="letter-spacing: 0.5px"
-            value="tabTipoEmpresa02"
-            variant="tonal"
-          >
-            No fiscal
-          </v-tab>
-        </v-tabs>
+          <template #tooltip>
+            <prenomina-tooltips name="ayudaTipoDePeriodo" />
+          </template>
+        </bec-autocomplete>
       </v-col>
-    </v-row>
-    <v-row>
+      <v-col cols="12" lg="6">
+        <bec-autocomplete
+          v-model="dataModel.id_esquema"
+          :clearable="false"
+          :disabled="btnDisabled.compEsquema"
+          :item-title="'combinacion'"
+          :item-value="'id'"
+          :items="itemsEsquemas"
+          :label="'Esquema *'"
+          :multiple="true"
+          :placeholder="'Seleccione'"
+          :prepend-icon="'mdi-calendar-month'"
+          :return-object="false"
+          :rules="[validationRules.required]"
+        >
+          <template #tooltip>
+            <prenomina-tooltips name="ayudaTipoDePeriodo" />
+          </template>
+        </bec-autocomplete>
+      </v-col>
+      <!-- Ejercicio -->
+      <v-col cols="12" lg="6">
+        <bec-autocomplete
+          v-model="dataModel.id_ejercicio"
+          :clearable="false"
+          :disabled="btnDisabled.compEjercicio"
+          :item-title="'ejercicio'"
+          :item-value="'ejercicio'"
+          :items="itemsEjercicios"
+          :label="'Ejercicio *'"
+          :multiple="false"
+          :placeholder="'Seleccione'"
+          :prepend-icon="'mdi-calendar'"
+          :return-object="false"
+          :rules="[validationRules.required]"
+        >
+          <template #tooltip>
+            <prenomina-tooltips name="ayudaEjercicio" />
+          </template>
+        </bec-autocomplete>
+      </v-col>
+
+      <!-- Periodo inicial -->
+      <v-col cols="12" lg="12">
+        <bec-autocomplete
+          v-model="dataModel.periodo_inicial"
+          :clearable="false"
+          :disabled="btnDisabled.compEjercicio"
+          :item-subtitle="(item) => `${item.fechainicio} - ${item.fechafin}`"
+          :item-title="'numeroperiodo'"
+          :item-value="'idperiodo'"
+          :items="itemsPeriodos"
+          :label="'Periodo *'"
+          :multiple="false"
+          :placeholder="'Seleccione'"
+          :prepend-icon="'mdi-calendar-arrow-left'"
+          :return-object="false"
+          :rules="[validationRules.required]"
+        >
+          <template #tooltip>
+            <prenomina-tooltips name="ayudaPeriodoInicial" />
+          </template>
+        </bec-autocomplete>
+      </v-col>
       <v-col class="my-0 py-0">
         <v-divider class="border-opacity-25 ma-0 pa-0" />
       </v-col>
-    </v-row>
-
-    <v-row class="overflow-auto" :style="getCardHeight">
-      <v-col>
-        <!-- vtabTipoEmpresa-->
-        <v-tabs-window v-model="vtabTipoEmpresa">
-          <!-- Empresa fiscal -->
-          <v-tabs-window-item value="tabTipoEmpresa01" eager>
-            <v-form ref="formRefFiscal">
-              <!-- Principales-->
-              <v-row class="mt-1">
-                <!-- Tipo de periodo -->
-                <v-col cols="12" lg="6">
-                  <bec-autocomplete
-                    v-model="dataModel.id_tipo_periodo"
-                    :clearable="false"
-                    :disabled="btnDisabled.compTipoPeriodo"
-                    :item-title="'nombretipoperiodo'"
-                    :item-value="'idtipoperiodo'"
-                    :items="itemsTipoPeriodoNomina"
-                    :label="'Tipo de periodo *'"
-                    :multiple="false"
-                    :placeholder="'Seleccione'"
-                    :prepend-icon="'mdi-calendar-month'"
-                    :return-object="false"
-                    :rules="[validationRules.required]"
-                    @update:model-value="buscarEjerciciosPorTipoPeriodo"
-                  >
-                    <template #tooltip>
-                      <prenomina-tooltips name="ayudaTipoDePeriodo" />
-                    </template>
-                  </bec-autocomplete>
-                </v-col>
-
-                <!-- Ejercicio -->
-                <v-col cols="12" lg="6">
-                  <bec-autocomplete
-                    v-model="dataModel.id_ejercicio"
-                    :clearable="false"
-                    :disabled="btnDisabled.compEjercicio"
-                    :item-title="'ejercicio'"
-                    :item-value="'ejercicio'"
-                    :items="itemsEjercicios"
-                    :label="'Ejercicio *'"
-                    :multiple="false"
-                    :placeholder="'Seleccione'"
-                    :prepend-icon="'mdi-calendar'"
-                    :return-object="false"
-                    :rules="[validationRules.required]"
-                  >
-                    <template #tooltip>
-                      <prenomina-tooltips name="ayudaEjercicio" />
-                    </template>
-                  </bec-autocomplete>
-                </v-col>
-
-                <!-- Periodo inicial -->
-                <v-col cols="12" lg="12">
-                  <bec-autocomplete
-                    v-model="dataModel.periodo_inicial"
-                    :clearable="false"
-                    :disabled="btnDisabled.compPeriodoInicial"
-                    :item-subtitle="(item) => `${item.fechainicio} - ${item.fechafin}`"
-                    :item-title="'numeroperiodo'"
-                    :item-value="'idperiodo'"
-                    :items="itemsPeriodos"
-                    :label="'Periodo *'"
-                    :multiple="false"
-                    :placeholder="'Seleccione'"
-                    :prepend-icon="'mdi-calendar-arrow-left'"
-                    :return-object="false"
-                    :rules="[validationRules.required]"
-                  >
-                    <template #tooltip>
-                      <prenomina-tooltips name="ayudaPeriodoInicial" />
-                    </template>
-                  </bec-autocomplete>
-                </v-col>
-                <v-col cols="12" lg="12">
-                  <v-file-upload
-                    v-model="dataModel.archivo"
-                    density="compact"
-                    variant="compact"
-                  ></v-file-upload>
-                </v-col>
-              </v-row>
-            </v-form>
-          </v-tabs-window-item>
-          <!-- Empresa no fiscal -->
-          <v-tabs-window-item value="tabTipoEmpresa02" eager>
-            <v-form ref="formRefNoFiscal">
-              <v-row class="mt-1"> </v-row>
-            </v-form>
-          </v-tabs-window-item>
-        </v-tabs-window>
+      <v-col cols="12" lg="12">
+        <v-file-upload
+          v-model="dataModel.archivo"
+          density="compact"
+          variant="compact"
+        ></v-file-upload>
       </v-col>
+      <v-row>
+        <v-col class="my-0 py-0">
+          <v-divider class="border-opacity-25 ma-0 pa-0" />
+        </v-col>
+      </v-row>
     </v-row>
+
+    <!-- vrowFiltrosRef -->
 
     <incidencia-modal-log
       :dialog-event="modalLogIncidencia.evento"
@@ -419,12 +361,9 @@ import {
   useEmpresaStore,
   useEmpleadoStore,
   useIncidenciaStore,
+  useEsquemaStore,
 } from '@/stores/modules/Nomina/gape'
-import {
-  useTipoPeriodoStore,
-  useDepartamentoStore,
-  usePeriodoStore,
-} from '@/stores/modules/Nomina/default'
+import { useTipoPeriodoStore, usePeriodoStore } from '@/stores/modules/Nomina/default'
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 
 // import utils
@@ -455,6 +394,7 @@ export default defineComponent({
     // 8. Functions (fetch, metodos, async)
 
     // 3. Composables
+
     const clienteStore = useClienteStore()
     const empresasStore = useEmpresaStore()
 
@@ -462,8 +402,9 @@ export default defineComponent({
     const incidenciaStore = useIncidenciaStore()
 
     const tipoPeriodoStore = useTipoPeriodoStore()
-    const departamentoStore = useDepartamentoStore()
     const periodoStore = usePeriodoStore()
+    const esquemaStore = useEsquemaStore()
+
     const dialogConfirmation = useDialogManagerStore()
 
     const { dataModel, setIncidencia, resetModel } = useIncidenciaModel()
@@ -480,9 +421,9 @@ export default defineComponent({
     // 4. Reactive
 
     const formRefFiscal = ref()
-    const formRefNoFiscal = ref()
     const loading = ref(false)
     const loadingUpload = ref(false)
+    const isFormValid = ref(false)
 
     // breadcrumbs
     const vbrePrincipalItems = ref([
@@ -525,17 +466,15 @@ export default defineComponent({
 
     const itemsEjercicios = computed(() => tipoPeriodoStore.ejercicios)
     const itemsPeriodos = computed(() => periodoStore.periodo)
-    const itemsDepartamentoNomina = computed(() => departamentoStore.departamento)
+
+    const itemsEsquemas = computed(() => esquemaStore.combinacion)
 
     const itemsEmpleados = computed(() => empleadoStore.empleado)
-
-    const isFiscal = computed(() => dataModel.value.fiscal)
 
     const buildData = (extras: any = {}) => {
       return {
         idCliente: dataModel.value.id_nomina_gape_cliente,
         idEmpresa: dataModel.value.id_nomina_gape_empresa,
-        fiscal: dataModel.value.fiscal,
         idTipoPeriodo: dataModel.value.id_tipo_periodo,
         idEjercicio: dataModel.value.id_ejercicio,
         ...extras, // añade valores adicionales dinámicamente
@@ -555,18 +494,24 @@ export default defineComponent({
     })
 
     // 6. Watchers
+
     watch(
-      () => dataModel.value.fiscal,
-      async (nuevoValor) => {
-        vtabTipoEmpresa.value = nuevoValor ? 'tabTipoEmpresa01' : 'tabTipoEmpresa02'
+      () => dataModel.value.id_esquema,
+      async (newValue, oldValue) => {
+        if (!newValue || newValue.length === 0) {
+          resetEjercicioPeriodo()
+          return
+        }
 
-        let formRef = nuevoValor ? formRefFiscal.value : formRefNoFiscal.value
-
-        if (formRef) {
-          await formRef.reset()
+        if (hayEsquemaFiscal.value) {
+          // 👉 SOLO aquí cargas ejercicios y periodos
+          dataModel.value.fiscal = true
+          await buscarEjerciciosPorTipoPeriodo()
+        } else {
+          resetEjercicioPeriodo()
         }
       },
-      { immediate: true },
+      { deep: true },
     )
 
     // 7. Lifecycle hooks | onMounted, onBeforeUnmount
@@ -580,6 +525,7 @@ export default defineComponent({
     onBeforeUnmount(() => {})
 
     // 8. Functions (fetch, metodos, async)
+
     const fetchClientes = async () => {
       try {
         await clienteStore.catalogoCliente()
@@ -587,19 +533,28 @@ export default defineComponent({
         console.error('Error al cargar empresas nómina:', error)
       }
     }
+    const resetEjercicioPeriodo = () => {
+      dataModel.value.id_ejercicio = undefined
+      dataModel.value.periodo_inicial = undefined
+    }
 
-    const loadCatalogosFiscales = async () => {
+    const buscarTipoPeriodo = async () => {
       await tipoPeriodoStore.tipoPeriodoConfiguradosNGE(buildData())
     }
 
-    const loadCatalogosNoFiscales = async () => {
-      await empleadoStore.listEmpleadosNoFiscales(buildData())
+    const buscarEsquemas = async () => {
+      await esquemaStore.combinacionPorTipoPeriodo(buildData())
     }
 
-    const buscarCatalogosPorEmpresa = async () => {
+    const buscarTipoPeriodoPorEmpresa = async () => {
       resetEmpleado()
       tipoPeriodoStore.reset()
-      dataModel.value.fiscal ? await loadCatalogosFiscales() : await loadCatalogosNoFiscales()
+      await buscarTipoPeriodo()
+    }
+
+    const buscarEsquemasPorTipoPeriodo = async () => {
+      //tipoPeriodoStore.reset()
+      await buscarEsquemas()
     }
 
     const buscarEjerciciosPorTipoPeriodo = async () => {
@@ -633,12 +588,21 @@ export default defineComponent({
       }
     }
 
+    const hayEsquemaFiscal = computed<boolean>(() => {
+      if (!Array.isArray(dataModel.value.id_esquema)) return false
+
+      return dataModel.value.id_esquema.some((idEsquema: number) => {
+        const esquema = itemsEsquemas.value.find((e) => e.id === idEsquema.toString())
+        return esquema?.contpaq === true
+      })
+    })
+
     const buildFormData = (extras: any = {}) => {
       return {
         idCliente: dataModel.value.id_nomina_gape_cliente,
         idEmpresa: dataModel.value.id_nomina_gape_empresa,
-        fiscal: dataModel.value.fiscal,
         idTipoPeriodo: dataModel.value.id_tipo_periodo,
+        idEsquema: dataModel.value.id_esquema,
         idPeriodo: dataModel.value.periodo_inicial,
       }
     }
@@ -652,12 +616,23 @@ export default defineComponent({
         // Ignorar null o undefined
         if (value === null || value === undefined) return
 
-        // Convertir booleanos a string para Laravel
+        // ✅ ARRAY (ej. idEsquema)
+        if (Array.isArray(value)) {
+          value.forEach((item) => {
+            if (item !== null && item !== undefined) {
+              formData.append(`${key}[]`, item.toString())
+            }
+          })
+          return
+        }
+
+        // Booleanos → string
         if (typeof value === 'boolean') {
           formData.append(key, value ? '1' : '0')
           return
         }
 
+        // Default
         formData.append(key, value)
       })
 
@@ -751,7 +726,7 @@ export default defineComponent({
 
       let formRef = null
 
-      formRef = isFiscal.value ? formRefFiscal.value : formRefNoFiscal.value
+      formRef = formRefFiscal.value
 
       const form = await formRef.validate()
 
@@ -761,11 +736,7 @@ export default defineComponent({
         try {
           loading.value = true
 
-          if (dataModel.value.fiscal) {
-            await incidenciaStore.formatoIncidencias(dataModel.value)
-          } else {
-            await incidenciaStore.prenominaNoFiscal(dataModel.value)
-          }
+          await incidenciaStore.formatoIncidencias(dataModel.value)
 
           await form.value?.reset()
         } catch (error: any) {
@@ -797,25 +768,26 @@ export default defineComponent({
       modalLogIncidencia.value.dialog = false
     }
     return {
+      isFormValid,
       onCloseModalLogIncidencia,
       modalLogIncidencia,
       btnDisabled,
-      buscarCatalogosPorEmpresa,
+      buscarTipoPeriodoPorEmpresa,
+      buscarEsquemasPorTipoPeriodo,
       buscarEjerciciosPorTipoPeriodo,
       buscarEmpresasNomina,
       buscarPeriodosPorEjercicio,
       dataModel,
       formRefFiscal,
-      formRefNoFiscal,
       getCardHeight,
       inputFilters,
       itemsClientesNomina,
-      itemsDepartamentoNomina,
       itemsEjercicios,
       itemsEmpleados,
       itemsEmpresaDatabase,
       itemsPeriodos,
       itemsTipoPeriodoNomina,
+      itemsEsquemas,
       loading,
       loadingUpload,
       mergeProps,

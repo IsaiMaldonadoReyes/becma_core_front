@@ -1,7 +1,6 @@
 import { ref } from 'vue'
 import type { EmpleadoModel } from '@/interfaces/nomina/gape/EmpleadoModel'
 import { getDefaultEmpleado } from '@/utils/nomina/gape/getDefaultEmpleado' // o desde donde lo guardes
-import { id } from 'vuetify/locale'
 
 export function useEmpleadoModel() {
   const dataModel = ref<EmpleadoModel>(getDefaultEmpleado())

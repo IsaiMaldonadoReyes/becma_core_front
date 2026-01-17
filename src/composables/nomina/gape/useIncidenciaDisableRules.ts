@@ -4,39 +4,50 @@ export const useIncidenciaDisableRules = (dataModel: any) => {
   //
   // 1️⃣ Helpers atómicos
   //
-  const isFiscal = computed(() => !!dataModel.value.fiscal)
   const hasCliente = computed(() => !!dataModel.value.id_nomina_gape_cliente)
   const hasEmpresa = computed(() => !!dataModel.value.id_nomina_gape_empresa)
+
   const hasTipoPeriodo = computed(() => !!dataModel.value.id_tipo_periodo)
+
   const hasEjercicio = computed(() => !!dataModel.value.id_ejercicio)
+
+  const hasEsquemaSeleccionado = computed(() => {
+    const esquemas = dataModel.value.id_esquema
+    return Array.isArray(esquemas) && esquemas.length > 0
+  })
 
   //
   // 2️⃣ Helpers compuestos (flow fiscal)
   //
-  const canSelectTipoPeriodo = computed(() => isFiscal.value && hasEmpresa.value)
+  const canSelectTipoPeriodo = computed(() => hasEmpresa.value)
+
+  const canSelectEsquema = computed(() => canSelectTipoPeriodo.value && hasTipoPeriodo.value)
+
   const canSelectEjercicio = computed(() => canSelectTipoPeriodo.value && hasTipoPeriodo.value)
 
   //
   // 3️⃣ Helpers compuestos (flow NO fiscal)
   //
-  const canSelectEmpleadosNoFiscales = computed(() => !isFiscal.value && hasEmpresa.value)
+  const canSelectEmpleadosNoFiscales = computed(() => hasEmpresa.value)
 
   //
   // 4️⃣ Computed final btnDisabled
   //
   const btnDisabled = computed(() => ({
-    importarRegistros: !canSelectEjercicio.value,
-    descargarFormato: !canSelectEjercicio.value,
+    importarRegistros: !hasEsquemaSeleccionado.value,
+    descargarFormato: !hasEsquemaSeleccionado.value,
+
     eliminarRegistros: true,
     guardarCambios: true,
     activarRegistro: true,
     crearRegistro: true,
 
     compCliente: false,
-    compTipoEmp: !hasCliente.value,
     compEmpresa: !hasCliente.value,
 
     compTipoPeriodo: !canSelectTipoPeriodo.value,
+    compEsquema: !canSelectEsquema.value,
+
     compEjercicio: true,
     compPeriodoInicial: true,
   }))
@@ -48,7 +59,6 @@ export const useIncidenciaDisableRules = (dataModel: any) => {
     btnDisabled,
 
     // Helpers (opcional)
-    isFiscal,
     hasCliente,
     hasEmpresa,
     hasTipoPeriodo,

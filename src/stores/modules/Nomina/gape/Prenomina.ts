@@ -41,7 +41,7 @@ export const usePrenominaStore = defineStore({
         this.responseMessage = error.message
       }
     },
-    async prenominaFiscal(data: any) {
+    async prenomina(data: any) {
       try {
         const now = new Date()
         const day = String(now.getDate()).padStart(2, '0')
@@ -52,7 +52,7 @@ export const usePrenominaStore = defineStore({
         const seconds = String(now.getSeconds()).padStart(2, '0')
 
         const response = await axios({
-          url: '/api/prenomina/fiscal', // URL de la API
+          url: '/api/prenomina/prenomina', // URL de la API
           method: 'POST', // Método HTTP
           data: data, // Datos que envías en el cuerpo de la petición
           responseType: 'blob', // Si la respuesta es un archivo (por ejemplo, Excel o PDF)
