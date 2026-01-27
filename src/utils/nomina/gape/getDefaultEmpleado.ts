@@ -107,5 +107,6 @@ export function getDefaultEmpleado(): EmpleadoModel {
     fecha_alta_gape: '',
     sueldo_real: 0,
     sueldo_imss_gape: 0,
+    id_nomina_gape_esquema: undefined,
   }
 }

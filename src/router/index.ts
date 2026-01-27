@@ -12,11 +12,12 @@ import EmpresaForm from '@/views/nominas/gape/EmpresaForm.vue'
 import EmpresaList from '@/views/nominas/gape/EmpresaList.vue'
 import ParametrizacionForm from '@/views/nominas/gape/ParametrizacionForm.vue'
 import ParametrizacionList from '@/views/nominas/gape/ParametrizacionList.vue'
-import LayoutDispersion from '@/views/nominas/gape/LayoutDispersion.vue'
 import IncidenciasForm from '@/views/nominas/gape/IncidenciasForm.vue'
 import ClienteModalForm from '@/views/nominas/gape/ClienteModalForm.vue'
 import ClienteList from '@/views/nominas/gape/ClienteList.vue'
 import PrenominaForm from '@/views/nominas/gape/PrenominaForm.vue'
+//import LayoutDispersion from '@/views/nominas/gape/LayoutDispersion.vue'
+import LayoutDispersion from '@/views/nominas/gape/BancoDispersionForm.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

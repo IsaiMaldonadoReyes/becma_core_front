@@ -11,5 +11,7 @@ export function getDefaultIncidencia(): IncidenciaModel {
 
     periodo_inicial: undefined,
     archivo: undefined,
+    titulo_incidencia: undefined,
+    descripcion_incidencia: undefined,
   }
 }

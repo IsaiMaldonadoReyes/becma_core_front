@@ -16,5 +16,6 @@ export function getDefaultPrenomina(): PrenominaModel {
 
     empleado_inicial: undefined,
     empleado_final: undefined,
+    id_esquema: undefined,
   }
 }

@@ -7,4 +7,7 @@ export interface IncidenciaModel {
   id_tipo_periodo?: number
   periodo_inicial?: number
   archivo?: File | File[]
+  id_esquema?: number[] | undefined
+  titulo_incidencia?: string
+  descripcion_incidencia?: string
 }

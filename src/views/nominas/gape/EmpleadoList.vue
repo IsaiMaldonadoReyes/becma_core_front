@@ -165,98 +165,11 @@
           @update:model-value="buscarEmpresasNomina"
         >
           <template #tooltip>
-            <v-card
-              :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-              class="py-3"
-              color="transparent"
-              elevation="0"
-            >
-              <v-row>
-                <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon icon="mdi-information-slab-circle-outline" />
-                </v-col>
-                <v-col cols="11">
-                  <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
-                  Elija el <b style="color: #2a73c5"><i>CLIENTE</i></b> para poder filtrar la
-                  información correspondientes.
-                </v-col>
-              </v-row>
-              <v-divider class="border-opacity-50 my-2 mx-2" />
-              <v-row>
-                <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon icon="mdi-cursor-default-click" />
-                </v-col>
-                <v-col cols="11">
-                  <span style="font-weight: bold; color: #2a73c5">Evento:</span>
-                  al seleccionar una opción en este campo, se habilitará y mostrará la información
-                  correspondiente de: <b style="color: #2a73c5"><i>TIPO DE EMPRESA</i></b>
-                </v-col>
-              </v-row>
-            </v-card>
+            <empleado-list-tooltips name="ayudaFiltroCliente" />
           </template>
         </bec-autocomplete>
       </v-col>
-      <v-col cols="12" md="3" class="d-flex align-start justify-end">
-        <bec-select
-          v-model="dataModel.fiscal"
-          :clearable="false"
-          :disabled="btnDisabled.compTipoEmp"
-          :item-title="'title'"
-          :item-value="'value'"
-          :items="[
-            { title: 'Empresa fiscal', value: true },
-            { title: 'Empresa no fiscal', value: false },
-          ]"
-          :label="'Tipo de empresa'"
-          :multiple="false"
-          :placeholder="'Seleccione'"
-          :prepend-icon="'mdi-briefcase-account'"
-          @update:model-value="buscarEmpresasNomina"
-        >
-          <template #tooltip>
-            <v-card
-              :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-              class="py-3"
-              color="transparent"
-              elevation="0"
-            >
-              <v-row>
-                <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon icon="mdi-information-slab-circle-outline" />
-                </v-col>
-                <v-col cols="11">
-                  <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
-                  elija el tipo de empresa (fiscal o no fiscal) para mostrar únicamente las empresas
-                  correspondientes.
-                </v-col>
-              </v-row>
-              <v-divider class="border-opacity-50 my-2 mx-2" />
-              <v-row>
-                <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon icon="mdi-file-rotate-left" />
-                </v-col>
-                <v-col cols="11">
-                  <span style="font-weight: bold; color: #2a73c5">Campo dependiente:</span>
-                  debe seleccionar primero
-                  <b style="color: #2a73c5"><i>CLIENTE</i></b> para poder habilitar este campo.
-                </v-col>
-              </v-row>
-              <v-divider class="border-opacity-50 my-2 mx-2" />
-              <v-row>
-                <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon icon="mdi-cursor-default-click" />
-                </v-col>
-                <v-col cols="11">
-                  <span style="font-weight: bold; color: #2a73c5">Evento:</span>
-                  al seleccionar una opción en este campo, se habilitará y mostrará la información
-                  correspondiente de: <b style="color: #2a73c5"><i>EMPRESA</i></b>
-                </v-col>
-              </v-row>
-            </v-card>
-          </template>
-        </bec-select>
-      </v-col>
-      <v-col cols="12" md="9">
+      <v-col cols="12" md="6">
         <bec-autocomplete
           v-model="dataModel.id_nomina_gape_empresa"
           :clearable="false"
@@ -270,48 +183,30 @@
           :prepend-icon="'mdi-briefcase-account'"
           :return-object="false"
           :show-chips="false"
+          @update:model-value="buscarEsquemasPorEmpresa"
+        >
+          <template #tooltip>
+            <empleado-list-tooltips name="ayudaFiltroEmpresa" />
+          </template>
+        </bec-autocomplete>
+      </v-col>
+      <v-col cols="12" lg="6">
+        <bec-autocomplete
+          v-model="dataModel.id_nomina_gape_esquema"
+          :clearable="false"
+          :disabled="btnDisabled.compEsquema"
+          :item-title="'esquema'"
+          :item-value="'id'"
+          :items="itemsEsquemas"
+          :label="'Esquema *'"
+          :multiple="false"
+          :placeholder="'Seleccione'"
+          :prepend-icon="'mdi-calendar-month'"
+          :return-object="false"
           @update:model-value="buscarEmpleadosClienteEmpresa"
         >
           <template #tooltip>
-            <v-card
-              :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-              class="py-3"
-              color="transparent"
-              elevation="0"
-            >
-              <v-row>
-                <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon icon="mdi-information-slab-circle-outline" />
-                </v-col>
-                <v-col cols="11">
-                  <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
-                  elija la empresa por la que desea filtrar los empleados.
-                </v-col>
-              </v-row>
-              <v-divider class="border-opacity-50 my-2 mx-2" />
-              <v-row>
-                <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon icon="mdi-file-rotate-left" />
-                </v-col>
-                <v-col cols="11">
-                  <span style="font-weight: bold; color: #2a73c5">Campo dependiente:</span>
-                  debe seleccionar primero
-                  <b style="color: #2a73c5"><i>TIPO DE EMPRESA</i></b> para poder habilitar este
-                  campo y mostrar las empresas correspondientes.
-                </v-col>
-              </v-row>
-              <v-divider class="border-opacity-50 my-2 mx-2" />
-              <v-row>
-                <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-icon icon="mdi-cursor-default-click" />
-                </v-col>
-                <v-col cols="11">
-                  <span style="font-weight: bold; color: #2a73c5">Evento:</span>
-                  al seleccionar una opción en este campo, se habilitará el:
-                  <b style="color: #2a73c5"><i>BUSCADOR</i></b> de empleados
-                </v-col>
-              </v-row>
-            </v-card>
+            <empleado-list-tooltips name="ayudaFiltroEsquema" />
           </template>
         </bec-autocomplete>
       </v-col>
@@ -558,6 +453,11 @@ import { ref, defineComponent, mergeProps, computed, onMounted, watch } from 'vu
 
 import { useDisplay } from 'vuetify'
 
+import { EmpleadoListTooltips } from '@/components/nomina/ayudas'
+
+// import composables
+import { useEmpleadoListDisableRules } from '@/composables/nomina/gape'
+
 // import components
 import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becmaComponents'
 
@@ -565,7 +465,12 @@ import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becm
 import type { EmpleadoModel } from '@/interfaces/nomina/gape'
 
 // import stores
-import { useClienteStore, useEmpresaStore, useEmpleadoStore } from '@/stores/modules/Nomina/gape'
+import {
+  useClienteStore,
+  useEmpresaStore,
+  useEmpleadoStore,
+  useEsquemaStore,
+} from '@/stores/modules/Nomina/gape'
 
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
 
@@ -573,7 +478,7 @@ import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'EmpleadoList',
-  components: { BecTextField, BecSelect, BecAutocomplete },
+  components: { BecTextField, BecSelect, BecAutocomplete, EmpleadoListTooltips },
 
   setup() {
     // 1. Imports
@@ -590,6 +495,7 @@ export default defineComponent({
     const clienteStore = useClienteStore()
     const empresasStore = useEmpresaStore()
     const empleadoStore = useEmpleadoStore()
+    const esquemaStore = useEsquemaStore()
 
     const dialogConfirmation = useDialogManagerStore()
     const { smAndDown } = useDisplay()
@@ -598,9 +504,30 @@ export default defineComponent({
       id_nomina_gape_cliente: undefined,
       fiscal: false,
       id_nomina_gape_empresa: undefined,
+      id_nomina_gape_esquema: undefined,
     })
 
+    const { btnDisabled } = useEmpleadoListDisableRules(dataModel)
+
+    /*
+    const btnDisabled = ref({
+      importarRegistros: true,
+      descargarFormato: true,
+      eliminarRegistros: true,
+      guardarCambios: true,
+      activarRegistro: true,
+      crearRegistro: false,
+
+      compCliente: false,
+      compTipoEmp: false,
+      compEmpresa: true,
+    })
+    */
+
     // 4. Reactive
+
+    const itemsEsquemas = computed(() => esquemaStore.esquemas)
+
     const vconPrincipalRef = ref()
     const vrowBarraDeAccionesRef = ref()
     const vrowFiltrosRef = ref()
@@ -616,19 +543,6 @@ export default defineComponent({
         title: 'Listado',
       },
     ])
-
-    const btnDisabled = ref({
-      importarRegistros: true,
-      descargarFormato: true,
-      eliminarRegistros: true,
-      guardarCambios: true,
-      activarRegistro: true,
-      crearRegistro: false,
-
-      compCliente: false,
-      compTipoEmp: false,
-      compEmpresa: true,
-    })
 
     const vbtnActivarRegistro = ref(true)
 
@@ -723,10 +637,29 @@ export default defineComponent({
     const itemsClientesNomina = computed(() => clienteStore.clientes)
     const itemsEmpresaDatabase = computed(() => empresasStore.empresasList)
 
+    const esquemaSeleccionado = computed(() => {
+      const id = dataModel.value.id_nomina_gape_esquema
+      if (!id) return null
+
+      return itemsEsquemas.value.find((e) => e.id === id) ?? null
+    })
+
+    const esEsquemaContpaq = computed<boolean>(() => {
+      return esquemaSeleccionado.value?.contpaq === true
+    })
+
     // 6. Watchers
     watch(vdtbPrincipalItemsSeleccionados, (nuevosSeleccionados) => {
       btnDisabled.value.eliminarRegistros = nuevosSeleccionados.length === 0
     })
+
+    watch(
+      esEsquemaContpaq,
+      async (esFiscal) => {
+        dataModel.value.fiscal = esFiscal
+      },
+      { immediate: true },
+    )
 
     // 7. Lifecycle hooks (onMounted, mounted)
     onMounted(async () => {
@@ -743,26 +676,22 @@ export default defineComponent({
       }
     }
 
-    const buscarEmpresasNomina = async (codigo: any) => {
+    const buscarEmpresasNomina = async () => {
       dataModel.value.id_nomina_gape_empresa = undefined
 
-      const idCliente = dataModel.value.id_nomina_gape_cliente
-      const fiscal = dataModel.value.fiscal
+      await fetchEmpresasNominaPorClienteTipo(buildData())
+    }
 
-      btnDisabled.value.compEmpresa = idCliente != null ? false : true
+    const buscarEsquemasPorEmpresa = async () => {
+      await buscarEsquemas()
+    }
 
-      // ✅ Si el cliente está seleccionado, aplicar la lógica fiscal/no fiscal
-      await fetchEmpresasNominaPorClienteTipo(idCliente, fiscal)
+    const buscarEsquemas = async () => {
+      await esquemaStore.esquemasPorEmpresa(buildData())
     }
 
     const buscarEmpleadosClienteEmpresa = async (codigo: any) => {
-      const data = {
-        idCliente: dataModel.value.id_nomina_gape_cliente,
-        fiscal: dataModel.value.fiscal,
-        idEmpresa: dataModel.value.id_nomina_gape_empresa,
-      }
-
-      await fetchEmpleadosClienteEmpresa(data)
+      await fetchEmpleadosClienteEmpresa(buildData())
     }
 
     const fetchEmpleadosClienteEmpresa = async (data: any) => {
@@ -776,20 +705,28 @@ export default defineComponent({
       }
     }
 
-    const fetchEmpresasNominaPorClienteTipo = async (idCliente: any, fiscal: boolean) => {
+    const fetchEmpresasNominaPorClienteTipo = async (data: any) => {
       empresasStore.reset()
       try {
-        const data = {
-          idCliente: idCliente,
-          fiscal: fiscal,
-        }
         await empresasStore.empresasNominasPorClienteTipo(data)
       } catch (error) {
         console.error('Error al cargar catálogos por empresa:', error)
       }
     }
 
+    const buildData = (extras: any = {}) => {
+      return {
+        idCliente: dataModel.value.id_nomina_gape_cliente,
+        idEmpresa: dataModel.value.id_nomina_gape_empresa,
+        idEsquema: dataModel.value.id_nomina_gape_esquema,
+        ...extras, // añade valores adicionales dinámicamente
+      }
+    }
+
     return {
+      esEsquemaContpaq,
+      buscarEsquemasPorEmpresa,
+      itemsEsquemas,
       btnDisabled,
       buscarEmpleadosClienteEmpresa,
       buscarEmpresasNomina,

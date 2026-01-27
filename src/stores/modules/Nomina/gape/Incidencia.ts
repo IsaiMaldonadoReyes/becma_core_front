@@ -25,6 +25,15 @@ export const useIncidenciaStore = defineStore({
         this.responseMessage = error.message
       }
     },
+    async listIncidenciasPrenomina(data: any) {
+      try {
+        const response = await axios.post('/api/incidencia/listIncidenciasPrenomina', data)
+
+        this.incidencia = response.data.data
+      } catch (error: any) {
+        this.responseMessage = error.message
+      }
+    },
     async uploadIncidencias(data: any) {
       try {
         const response = await axios.post('/api/incidencia/uploadIncidenciasFiscales', data, {

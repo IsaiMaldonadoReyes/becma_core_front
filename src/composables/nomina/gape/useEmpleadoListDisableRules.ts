@@ -1,25 +1,18 @@
 import { computed } from 'vue'
 
-export const usePrenominaDisableRules = (dataModel: any) => {
+export const useEmpleadoListDisableRules = (dataModel: any) => {
   //
   // 1️⃣ Helpers atómicos
   //
   const hasCliente = computed(() => !!dataModel.value.id_nomina_gape_cliente)
   const hasEmpresa = computed(() => !!dataModel.value.id_nomina_gape_empresa)
 
-  const hasTipoPeriodo = computed(() => !!dataModel.value.id_tipo_periodo)
-
-  const canSelectEsquema = computed(() => canSelectTipoPeriodo.value && hasTipoPeriodo.value)
-
-  const hasEsquemaSeleccionado = computed(() => {
-    const esquemas = dataModel.value.id_esquema
-    return Array.isArray(esquemas) && esquemas.length > 0
-  })
-
   //
   // 2️⃣ Helpers compuestos (flow fiscal)
   //
-  const canSelectTipoPeriodo = computed(() => hasEmpresa.value)
+  const canSelectEsquema = computed(() => hasEmpresa.value)
+
+  //
 
   //
   // 4️⃣ Computed final btnDisabled
@@ -28,15 +21,16 @@ export const usePrenominaDisableRules = (dataModel: any) => {
     importarRegistros: true,
     descargarFormato: true,
     eliminarRegistros: true,
-    guardarCambios: !hasEsquemaSeleccionado.value,
+    guardarCambios: true,
     activarRegistro: true,
-    crearRegistro: true,
+    crearRegistro: false,
 
     compCliente: false,
+    compTipoEmp: true,
     compEmpresa: !hasCliente.value,
-
-    compTipoPeriodo: !canSelectTipoPeriodo.value,
     compEsquema: !canSelectEsquema.value,
+
+    dmCodigoEmpleado: true,
   }))
 
   //
@@ -45,10 +39,8 @@ export const usePrenominaDisableRules = (dataModel: any) => {
   return {
     btnDisabled,
 
+    // Helpers (opcional)
     hasCliente,
     hasEmpresa,
-    hasTipoPeriodo,
-
-    canSelectTipoPeriodo,
   }
 }

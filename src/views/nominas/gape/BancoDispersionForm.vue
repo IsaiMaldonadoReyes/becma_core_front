@@ -155,224 +155,248 @@
         </v-tooltip>
       </v-col>
     </v-row>
-    <v-row>
+    <!--v-row>
       <v-col class="my-0 py-0"><v-divider class="border-opacity-25 ma-0 pa-0" /></v-col>
-    </v-row>
+    </v-row-->
 
     <!-- vrowFiltrosRef -->
-    <v-row ref="vrowFiltrosRef">
-      <v-col cols="12">
-        <bec-autocomplete
-          v-model="dataModel.id_nomina_gape_cliente"
-          :clearable="false"
-          :disabled="btnDisabled.compCliente"
-          :item-subtitle="(item) => `${item.codigo}`"
-          :item-title="'nombre'"
-          :item-value="'id'"
-          :items="itemsClientesNomina"
-          :label="'Cliente *'"
-          :multiple="false"
-          :prepend-icon="'mdi-account-box'"
-          :return-object="false"
-          :rules="[validationRules.required2]"
-          :show-chips="false"
-          @update:model-value="buscarEmpresasNomina"
-        >
-          <template #tooltip>
-            <prenomina-tooltips name="ayudaFiltroCliente" />
-          </template>
-        </bec-autocomplete>
-      </v-col>
-      <v-col cols="12" md="12">
-        <bec-autocomplete
-          v-model="dataModel.id_nomina_gape_empresa"
-          :clearable="false"
-          :disabled="btnDisabled.compEmpresa"
-          :item-subtitle="(item) => `${item.rfc}`"
-          :item-title="'razon_social'"
-          :item-value="'id'"
-          :items="itemsEmpresaDatabase"
-          :label="'Empresa *'"
-          :multiple="false"
-          :prepend-icon="'mdi-briefcase-account'"
-          :return-object="false"
-          :rules="[validationRules.required2]"
-          :show-chips="false"
-          @update:model-value="buscarTipoPeriodoPorEmpresa"
-        >
-          <template #tooltip>
-            <prenomina-tooltips name="ayudaFiltroEmpresa" />
-          </template>
-        </bec-autocomplete>
-      </v-col>
-      <v-col cols="12" lg="6">
-        <bec-autocomplete
-          v-model="dataModel.id_tipo_periodo"
-          :clearable="false"
-          :disabled="btnDisabled.compTipoPeriodo"
-          :item-title="'nombretipoperiodo'"
-          :item-value="'idtipoperiodo'"
-          :items="itemsTipoPeriodoNomina"
-          :label="'Tipo de periodo *'"
-          :multiple="false"
-          :placeholder="'Seleccione'"
-          :prepend-icon="'mdi-calendar-month'"
-          :return-object="false"
-          :rules="[validationRules.required]"
-          @update:model-value="buscarEsquemasPorTipoPeriodo"
-        >
-          <template #tooltip>
-            <prenomina-tooltips name="ayudaTipoDePeriodo" />
-          </template>
-        </bec-autocomplete>
-      </v-col>
-      <v-col cols="12" lg="6">
-        <bec-autocomplete
-          v-model="dataModel.id_esquema"
-          :clearable="false"
-          :disabled="btnDisabled.compEsquema"
-          :item-title="'combinacion'"
-          :item-value="'id'"
-          :items="itemsEsquemas"
-          :label="'Esquema *'"
-          :multiple="true"
-          :placeholder="'Seleccione'"
-          :prepend-icon="'mdi-calendar-month'"
-          :return-object="false"
-          :rules="[validationRules.required]"
-        >
-          <template #tooltip>
-            <prenomina-tooltips name="ayudaTipoDePeriodo" />
-          </template>
-        </bec-autocomplete>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col class="my-0 py-0">
-        <v-divider class="border-opacity-25 ma-0 pa-0" />
-      </v-col>
-    </v-row>
+    <v-card elevation="0" border rounded class="mb-5 pa-5" ref="vrowFiltrosRef">
+      <v-row>
+        <v-col cols="12">
+          <bec-autocomplete
+            v-model="dataModel.id_nomina_gape_cliente"
+            :clearable="false"
+            :disabled="btnDisabled.compCliente"
+            :item-subtitle="(item) => `${item.codigo}`"
+            :item-title="'nombre'"
+            :item-value="'id'"
+            :items="itemsClientesNomina"
+            :label="'Cliente *'"
+            :multiple="false"
+            :prepend-icon="'mdi-account-box'"
+            :return-object="false"
+            :rules="[validationRules.required2]"
+            :show-chips="false"
+            @update:model-value="buscarEmpresasNomina"
+          >
+            <template #tooltip>
+              <prenomina-tooltips name="ayudaFiltroCliente" />
+            </template>
+          </bec-autocomplete>
+        </v-col>
+        <v-col cols="12" md="12">
+          <bec-autocomplete
+            v-model="dataModel.id_nomina_gape_empresa"
+            :clearable="false"
+            :disabled="btnDisabled.compEmpresa"
+            :item-subtitle="(item) => `${item.rfc}`"
+            :item-title="'razon_social'"
+            :item-value="'id'"
+            :items="itemsEmpresaDatabase"
+            :label="'Empresa *'"
+            :multiple="false"
+            :prepend-icon="'mdi-briefcase-account'"
+            :return-object="false"
+            :rules="[validationRules.required2]"
+            :show-chips="false"
+            @update:model-value="buscarTipoPeriodoPorEmpresa"
+          >
+            <template #tooltip>
+              <prenomina-tooltips name="ayudaFiltroEmpresa" />
+            </template>
+          </bec-autocomplete>
+        </v-col>
+        <v-col cols="12" lg="3">
+          <bec-autocomplete
+            v-model="dataModel.id_tipo_periodo"
+            :clearable="false"
+            :disabled="btnDisabled.compTipoPeriodo"
+            :item-title="'nombretipoperiodo'"
+            :item-value="'idtipoperiodo'"
+            :items="itemsTipoPeriodoNomina"
+            :label="'Tipo de periodo *'"
+            :multiple="false"
+            :placeholder="'Seleccione'"
+            :prepend-icon="'mdi-calendar-month'"
+            :return-object="false"
+            :rules="[validationRules.required]"
+            @update:model-value="buscarEsquemasPorTipoPeriodo"
+          >
+            <template #tooltip>
+              <prenomina-tooltips name="ayudaTipoDePeriodo" />
+            </template>
+          </bec-autocomplete>
+        </v-col>
+        <v-col cols="12" lg="9">
+          <bec-autocomplete
+            v-model="dataModel.id_esquema"
+            :clearable="false"
+            :disabled="btnDisabled.compEsquema"
+            :item-title="'combinacion'"
+            :item-value="'id'"
+            :items="itemsEsquemas"
+            :label="'Esquema *'"
+            :multiple="true"
+            :placeholder="'Seleccione'"
+            :prepend-icon="'mdi-calendar-month'"
+            :return-object="false"
+            :rules="[validationRules.required]"
+          >
+            <template #tooltip>
+              <prenomina-tooltips name="ayudaTipoDePeriodo" />
+            </template>
+          </bec-autocomplete>
+        </v-col>
+      </v-row>
+    </v-card>
 
     <v-row class="overflow-auto" :style="getCardHeight">
       <v-col>
         <v-form ref="formRefFiscal">
           <!-- si selecciona una combinación que es de tipo contpaq-->
-
           <template v-for="sec in filtrosPorEsquema" :key="sec.id_esquema">
-            <v-row class="mx-2">
-              <v-col cols="12">
-                <v-divider class="border-opacity-25 ma-0 pa-0" />
-                <v-card-title color="primary" class="text-primary text-body-1">
-                  {{ itemsEsquemas.find((e) => e.id == sec.id_esquema)?.combinacion }}
-                </v-card-title>
-                <v-divider class="border-opacity-25 ma-0 pa-0" />
-              </v-col>
-            </v-row>
-            <v-row class="mt-1">
-              <!-- CONTAPQ -->
-              <template v-if="sec.esContpaq">
-                <v-col cols="12" lg="6">
-                  <bec-autocomplete
-                    v-model="sec.id_ejercicio"
-                    :clearable="true"
-                    :item-title="'ejercicio'"
-                    :item-value="'ejercicio'"
-                    :items="sec.ejerciciosDisponibles"
-                    :label="'Ejercicio *'"
-                    :multiple="false"
-                    :placeholder="'Seleccione'"
-                    :prepend-icon="'mdi-calendar'"
-                    :return-object="false"
-                    :rules="[validationRules.required]"
-                    @update:model-value="cargarPeriodosPorEjercicio(sec.id_esquema)"
-                  >
-                    <template #tooltip> <prenomina-tooltips name="ayudaEjercicio" /> </template>
-                  </bec-autocomplete>
+            <v-card elevation="3" border rounded class="mb-5 pa-5">
+              <v-row>
+                <v-col cols="12">
+                  <div color="primary" class="text-primary text-body-1">
+                    {{ itemsEsquemas.find((e) => e.id == sec.id_esquema)?.combinacion }}
+                  </div>
+                  <v-divider class="border-opacity-25 ma-0 pa-0" />
                 </v-col>
+              </v-row>
+              <v-row>
+                <!-- CONTAPQ -->
+                <template v-if="sec.esContpaq">
+                  <v-col cols="12" lg="6">
+                    <bec-autocomplete
+                      v-model="sec.id_ejercicio"
+                      :clearable="true"
+                      :item-title="'ejercicio'"
+                      :item-value="'ejercicio'"
+                      :items="sec.ejerciciosDisponibles"
+                      :label="'Ejercicio *'"
+                      :multiple="false"
+                      :placeholder="'Seleccione'"
+                      :prepend-icon="'mdi-calendar'"
+                      :return-object="false"
+                      :rules="[validationRules.required]"
+                      @update:model-value="cargarPeriodosPorEjercicio(sec.id_esquema)"
+                    >
+                      <template #tooltip> <prenomina-tooltips name="ayudaEjercicio" /> </template>
+                    </bec-autocomplete>
+                  </v-col>
 
+                  <v-col cols="12" lg="6">
+                    <bec-autocomplete
+                      v-model="sec.id_periodo"
+                      :clearable="true"
+                      :item-subtitle="(item) => `${item.fechainicio} - ${item.fechafin}`"
+                      :item-title="'numeroperiodo'"
+                      :item-value="'idperiodo'"
+                      :items="sec.periodosDisponibles"
+                      :label="'Periodo *'"
+                      :multiple="false"
+                      :placeholder="'Seleccione'"
+                      :prepend-icon="'mdi-calendar-arrow-left'"
+                      :return-object="false"
+                      :rules="[validationRules.required]"
+                      @update:model-value="cargarEmpleadosFiscal(sec.id_esquema)"
+                    >
+                      <template #tooltip>
+                        <prenomina-tooltips name="ayudaPeriodoInicial" />
+                      </template>
+                    </bec-autocomplete>
+                  </v-col>
+                </template>
+
+                <!-- EMPLEADOS (AMBOS CASOS) -->
                 <v-col cols="12" lg="6">
                   <bec-autocomplete
-                    v-model="sec.id_periodo"
+                    v-model="sec.empleado_inicial"
                     :clearable="true"
-                    :item-subtitle="(item) => `${item.fechainicio} - ${item.fechafin}`"
-                    :item-title="'numeroperiodo'"
-                    :item-value="'idperiodo'"
-                    :items="sec.periodosDisponibles"
-                    :label="'Periodo *'"
+                    :item-subtitle="(item) => `${item.rfc}`"
+                    :item-title="'nombrelargo'"
+                    :item-value="'idempleado'"
+                    :items="sec.empleadosDisponibles"
+                    :label="'Empleado inicial *'"
                     :multiple="false"
                     :placeholder="'Seleccione'"
-                    :prepend-icon="'mdi-calendar-arrow-left'"
+                    :prepend-icon="'mdi-account-arrow-left'"
                     :return-object="false"
                     :rules="[validationRules.required]"
-                    @update:model-value="cargarEmpleadosFiscal(sec.id_esquema)"
                   >
                     <template #tooltip>
-                      <prenomina-tooltips name="ayudaPeriodoInicial" />
+                      <prenomina-tooltips name="ayudaEmpleadoInicial" />
                     </template>
                   </bec-autocomplete>
                 </v-col>
-              </template>
-
-              <!-- EMPLEADOS (AMBOS CASOS) -->
-              <v-col cols="12" lg="6">
-                <bec-autocomplete
-                  v-model="sec.empleado_inicial"
-                  :clearable="true"
-                  :item-subtitle="(item) => `${item.rfc}`"
-                  :item-title="'nombrelargo'"
-                  :item-value="'idempleado'"
-                  :items="sec.empleadosDisponibles"
-                  :label="'Empleado inicial *'"
-                  :multiple="false"
-                  :placeholder="'Seleccione'"
-                  :prepend-icon="'mdi-account-arrow-left'"
-                  :return-object="false"
-                  :rules="[validationRules.required]"
-                >
-                  <template #tooltip>
-                    <prenomina-tooltips name="ayudaEmpleadoInicial" />
-                  </template>
-                </bec-autocomplete>
-              </v-col>
-
-              <v-col cols="12" lg="6">
-                <bec-autocomplete
-                  v-model="sec.empleado_final"
-                  :clearable="true"
-                  :item-subtitle="(item) => `${item.rfc}`"
-                  :item-title="'nombrelargo'"
-                  :item-value="'idempleado'"
-                  :items="sec.empleadosDisponibles"
-                  :label="'Empleado final *'"
-                  :multiple="false"
-                  :placeholder="'Seleccione'"
-                  :prepend-icon="'mdi-account-arrow-right'"
-                  :return-object="false"
-                  :rules="[validationRules.required]"
-                >
-                  <template #tooltip> <prenomina-tooltips name="ayudaEmpleadoInicial" /> </template>
-                </bec-autocomplete>
-              </v-col>
-              <v-col cols="12" lg="6">
-                <bec-autocomplete
-                  v-model="sec.id_nomina_gape_incidencia"
-                  :clearable="true"
-                  :item-subtitle="(item) => `${item.descripcion_incidencia}`"
-                  :item-title="'titulo_incidencia'"
-                  :item-value="'id'"
-                  :items="sec.incidenciasDisponibles"
-                  :label="'Carga de incidencias para el reporte *'"
-                  :multiple="false"
-                  :placeholder="'Seleccione'"
-                  :prepend-icon="'mdi-account-arrow-left'"
-                  :return-object="false"
-                >
-                  <template #tooltip>
-                    <prenomina-tooltips name="ayudaEmpleadoInicial" />
-                  </template>
-                </bec-autocomplete>
-              </v-col>
-            </v-row>
+                <v-col cols="12" lg="6">
+                  <bec-autocomplete
+                    v-model="sec.empleado_final"
+                    :clearable="true"
+                    :item-subtitle="(item) => `${item.rfc}`"
+                    :item-title="'nombrelargo'"
+                    :item-value="'idempleado'"
+                    :items="sec.empleadosDisponibles"
+                    :label="'Empleado final *'"
+                    :multiple="false"
+                    :placeholder="'Seleccione'"
+                    :prepend-icon="'mdi-account-arrow-right'"
+                    :return-object="false"
+                    :rules="[validationRules.required]"
+                  >
+                    <template #tooltip>
+                      <prenomina-tooltips name="ayudaEmpleadoInicial" />
+                    </template>
+                  </bec-autocomplete>
+                </v-col>
+                <v-col cols="12" lg="6">
+                  <bec-autocomplete
+                    v-model="sec.id_nomina_gape_incidencia"
+                    :clearable="true"
+                    :item-subtitle="(item) => `${item.descripcion_incidencia}`"
+                    :item-title="'titulo_incidencia'"
+                    :item-value="'id'"
+                    :items="sec.incidenciasDisponibles"
+                    :label="'Carga de incidencias para dispersión *'"
+                    :multiple="false"
+                    :placeholder="'Seleccione'"
+                    :prepend-icon="'mdi-account-arrow-left'"
+                    :return-object="false"
+                  >
+                    <template #tooltip>
+                      <prenomina-tooltips name="ayudaEmpleadoInicial" />
+                    </template>
+                  </bec-autocomplete>
+                </v-col>
+              </v-row>
+              <v-card elevation="0" border rounded class="mt-5 bg-surface-light">
+                <template v-for="bancoSec in sec.bancosPorEsquema" :key="bancoSec.esquema">
+                  <v-card elevation="0" border rounded class="ma-5 pa-5">
+                    <v-row>
+                      <v-col cols="12" lg="12">
+                        <bec-autocomplete
+                          v-model="bancoSec.id_banco"
+                          :clearable="true"
+                          :item-title="'descripcion'"
+                          :item-value="'id'"
+                          :items="bancoSec.bancos"
+                          :label="`Banco de dispersión: ${bancoSec.esquema} *`"
+                          :multiple="false"
+                          :placeholder="'Seleccione'"
+                          :prepend-icon="'mdi-bank'"
+                          :return-object="false"
+                        >
+                          <template #tooltip>
+                            <prenomina-tooltips name="ayudaEmpleadoInicial" />
+                          </template>
+                        </bec-autocomplete>
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </template>
+              </v-card>
+            </v-card>
           </template>
         </v-form>
       </v-col>
@@ -414,6 +438,7 @@ import {
   usePrenominaStore,
   useEsquemaStore,
   useIncidenciaStore,
+  useBancoConfiguracionEsquemaStore,
 } from '@/stores/modules/Nomina/gape'
 
 import { useTipoPeriodoStore, usePeriodoStore } from '@/stores/modules/Nomina/default'
@@ -427,7 +452,7 @@ import { inputFilters } from '@/utils/inputFilters'
 import { useRoute, useRouter } from 'vue-router'
 
 export default defineComponent({
-  name: 'PrenominaForm',
+  name: 'BancoDispersionForm',
   components: { BecSelect, BecAutocomplete, BecTextField, prenominaTooltips },
   setup() {
     // 1. Imports
@@ -452,6 +477,8 @@ export default defineComponent({
 
     const incidenciaStore = useIncidenciaStore()
 
+    const bancoConfiguracionEsquemaStore = useBancoConfiguracionEsquemaStore()
+
     const dialogConfirmation = useDialogManagerStore()
 
     const { dataModel, setPrenomina, resetModel } = usePrenominaModel()
@@ -474,7 +501,7 @@ export default defineComponent({
     const vbrePrincipalItems = ref([
       {
         disabled: false,
-        title: 'Prenomina',
+        title: 'Dispersión de pagos',
       },
       {
         disabled: false,
@@ -509,6 +536,17 @@ export default defineComponent({
 
     const itemsEsquemas = computed(() => esquemaStore.combinacion)
 
+    type BancoItem = {
+      id: number
+      descripcion: string
+    }
+
+    type BancoPorEsquema = {
+      esquema: string // "Sueldo IMSS", "Sindicato"
+      bancos: BancoItem[] // opciones del combo
+      id_banco?: number | null // selección del usuario para ese esquema
+    }
+
     type FiltrosSeccion = {
       id_esquema: string
       esContpaq: boolean
@@ -524,6 +562,8 @@ export default defineComponent({
       periodosDisponibles: any[]
       empleadosDisponibles: any[]
       incidenciasDisponibles: any[]
+
+      bancosPorEsquema: BancoPorEsquema[]
     }
 
     const filtrosPorEsquema = ref<Record<number, FiltrosSeccion>>({})
@@ -568,6 +608,7 @@ export default defineComponent({
             periodosDisponibles: [],
             empleadosDisponibles: [],
             incidenciasDisponibles: [],
+            bancosPorEsquema: [],
           }
         }
 
@@ -587,6 +628,8 @@ export default defineComponent({
           }
 
           await cargarIncidencias(id)
+
+          await cargarBancosEsquemasPorCombinacion(id)
         }
       },
       { deep: true },
@@ -640,6 +683,35 @@ export default defineComponent({
       await tipoPeriodoStore.ejerciciosPorTipoPeriodo(buildData())
 
       seccion.ejerciciosDisponibles = [...tipoPeriodoStore.ejercicios]
+    }
+
+    const cargarBancosEsquemasPorCombinacion = async (idEsquema: number) => {
+      const seccion = filtrosPorEsquema.value[idEsquema]
+      if (!seccion) return
+
+      await bancoConfiguracionEsquemaStore.bancosPorCombinacion(buildData({ idEsquema }))
+
+      const rows = bancoConfiguracionEsquemaStore.bancos // trae: {id, descripcion, esquema, ...}
+
+      // Agrupar por esquema (string)
+      const grouped: Record<string, BancoItem[]> = {}
+
+      for (const r of rows) {
+        const esquema = r.esquema ?? 'SIN_ESQUEMA'
+
+        if (!grouped[esquema]) grouped[esquema] = []
+
+        grouped[esquema].push({
+          id: r.id,
+          descripcion: r.descripcion ?? r.descripcion ?? `Banco ${r.id}`,
+        })
+      }
+      // Convertir a arreglo para tu UI (uno por esquema)
+      seccion.bancosPorEsquema = Object.entries(grouped).map(([esquema, bancos]) => ({
+        esquema,
+        bancos,
+        id_banco: null,
+      }))
     }
 
     // 7. Lifecycle hooks | onMounted, onBeforeUnmount
@@ -713,17 +785,17 @@ export default defineComponent({
 
     const buildPrenominaPayload = () => {
       return {
-        // filtros generales
+        // 🔹 filtros generales
         id_nomina_gape_cliente: dataModel.value.id_nomina_gape_cliente,
         id_nomina_gape_empresa: dataModel.value.id_nomina_gape_empresa,
         id_tipo_periodo: dataModel.value.id_tipo_periodo,
 
-        // ids seleccionados
+        // 🔹 combinaciones seleccionadas (ids)
         id_esquema: dataModel.value.id_esquema,
 
-        // combinaciones dinámicas
+        // 🔥 combinaciones completas
         combinaciones: Object.values(filtrosPorEsquema.value).map((sec) => ({
-          id_esquema: sec.id_esquema,
+          id_esquema: Number(sec.id_esquema),
           esContpaq: sec.esContpaq,
 
           id_ejercicio: sec.esContpaq ? sec.id_ejercicio : null,
@@ -733,6 +805,12 @@ export default defineComponent({
           empleado_final: sec.empleado_final,
 
           id_nomina_gape_incidencia: sec.id_nomina_gape_incidencia,
+
+          // 👇 AQUÍ VA LA RAMA EXTRA QUE NECESITABAS
+          bancos: sec.bancosPorEsquema.map((b) => ({
+            esquema: b.esquema,
+            id_nomina_gape_banco: b.id_banco,
+          })),
         })),
       }
     }
@@ -754,7 +832,9 @@ export default defineComponent({
 
           const payload = buildPrenominaPayload()
 
-          await prenominaStore.prenomina(payload)
+          console.log(payload)
+
+          bancoConfiguracionEsquemaStore.exportarFormatos(payload)
 
           await form.value?.reset()
         } catch (error: any) {
