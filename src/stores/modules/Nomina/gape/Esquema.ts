@@ -25,13 +25,20 @@ export const useEsquemaStore = defineStore({
         this.responseMessage = error.message
       }
     },
+    async esquemasPorCombinacion(data: any) {
+      try {
+        const response = await axios.post(`/api/prenomina/esquemaPorCombinacion`, data)
+        this.esquemas = response.data.data
+      } catch (error: any) {
+        this.responseMessage = error.message
+      }
+    },
     async combinacionPorTipoPeriodo(data: any) {
       try {
         const response = await axios.post(
           '/api/prenomina/combinacionPorTipoPeriodoDisponibles',
           data,
         )
-
         // 🔥 NORMALIZACIÓN CLAVE
         this.combinacion = response.data.data.map((c: any) => ({
           ...c,

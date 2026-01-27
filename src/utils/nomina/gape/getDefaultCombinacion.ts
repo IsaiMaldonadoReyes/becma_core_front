@@ -4,6 +4,7 @@ export function getDefaultCombinacion(): CombinacionModel {
   return {
     id: '',
     combinacion: '',
-    contpaq: '',
+    contpaq: false,
+    esquema: '',
   }
 }

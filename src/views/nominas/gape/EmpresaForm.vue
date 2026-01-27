@@ -205,14 +205,8 @@
             class="border rounded tab-right text-medium-emphasis"
             color="primary"
             show-arrows
-            width="100px"
           >
-            <v-tooltip
-              v-for="item in itemsTabVertical"
-              :key="item.value"
-              :disabled="!item.tooltip"
-              location="right"
-            >
+            <v-tooltip v-for="item in itemsTabVertical" :key="item.value" :disabled="!item.tooltip">
               <template #activator="{ props: tooltipProps }">
                 <div v-bind="tooltipProps">
                   <v-tab
@@ -222,7 +216,7 @@
                     :value="item.value"
                     :variant="modelTabVertical == item.value ? 'tonal' : 'text'"
                     class="text-none text-no-wrap"
-                    min-width="100%"
+                    width="180"
                     style="letter-spacing: 0.5px"
                     @click="onClickTabVertical(item.value)"
                   />
@@ -256,6 +250,7 @@
                         item-value="combinacion"
                         return-object
                         show-select
+                        :disabled="!dataModel.id_nomina_gape_cliente || isNullRowCombinacionEsquema"
                       >
                         <template
                           v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }"
@@ -325,7 +320,7 @@
                           </bec-autocomplete>
                         </template>
 
-                        <template v-slot:item.tope="{ item }">
+                        <template v-slot:item.topes="{ item }">
                           <v-sheet border rounded class="my-2">
                             <v-data-table
                               :headers="headersTope"
@@ -334,7 +329,6 @@
                               hide-default-footer
                               hide-default-header
                               item-key="id_nomina_gape_esquema"
-                              no-data-text=""
                             >
                               <template v-slot:item.tope="{ item: tope }">
                                 <bec-text-field
@@ -346,6 +340,7 @@
                                   @keypress="inputFilters.onlyDecimal"
                                   prefix="$"
                                 >
+                                  <!--:disabled="deshabilitarCampoTope(tope, item)"-->
                                 </bec-text-field>
                               </template>
 
@@ -356,11 +351,11 @@
                                       <v-icon
                                         v-bind="mergeProps(tooltipProps)"
                                         :color="
-                                          esFilaFija(slotItem as ItemsTopeEsquema)
+                                          esFilaFija(slotItem as TableTopeEsquema)
                                             ? 'grey'
                                             : 'primary'
                                         "
-                                        :draggable="!esFilaFija(slotItem as ItemsTopeEsquema)"
+                                        :draggable="!esFilaFija(slotItem as TableTopeEsquema)"
                                         class="draggable-row"
                                         icon="mdi-drag"
                                         style="cursor: grab"
@@ -632,11 +627,11 @@
                   <v-col cols="12">
                     <v-sheet border rounded>
                       <v-data-table
-                        v-model="itemsSeleccionados"
+                        v-model="modelSeleccionadosCombinacionParametrizacion"
                         :headers="headersParametrizacion"
                         :height="smAndDown ? undefined : getTableHeight"
                         :hover="true"
-                        :items="itemsParametrizacion"
+                        :items="itemsCombinacionParametrizacion"
                         :mobile="smAndDown"
                         :sticky="true"
                         color="transparent"
@@ -686,34 +681,31 @@
                           />
                         </template>
 
-                        <template v-slot:item.esActivo="{ item }">
+                        <template v-slot:item.estado="{ item }">
                           <v-chip
-                            :color="
-                              itemsSeleccionados.some((i) => i === item.id) ? 'primary' : 'grey'
-                            "
+                            :color="item.estado ? 'primary' : 'grey'"
                             size="small"
                             label
                             variant="flat"
                           >
-                            {{
-                              itemsSeleccionados.some((i) => i === item.Codigo)
-                                ? 'Habilitado'
-                                : 'Inhabilitado'
-                            }}
+                            {{ item.estado ? 'Habilitado' : 'Inhabilitado' }}
                           </v-chip>
                         </template>
 
                         <template v-slot:item.fee="{ item }">
                           <bec-text-field
-                            v-model="dataModel.razon_social"
-                            placeholder="0.00"
+                            v-model="item.fee"
+                            :clearable="true"
                             :rules="btnDisabled.compRazonSocial ? [] : [validationRules.required]"
+                            placeholder="0.00"
+                            prefix="$"
                           >
                           </bec-text-field>
                         </template>
 
                         <template v-slot:item.baseFee="{ item }">
                           <bec-select
+                            v-model="item.baseFee"
                             :items="itemsBaseFEE"
                             :item-title="'concepto'"
                             :item-value="'codigo'"
@@ -725,6 +717,7 @@
 
                         <template v-slot:item.provisiones="{ item }">
                           <bec-select
+                            v-model="item.provisiones"
                             :items="itemsComprobacion"
                             :item-title="'concepto'"
                             :item-value="'codigo'"
@@ -734,18 +727,17 @@
                           </bec-select>
                         </template>
 
-                        <template v-slot:item.prevision="{ item }">
-                          <v-autocomplete
+                        <template v-slot:item.previsiones="{ item }">
+                          <bec-select
                             v-model="item.prevision"
-                            :items="catalogoConceptosPrevision"
-                            item-title="descripcion"
-                            item-value="id"
-                            return-object
-                            clearable
-                            hide-details
-                            label="Previsión"
-                            :disabled="!tieneEsquemaContpaqi(item.esquemas)"
-                          />
+                            :disabled="!combinacionTieneContpaqi(item.combinacionKey)"
+                            :item-title="'concepto'"
+                            :item-value="'id'"
+                            :items="itemsPrevisionSocial"
+                            :multiple="false"
+                            :placeholder="'Seleccione'"
+                          >
+                          </bec-select>
                         </template>
 
                         <template v-slot:top>
@@ -754,27 +746,6 @@
                               Configuración de la parametrización de las combinaciones de los
                               esquemas de pago
                             </v-toolbar-title>
-
-                            <v-tooltip bottom interactive location="bottom">
-                              <template v-slot:activator="{ props: tooltipProps }">
-                                <v-btn
-                                  v-bind="mergeProps(tooltipProps)"
-                                  :disabled="
-                                    !dataModel.id_nomina_gape_cliente || isNullRowCombinacionEsquema
-                                  "
-                                  class="me-2"
-                                  color="primary"
-                                  height="40px"
-                                  min-width="40px"
-                                  variant="flat"
-                                  width="40px"
-                                  @click="onAddRowCombinacionEsquema"
-                                >
-                                  <v-icon color="white" icon="mdi-plus" size="24px" />
-                                </v-btn>
-                              </template>
-                              <span>Agregar nueva combinación de esquemas</span>
-                            </v-tooltip>
                           </v-toolbar>
                         </template>
 
@@ -805,27 +776,26 @@
 
               <!-- Bancos  -->
               <v-tabs-window-item value="option-4" eager>
-                <v-row class="ml-2">
-                  <v-col>
-                    <v-divider class="border-opacity-25 ma-0 pa-0" />
-                    <v-card-title color="primary" class="text-primary text-body-1">
-                      Configuración de bancos para layouts de dispersión
-                    </v-card-title>
-                    <v-divider class="border-opacity-25 ma-0 pa-0" />
-                  </v-col>
-                </v-row>
-
                 <!--v-form ref="formRefFiscalBanco"></v-form>
                     <v-form ref="formRefNoFiscalGral"></v-form>
                     <v-form ref="formRefNoFiscalBanco"></v-form-->
-
-                <v-row class="mt-1 ml-2">
+                <v-row class="ml-2">
                   <v-col key="id" cols="12" md="12">
                     <v-card
-                      class="rounded d-flex justify-center align-center mx-4 pa-2 border"
-                      elevation="0"
+                      class="rounded mb-4 mr-4 pa-2 border"
+                      elevation="3"
                       min-height="60px"
+                      v-for="(item, index) in getItemsHabilitadosCombinacionEsquema"
+                      :key="item.esquema"
                     >
+                      <v-row>
+                        <v-col>
+                          <v-card-title color="primary" class="text-primary text-body-1">
+                            Configuración de bancos para: {{ item.esquema }}
+                          </v-card-title>
+                          <v-divider class="border-opacity-25 ma-0 pa-0" />
+                        </v-col>
+                      </v-row>
                       <v-row class="pa-2">
                         <v-col cols="12">
                           <v-expansion-panels elevation="0" class="border-0">
@@ -1490,7 +1460,6 @@
       @close="onCloseModalFormAztecaBancario"
       @save="onSaveModalFormAztecaBancario"
     />
-
     <banco-banorte-terceros-modal-form
       :dialog-event="modalFormBancoBanorteTerceros.evento"
       :dialog-items="modalFormBancoBanorteTerceros.items"
@@ -1582,35 +1551,46 @@ interface EsquemaPago {
   contpaqi: boolean
 }
 
-
-
-interface ItemsCombinacionEsquema {
+interface TableCombinacionEsquema {
   estado: boolean
   combinacion: string
   esquemas: EsquemaPago[]
-  topes: ItemsTopeEsquema[]
+  topes: TableTopeEsquema[]
 }
 
-interface ItemsTopeEsquema {
+interface TableTopeEsquema {
   id: number
-  id_nomina_gape_cliente: number
   id_nomina_gape_esquema: number
   esquema: string
   tope: number
   orden: number
 }
 
-interface ItemsCombinacionParametrizacion {
+interface CombinacionEsquema {
+  id: number
+  estado: boolean
+  combinacion: string
+  id_nomina_gape_cliente: number
+  id_nomina_gape_empresa: number
+  id_nomina_gape_esquema: number
+  esquema: string
+  tope: number
+  orden: number
+}
+
+interface TableCombinacionParametrizacion {
+  estado: boolean
   combinacionKey: string
   combinacionTexto: string
-  esquemas: EsquemaPago[]
+  itemsEsquemas: EsquemaPago[]
+  esquemas: string
 
-  periodo: {
-    id: number
-    nombre: string
-  }
+  idPeriodo: number
+  periodo: string
 
-  data: CombinacionParametrizacion
+  fee: number | null
+  baseFee: string | null
+  provisiones: string | null
 
   // 👇 SOLO UNA previsión
   prevision: CombinacionPrevision | null
@@ -1633,6 +1613,12 @@ interface CombinacionPrevision {
   id: number
   nomina_gape_empresa_periodo_combinacion_parametrizacion: number
   id_concepto: number
+}
+
+interface TableEsquemaBanco {
+  esActivo: boolean
+  id: number
+  banco: string
 }
 
 export default defineComponent({
@@ -1662,23 +1648,17 @@ export default defineComponent({
     // 7. Lifecycle hooks (onMounted, mounted)
     // 8. Functions (fetch, metodos, async)
 
-    // 3. Composables
-    const clienteStore = useClienteStore()
-    const empresasStore = useEmpresasStore()
-    const empresaStore = useEmpresaStore()
-    const bancoStore = useBancoStore()
-    const { dataModel, setEmpresa, resetModel, resetModelEmpresa } = useEmpresaModel()
-    //const dialogConfirmation = useDialogManagerStore()
-    const dialogConfirmation = useDialogManagerStore()
-    const { name, mobile, smAndDown } = useDisplay()
+    /** General */
 
+    // 3. Composables
+    const { name, mobile, smAndDown } = useDisplay()
+    const router = useRouter()
+    const clienteStore = useClienteStore()
+    const dialogConfirmation = useDialogManagerStore()
     const idEditar = ref(1)
 
-    const router = useRouter()
-
-    //4. Reactive | Funcionamiento general
+    // 4. Reactive
     const vrowBarraDeAccionesRef = ref()
-
     const vbrePrincipalItems = ref([
       {
         disabled: false,
@@ -1692,6 +1672,8 @@ export default defineComponent({
     ])
     const vconPrincipalRef = ref()
     const vrowFiltrosRef = ref()
+
+    const cardHeight = ref(0)
 
     const btnDisabled = ref({
       importarRegistros: true,
@@ -1716,10 +1698,7 @@ export default defineComponent({
       compNoFiscCodigoActual: true,
     })
 
-    const cardHeight = ref(0)
-
     type TabKey = 'option-1' | 'option-2' | 'option-3' | 'option-4'
-
     const itemsTabVertical = ref<{ value: TabKey; icon: string; text: string; tooltip: string }[]>([
       {
         value: 'option-1',
@@ -1741,358 +1720,15 @@ export default defineComponent({
       },
       { value: 'option-4', icon: 'mdi-bank', text: 'Bancos', tooltip: 'ayudaBancos' },
     ])
-
     const handlersTabsVertical: Record<string, () => void> = {
       'option-1': onClickTabEsquemasDePago,
       'option-2': onClickTabDatosEmpresa,
       'option-3': onClickTabParametrizacion,
       'option-4': onClickTabBancos,
     }
-
     const modelTabVertical = ref(itemsTabVertical.value[0].value)
 
-    //4. Reactive | Esquemas de pago
-    const itemsEsquemasDePago = ref<EsquemaPago[]>([
-      { id: 1, esquema: 'Sueldo IMSS', contpaqi: true },
-      { id: 2, esquema: 'Honorarios asimilados', contpaqi: true },
-      { id: 3, esquema: 'Fondo sindicato', contpaqi: false },
-      { id: 4, esquema: 'Gastos por comprobar', contpaqi: false },
-      { id: 5, esquema: 'Tarjeta fácil', contpaqi: false },
-    ])
-
-    const modelSeleccionadosCombinacionEsquema = ref<ItemsCombinacionEsquema[]>([
-      {
-        combinacion: '1',
-        estado: true,
-        esquemas: [{ id: 1, esquema: 'Sueldo IMSS', contpaqi: true }],
-        topes: [
-          {
-            id: 1,
-            id_nomina_gape_cliente: 1,
-            id_nomina_gape_esquema: 1,
-            esquema: 'Sueldo IMSS',
-            tope: 0,
-            orden: 1,
-          },
-        ],
-      },
-    ])
-
-    const itemsCombinacionEsquema = ref<ItemsCombinacionEsquema[]>([
-      {
-        combinacion: '1',
-        estado: true,
-        esquemas: [{ id: 1, esquema: 'Sueldo IMSS', contpaqi: true }],
-        topes: [
-          {
-            id: 1,
-            id_nomina_gape_cliente: 1,
-            id_nomina_gape_esquema: 1,
-            esquema: 'Sueldo IMSS',
-            tope: 0,
-            orden: 1,
-          },
-        ],
-      },
-    ])
-
-    const headersCombinacionEsquema = ref<
-      {
-        key: string
-        align?: 'start' | 'center' | 'end'
-        sortable?: boolean
-        title: string
-        width?: string
-      }[]
-    >([
-      {
-        key: 'combinacion',
-        align: 'center',
-        sortable: false,
-        title: '',
-        width: '5%',
-      },
-      {
-        key: 'estado',
-        align: 'center',
-        sortable: false,
-        title: '',
-        width: '5%',
-      },
-      {
-        key: 'esquemas',
-        align: 'center',
-        sortable: false,
-        title: 'Esquemas',
-        width: '40%',
-      },
-      {
-        key: 'tope',
-        align: 'center',
-        sortable: false,
-        title: 'Topes',
-        width: '40%',
-      },
-      {
-        key: 'eliminar',
-        align: 'center',
-        sortable: false,
-        title: '',
-        width: '5%',
-      },
-    ])
-
-    const isNullRowCombinacionEsquema = computed(() => {
-      return itemsCombinacionEsquema.value.some((fila) => fila.esquemas.length === 0)
-    })
-
-    const headersTope = [
-      { title: '', key: 'orden', width: 40 },
-      { title: '', key: 'tope' },
-      { title: '', key: 'drag', width: 40 },
-    ]
-
-    //4. Reactive | Datos empresa
-    const loading = ref(false)
-
-    const formDatosEmpresa = ref()
-
-    const formDatosEmpresaValido = ref(false)
-
-    const modelEmpresa = ref<Object>()
-
-    const itemsEmpresas = ref<Object[]>([])
-
-    //4. Reactive | Parametrización
-    const itemsParametrizacion = ref<ItemsCombinacionParametrizacion[]>([])
-
-    const itemsBaseFEE: Ref<BaseFeeModel[]> = ref(getDefaultBaseFee())
-
-    const itemsComprobacion = ref([
-      { concepto: 'Si', codigo: 'si' },
-      { concepto: 'No', codigo: 'no' },
-    ])
-
-    const headersParametrizacion = ref<
-      {
-        key: string
-        align?: 'start' | 'center' | 'end'
-        title: string
-        sortable?: boolean
-        width?: string
-      }[]
-    >([
-      {
-        key: 'combinacion',
-        align: 'center',
-        sortable: false,
-        title: 'Combinación',
-        width: '5%',
-      },
-      {
-        key: 'estado',
-        sortable: false,
-        title: '',
-      },
-      {
-        key: 'esquemas',
-        sortable: false,
-        title: 'Esquemas',
-        width: '20%',
-      },
-      {
-        key: 'tipoPeriodo',
-        title: 'Perioricidad',
-        sortable: false,
-        width: '5%',
-      },
-      {
-        key: 'fee',
-        align: 'center',
-        title: 'FEE',
-        sortable: false,
-        width: '10%',
-      },
-      {
-        key: 'baseFee',
-        align: 'center',
-        sortable: false,
-        title: 'Base FEE',
-        width: '20%',
-      },
-      {
-        key: 'provisiones',
-        sortable: false,
-        align: 'center',
-        title: 'Provisiones',
-        width: '10%',
-      },
-    ])
-
-    const itemsSeleccionados: Ref<string[]> = ref([])
-
-    //4. Reactive | Bancos
-    const formRefFiscalBanco = ref()
-
-    const formRefNoFiscalGral = ref()
-
-    const formRefNoFiscalBanco = ref()
-
-    type Banco = { id: number; banco: string; esActivo: boolean }
-
-    const itemsBanco: Banco[] = [
-      {
-        id: 1,
-        banco: 'Fondeadora',
-        esActivo: true,
-      },
-      {
-        id: 2,
-        banco: 'Azteca interbancario',
-        esActivo: true,
-      },
-      {
-        id: 3,
-        banco: 'Azteca bancario',
-        esActivo: true,
-      },
-      {
-        id: 4,
-        banco: 'Banorte terceros',
-        esActivo: true,
-      },
-    ]
-
-    const isActiveFondeadora = ref(false)
-    const isActiveAztecaInterbancario = ref(false)
-    const isActiveAztecaBancario = ref(false)
-    const isActiveBanorteTerceros = ref(false)
-
-    const itemsAztecaInterbancario = ref<AztecaInterbancario[]>([])
-
-    const headersAztecaInterbancario = ref<
-      {
-        key: string
-        align?: 'start' | 'center' | 'end'
-        sortable?: boolean
-        title: string
-        width?: string
-      }[]
-    >([
-      {
-        key: 'activo_dispersion',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-      {
-        key: 'cuenta_origen',
-        align: 'center',
-        sortable: false,
-        title: '',
-      },
-      {
-        key: 'acciones',
-        align: 'end',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-    ])
-
-    const itemsAztecaBancario = ref<AztecaBancario[]>([])
-
-    const headersAztecaBancario = ref<
-      {
-        key: string
-        align?: 'start' | 'center' | 'end'
-        sortable?: boolean
-        title: string
-        width?: string
-      }[]
-    >([
-      {
-        key: 'activo_dispersion',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-      {
-        key: 'cuenta_origen',
-        align: 'center',
-        sortable: false,
-        title: '',
-      },
-      {
-        key: 'acciones',
-        align: 'end',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-    ])
-
-    const itemsBanorteTerceros = ref<BanorteTerceros[]>([])
-
-    const headersBanorteTerceros = ref<
-      {
-        key: string
-        align?: 'start' | 'center' | 'end'
-        sortable?: boolean
-        title: string
-        width?: string
-      }[]
-    >([
-      {
-        key: 'activo_dispersion',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-      {
-        key: 'cuenta_origen',
-        align: 'center',
-        sortable: false,
-        title: '',
-      },
-      {
-        key: 'clave_banco',
-        align: 'center',
-        sortable: false,
-        title: '',
-      },
-      {
-        key: 'acciones',
-        align: 'end',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-    ])
-
-    const modalFormBancoAztecaInterbancario = ref({
-      dialog: false,
-      evento: '',
-      items: {},
-      titulo: '',
-    })
-
-    const modalFormBancoAztecaBancario = ref({
-      dialog: false,
-      evento: '',
-      items: {},
-      titulo: '',
-    })
-
-    const modalFormBancoBanorteTerceros = ref({
-      dialog: false,
-      evento: '',
-      items: {},
-      titulo: '',
-    })
-
-    // 5. Computed properties | Funcionamiento general
-    // Heights automáticos
+    // 5. Computed
     const getCardHeight = computed(() => {
       const alto = ref(0)
       if (vconPrincipalRef.value) {
@@ -2104,7 +1740,6 @@ export default defineComponent({
       }
       return { height: `${alto.value}px !important` }
     })
-
     const getTableHeight = computed(() => {
       const alto = ref(0)
       if (vconPrincipalRef.value) {
@@ -2117,7 +1752,6 @@ export default defineComponent({
 
       return `${alto.value}px !important`
     })
-
     const getTableNoDataHeight = computed(() => {
       const alto = ref(0)
       if (vconPrincipalRef.value) {
@@ -2132,60 +1766,9 @@ export default defineComponent({
       return `${alto.value}px !important`
     })
 
-    // 5. Computed properties | Esquemas de pago
-    const esValidaEstructuraTab1 = computed(() => {
-      return (
-        itemsCombinacionEsquema.value.length > 0 &&
-        itemsCombinacionEsquema.value.every(
-          (fila) =>
-            fila.esquemas.length > 0 &&
-            fila.topes.every((t) => esEsquemaContpaqi(t) || (t.tope && t.tope > 0)),
-        )
-      )
-    })
-
-    const hayFilasHabilitadas = computed(() => {
-      return modelSeleccionadosCombinacionEsquema.value.length > 0
-    })
-
     const esRegistroNuevo = computed(() => idEditar.value === 0)
 
-    const getEsValidoTab1 = computed(() => {
-      // Si la estructura no es válida → nunca pasa
-      if (!esValidaEstructuraTab1.value) return false
-
-      // 🆕 Registro nuevo → exigir selección
-      if (esRegistroNuevo.value) {
-        return hayFilasHabilitadas.value
-      }
-
-      // ✏️ Edición → no exigir selección
-      return true
-    })
-
-    const combinacionesDuplicadas = computed(() => {
-      const seen = new Set<number>()
-      const duplicadas: ItemsCombinacionEsquema[] = []
-
-      itemsCombinacionEsquema.value.forEach((fila) => {
-        // 👉 Solo validar combinaciones de UN esquema
-        if (fila.esquemas.length !== 1) return
-
-        const idEsquema = fila.esquemas[0].id
-
-        if (seen.has(idEsquema)) {
-          duplicadas.push(fila)
-        } else {
-          seen.add(idEsquema)
-        }
-      })
-
-      return duplicadas
-    })
-
-    const getEsValidoTab2 = computed(() => {
-      return formDatosEmpresaValido.value
-    })
+    const getItemsClientesNomina = computed(() => clienteStore.clientes)
 
     const tabsHabilitados = computed<Record<TabKey, boolean>>(() => ({
       'option-1': true,
@@ -2194,84 +1777,7 @@ export default defineComponent({
       'option-4': getEsValidoTab1.value && getEsValidoTab2.value,
     }))
 
-    const getItemsHabilitadosCombinacionEsquema = computed<EsquemaPago[]>(() => {
-      const map = new Map<number, EsquemaPago>()
-
-      modelSeleccionadosCombinacionEsquema.value.forEach((combinacion) => {
-        combinacion.esquemas.forEach((esquema) => {
-          if (!map.has(esquema.id)) {
-            map.set(esquema.id, esquema)
-          }
-        })
-      })
-
-      return Array.from(map.values())
-    })
-
-    // 5. Computed properties | Datos Empresa
-    const getItemsClientesNomina = computed(() => clienteStore.clientes)
-
-    const getItemsEmpresaDatabase = computed(() => empresasStore.empresas)
-
-    // 6. Watchers | Funcionamiento general
-    watch(getEsValidoTab1, (valido) => {
-      if (!valido && modelTabVertical.value !== 'option-1') {
-        modelTabVertical.value = 'option-1'
-      }
-    })
-
-    watch(getEsValidoTab2, (valido) => {
-      if (!valido && modelTabVertical.value !== 'option-2') {
-        modelTabVertical.value = 'option-2'
-      }
-    })
-
-    watch(
-      () => dataModel.value.mascara_codigo,
-      (nuevaMascara) => {
-        if (props.id !== undefined && props.id !== null) return
-        validarMascaraYActualizarCampos(nuevaMascara)
-      },
-    )
-
-    watch(
-      () => itemsCombinacionEsquema.value,
-      async (val) => {
-        if (!esRegistroNuevo.value && val.length > 0) {
-          await nextTick()
-          await validateTabs()
-        }
-      },
-      { immediate: true, deep: true },
-    )
-
-    watch(
-      () => modelSeleccionadosCombinacionEsquema.value,
-      (seleccionados) => {
-        itemsCombinacionEsquema.value.forEach((fila) => {
-          fila.estado = seleccionados.includes(fila)
-        })
-      },
-      { deep: true },
-    )
-
-    // 6. Watchers | Esquemas de pago
-    // Si hay filas en la tabla de combinaciones se mantienen los estatus de habilitados
-    watch(
-      () => itemsCombinacionEsquema.value.map((i) => i.combinacion),
-      () => {
-        const selectedKeys = new Set(
-          modelSeleccionadosCombinacionEsquema.value.map((i) => i.combinacion),
-        )
-
-        // reconstruir selección con los objetos "reales" del array items
-        modelSeleccionadosCombinacionEsquema.value = itemsCombinacionEsquema.value.filter((i) =>
-          selectedKeys.has(i.combinacion),
-        )
-      },
-      { deep: false },
-    )
-
+    // 6. Watchers
     // 7. Lifecycle hooks (onMounted, mounted)
     onMounted(async () => {
       nextTick(() => {
@@ -2310,7 +1816,7 @@ export default defineComponent({
       //window.removeEventListener('resize', calcularDimensiones)
     })
 
-    // 8. Functions (fetch, metodos, async) | Funcionamiento general
+    // 8. Functions (fetch, metodos, async)
     const validateTabs = async (): Promise<boolean> => {
       // 🔹 Tab 1 (tabla)
       if (!getEsValidoTab1.value) {
@@ -2419,98 +1925,6 @@ export default defineComponent({
       handlersTabsVertical[tab]?.()
     }
 
-    function onClickTabEsquemasDePago() {
-      console.log('Esquemas de pago')
-    }
-
-    function onClickTabDatosEmpresa() {
-      // 🔴 Validar combinaciones duplicadas
-      if (combinacionesDuplicadas.value.length > 0) {
-        // puedes mostrar snackbar / toast
-        alert('combinacionesDuplicadas')
-        onDeleteRowDuplicateCombinacionEsquema()
-
-        modelTabVertical.value = 'option-1'
-        return
-      }
-
-      console.log('Datos empresa')
-
-      const esquemas = getItemsHabilitadosCombinacionEsquema.value
-
-      console.log('Esquemas habilitados:', esquemas)
-
-      // 🔹 Flags de negocio
-      const tieneContpaqi = esquemas.some((e) => e.contpaqi === true)
-      const tieneNoContpaqi = esquemas.some((e) => e.contpaqi === false)
-
-      // 🏢 Empresa CONTPAQi
-      // Se habilita si existe al menos un esquema CONTPAQi
-      btnDisabled.value.compEmpresa = !tieneContpaqi
-
-      // 🧾 Razón social y RFC
-      // Solo se habilitan si TODOS son NO CONTPAQi
-      btnDisabled.value.compRazonSocial = tieneContpaqi
-      btnDisabled.value.compRfc = tieneContpaqi
-
-      // 📧 Correo → siempre habilitado
-      btnDisabled.value.compCorreo = false
-
-      // 🧩 Campos NO fiscales
-      // Se habilitan si existe al menos un esquema NO CONTPAQi
-      btnDisabled.value.compNoFiscMascara = !tieneNoContpaqi
-      btnDisabled.value.compNoFiscCodigoInicial = !tieneNoContpaqi
-    }
-
-    function onClickTabParametrizacion() {
-      console.log('Parametrización')
-
-      const periodos = [
-        { id: 1, tipoPeriodo: 'Semanal' },
-        { id: 2, tipoPeriodo: 'Catorcenal' },
-        { id: 3, tipoPeriodo: 'Quincenal' },
-        { id: 4, tipoPeriodo: 'Mensual' },
-      ]
-
-      const resultado: CombinacionParametrizacion[] = []
-
-      modelSeleccionadosCombinacionEsquema.value.forEach((itemCombinacion) => {
-        const esquemasTexto = itemCombinacion.esquemas.map((e) => e.esquema).join(' + ')
-
-        // 🔑 eliminar cualquier registro previo de ESTA combinación
-        const filtrado = resultado.filter(
-          (r) => r.id_nomina_gape_cliente_esquema_combinacion !== itemCombinacion.combinacion,
-        )
-
-        periodos.forEach((itemPeriodo) => {
-          filtrado.push({
-            id: 0,
-            estado: true,
-            id_nomina_gape_cliente: 1,
-            id_nomina_gape_empresa: 1,
-            id_nomina_gape_tipo_periodo: itemPeriodo.id,
-            idtipoperiodo: itemPeriodo.id,
-
-            // 🔑 ESTA es la clave
-            id_nomina_gape_cliente_esquema_combinacion: itemCombinacion.combinacion,
-
-            fee: 0,
-            baseFee: '1',
-            provisiones: '1',
-            esquemas: esquemasTexto,
-          })
-        })
-
-        resultado.push(...filtrado)
-      })
-
-      itemsParametrizacion.value = resultado
-    }
-
-    function onClickTabBancos() {
-      console.log('Bancos')
-    }
-
     const onDecision = () => {
       let mensaje = ''
       let titulo = ''
@@ -2532,7 +1946,185 @@ export default defineComponent({
       )
     }
 
-    // 8. Functions (fetch, metodos, async) | Esquemas de pago
+    /** Esquemas de pago */
+
+    // 3. Composables
+    // 4. Reactive
+    const itemsEsquemasDePago = ref<EsquemaPago[]>([
+      { id: 1, esquema: 'Sueldo IMSS', contpaqi: true },
+      { id: 2, esquema: 'Honorarios asimilados', contpaqi: true },
+      { id: 3, esquema: 'Fondo sindicato', contpaqi: false },
+      { id: 4, esquema: 'Gastos por comprobar', contpaqi: false },
+      { id: 5, esquema: 'Tarjeta fácil', contpaqi: false },
+    ])
+    const modelSeleccionadosCombinacionEsquema = ref<TableCombinacionEsquema[]>([
+
+    ])
+    const itemsCombinacionEsquema = ref<TableCombinacionEsquema[]>([
+
+    ])
+    const headersCombinacionEsquema = ref<
+      {
+        key: string
+        align?: 'start' | 'center' | 'end'
+        sortable?: boolean
+        title: string
+        width?: string
+      }[]
+    >([
+      {
+        key: 'combinacion',
+        align: 'center',
+        sortable: false,
+        title: '',
+        width: '5%',
+      },
+      {
+        key: 'estado',
+        align: 'center',
+        sortable: false,
+        title: '',
+        width: '5%',
+      },
+      {
+        key: 'esquemas',
+        align: 'center',
+        sortable: false,
+        title: 'Esquemas',
+        width: '40%',
+      },
+      {
+        key: 'topes',
+        align: 'center',
+        sortable: false,
+        title: 'Topes',
+        width: '40%',
+      },
+      {
+        key: 'eliminar',
+        align: 'center',
+        sortable: false,
+        title: '',
+        width: '5%',
+      },
+    ])
+    const isNullRowCombinacionEsquema = computed(() => {
+      return itemsCombinacionEsquema.value.some((fila) => fila.esquemas.length === 0)
+    })
+    const headersTope = [
+      { title: '', key: 'drag', width: 40 },
+      { title: '', key: 'orden', width: 40 },
+      { title: '', key: 'tope' },
+    ]
+
+    // 5. Computed
+    const getEsValidoTab1 = computed(() => {
+      // Si la estructura no es válida → nunca pasa
+      if (!esValidaEstructuraTab1.value) return false
+
+      // 🆕 Registro nuevo → exigir selección
+      if (esRegistroNuevo.value) {
+        return hayFilasHabilitadas.value
+      }
+
+      // ✏️ Edición → no exigir selección
+      return true
+    })
+    const esValidaEstructuraTab1 = computed(() => {
+      return (
+        itemsCombinacionEsquema.value.length > 0 &&
+        itemsCombinacionEsquema.value.every(
+          (fila) =>
+            fila.esquemas.length > 0 &&
+            fila.topes.every((t) => esEsquemaContpaqi(t) || (t.tope && t.tope > 0)),
+        )
+      )
+    })
+    const hayFilasHabilitadas = computed(() => {
+      return modelSeleccionadosCombinacionEsquema.value.length > 0
+    })
+    const combinacionesDuplicadas = computed(() => {
+      const seen = new Set<number>()
+      const duplicadas: TableCombinacionEsquema[] = []
+
+      itemsCombinacionEsquema.value.forEach((fila) => {
+        // 👉 Solo validar combinaciones de UN esquema
+        if (fila.esquemas.length !== 1) return
+
+        const idEsquema = fila.esquemas[0].id
+
+        if (seen.has(idEsquema)) {
+          duplicadas.push(fila)
+        } else {
+          seen.add(idEsquema)
+        }
+      })
+
+      return duplicadas
+    })
+    const getItemsHabilitadosCombinacionEsquema = computed<EsquemaPago[]>(() => {
+      const map = new Map<number, EsquemaPago>()
+
+      modelSeleccionadosCombinacionEsquema.value.forEach((combinacion) => {
+        combinacion.esquemas.forEach((esquema) => {
+          if (!map.has(esquema.id)) {
+            map.set(esquema.id, esquema)
+          }
+        })
+      })
+
+      return Array.from(map.values())
+    })
+
+    // 6. Watchers
+    watch(getEsValidoTab1, (valido) => {
+      if (!valido && modelTabVertical.value !== 'option-1') {
+        modelTabVertical.value = 'option-1'
+      }
+    })
+
+    watch(
+      () => itemsCombinacionEsquema.value,
+      async (val) => {
+        if (!esRegistroNuevo.value && val.length > 0) {
+          await nextTick()
+          await validateTabs()
+        }
+      },
+      { immediate: true, deep: true },
+    )
+
+    watch(
+      () => modelSeleccionadosCombinacionEsquema.value,
+      (seleccionados) => {
+        itemsCombinacionEsquema.value.forEach((fila) => {
+          fila.estado = seleccionados.includes(fila)
+        })
+      },
+      { deep: true },
+    )
+
+    // Si hay filas en la tabla de combinaciones se mantienen los estatus de habilitados
+    watch(
+      () => itemsCombinacionEsquema.value.map((i) => i.combinacion),
+      () => {
+        const selectedKeys = new Set(
+          modelSeleccionadosCombinacionEsquema.value.map((i) => i.combinacion),
+        )
+
+        // reconstruir selección con los objetos "reales" del array items
+        modelSeleccionadosCombinacionEsquema.value = itemsCombinacionEsquema.value.filter((i) =>
+          selectedKeys.has(i.combinacion),
+        )
+      },
+      { deep: false },
+    )
+
+    // 7. Lifecycle hooks (onMounted, mounted)
+    // 8. Functions (fetch, metodos, async)
+    function onClickTabEsquemasDePago() {
+      console.log('Esquemas de pago')
+    }
 
     function generarFirmaCombinacion(esquemas: EsquemaPago[]): string | null {
       // 🔐 Solo validar duplicados si hay UN solo esquema
@@ -2548,7 +2140,7 @@ export default defineComponent({
       return itemsEsquemasDePago.value.find((e) => e.id === id)
     }
 
-    const esFilaFija = (tope: ItemsTopeEsquema): boolean => {
+    const esFilaFija = (tope: TableTopeEsquema): boolean => {
       const esquema = getEsquemaById(tope.id_nomina_gape_esquema)
       return esquema?.contpaqi === true
     }
@@ -2556,13 +2148,13 @@ export default defineComponent({
     const isDragging = ref(false)
     let dragIndex: number | null = null
 
-    const onDragStart = (index: number, items: ItemsTopeEsquema[]) => {
+    const onDragStart = (index: number, items: TableTopeEsquema[]) => {
       if (esFilaFija(items[index])) return
       dragIndex = index
       isDragging.value = true
     }
 
-    const onDrop = (index: number, items: ItemsTopeEsquema[]) => {
+    const onDrop = (index: number, items: TableTopeEsquema[]) => {
       if (dragIndex === null) return
 
       const dragged = items[dragIndex]
@@ -2583,9 +2175,9 @@ export default defineComponent({
       ordenarTopesConContpaqiArriba(items)
     }
 
-    const fixFixedRowPosition = (items: ItemsTopeEsquema[]) => {
-      const fijos: ItemsTopeEsquema[] = []
-      const normales: ItemsTopeEsquema[] = []
+    const fixFixedRowPosition = (items: TableTopeEsquema[]) => {
+      const fijos: TableTopeEsquema[] = []
+      const normales: TableTopeEsquema[] = []
 
       items.forEach((t) => {
         esFilaFija(t) ? fijos.push(t) : normales.push(t)
@@ -2599,7 +2191,7 @@ export default defineComponent({
       })
     }
 
-    const ordenarTopesConContpaqiArriba = (topes: ItemsTopeEsquema[]) => {
+    const ordenarTopesConContpaqiArriba = (topes: TableTopeEsquema[]) => {
       const contpaqi = topes.filter((t) => esEsquemaContpaqi(t))
       const normales = topes.filter((t) => !esEsquemaContpaqi(t))
 
@@ -2614,8 +2206,8 @@ export default defineComponent({
     }
 
     const deshabilitarCampoTope = (
-      tope: ItemsTopeEsquema,
-      combinacion: ItemsCombinacionEsquema,
+      tope: TableTopeEsquema,
+      combinacion: TableCombinacionEsquema,
     ): boolean => {
       // 1️⃣ CONTPAQi → siempre deshabilitado
       if (esEsquemaContpaqi(tope)) return true
@@ -2627,40 +2219,70 @@ export default defineComponent({
       return false
     }
 
-    function esEsquemaContpaqi(item: ItemsTopeEsquema): boolean {
+    function esEsquemaContpaqi(item: TableTopeEsquema): boolean {
       const esquema = itemsEsquemasDePago.value.find((e) => e.id === item.id_nomina_gape_esquema)
       return esquema?.contpaqi === true
     }
 
-    function onUpdateItemsEsquemasDePago(item: ItemsCombinacionEsquema) {
-      const map = new Map<number, ItemsTopeEsquema>()
+    function onValidateItemDuplicateEsquema(esquemas: EsquemaPago[]): EsquemaPago[] {
+      const contpaqi = esquemas.filter((e) => e.contpaqi === true)
 
-      // conservar topes existentes
+      // ✅ Caso válido
+      if (contpaqi.length <= 1) {
+        return esquemas
+      }
+
+      // ❌ Caso inválido: más de un CONTPAQi
+      const mensaje =
+        'Solo se puede seleccionar un esquema de tipo CONTPAQi por combinación. ' +
+        'La selección duplicada fue descartada.'
+
+      dialogConfirmation.onOpenDialogInformation(
+        mensaje,
+        'Selección no permitida',
+        'alert',
+        '#285697',
+        2,
+      )
+
+      // 👉 conservar SOLO el último CONTPAQi + los NO CONTPAQi
+      const ultimo = contpaqi[contpaqi.length - 1]
+
+      return [ultimo, ...esquemas.filter((e) => !e.contpaqi)]
+    }
+
+    function onUpdateItemsEsquemasDePago(item: TableCombinacionEsquema) {
+      // 🔴 1. Validar selección (máx. 1 CONTPAQi)
+      item.esquemas = onValidateItemDuplicateEsquema(item.esquemas)
+
+      const map = new Map<number, TableTopeEsquema>()
+
+      // 🔵 2. Conservar topes existentes
       item.topes.forEach((t) => {
         map.set(t.id_nomina_gape_esquema, t)
       })
 
-      // agregar nuevos topes
+      // 🟢 3. Agregar nuevos topes
       item.esquemas.forEach((e, index) => {
         if (!map.has(e.id)) {
           map.set(e.id, {
             id: index,
             id_nomina_gape_esquema: e.id,
             esquema: e.esquema,
-            id_nomina_gape_cliente: 0,
             tope: 0,
             orden: index + 1,
           })
         }
       })
 
+      // 🟣 4. Filtrar + ordenar (CONTPAQi arriba)
       item.topes = ordenarTopesConContpaqiArriba(
         Array.from(map.values()).filter((t) =>
           item.esquemas.some((e) => e.id === t.id_nomina_gape_esquema),
         ),
       )
 
-      // 🔑 asegurar que siga seleccionada
+      // 🔑 5. Asegurar que la fila siga seleccionada
       if (!modelSeleccionadosCombinacionEsquema.value.includes(item)) {
         modelSeleccionadosCombinacionEsquema.value.push(item)
       }
@@ -2679,6 +2301,23 @@ export default defineComponent({
 
     function onAddRowCombinacionEsquema() {
       if (isNullRowCombinacionEsquema.value) {
+        return
+      }
+
+      if (combinacionesDuplicadas.value.length > 0) {
+        let mensaje =
+          'Se detectó un registro duplicado. No se agregó una nueva fila y la fila duplicada fue eliminada.'
+
+        dialogConfirmation.onOpenDialogInformation(
+          mensaje,
+          'Registro duplicado',
+          'alert',
+          '#285697',
+          2,
+        )
+        onDeleteRowDuplicateCombinacionEsquema()
+
+        modelTabVertical.value = 'option-1'
         return
       }
 
@@ -2708,7 +2347,7 @@ export default defineComponent({
       )
     }
 
-    function onDeleteCombinacionEsquemaConfirmation(item: ItemsCombinacionEsquema) {
+    function onDeleteCombinacionEsquemaConfirmation(item: TableCombinacionEsquema) {
       let mensaje = `¿Está seguro de que desea eliminar el registro seleccionado? Esta acción no se puede deshacer.`
       let titulo = 'Eliminiar registro'
 
@@ -2721,7 +2360,7 @@ export default defineComponent({
       )
     }
 
-    async function onDeleteCombinacionEsquema(item: ItemsCombinacionEsquema) {
+    async function onDeleteCombinacionEsquema(item: TableCombinacionEsquema) {
       try {
         const index = itemsCombinacionEsquema.value.indexOf(item)
         if (index === -1) return
@@ -2768,6 +2407,91 @@ export default defineComponent({
         modelSeleccionadosCombinacionEsquema.value.filter((fila) =>
           itemsCombinacionEsquema.value.includes(fila),
         )
+    }
+
+    /** Datos empresa */
+
+    // 3. Composables
+    const empresasStore = useEmpresasStore()
+    const empresaStore = useEmpresaStore()
+    const { dataModel, setEmpresa, resetModel, resetModelEmpresa } = useEmpresaModel()
+
+    // 4. Reactive
+    const loading = ref(false)
+    const formDatosEmpresa = ref()
+    const formDatosEmpresaValido = ref(false)
+    const itemsEmpresas = ref<Object[]>([])
+    const modelEmpresa = ref<Object>()
+
+    // 5. Computed
+    const getEsValidoTab2 = computed(() => {
+      return formDatosEmpresaValido.value
+    })
+
+    const getItemsEmpresaDatabase = computed(() => empresasStore.empresas)
+
+    // 6. Watchers
+    watch(getEsValidoTab2, (valido) => {
+      if (!valido && modelTabVertical.value !== 'option-2') {
+        modelTabVertical.value = 'option-2'
+      }
+    })
+
+    watch(
+      () => dataModel.value.mascara_codigo,
+      (nuevaMascara) => {
+        if (props.id !== undefined && props.id !== null) return
+        validarMascaraYActualizarCampos(nuevaMascara)
+      },
+    )
+
+    // 7. Lifecycle hooks (onMounted, mounted)
+    // 8. Functions (fetch, metodos, async)
+    function onClickTabDatosEmpresa() {
+      // Validar combinaciones duplicadas
+      if (combinacionesDuplicadas.value.length > 0) {
+        let mensaje =
+          'Se detectó un registro duplicado. La fila duplicada será eliminada automáticamente.'
+
+        dialogConfirmation.onOpenDialogInformation(
+          mensaje,
+          'Registro duplicado',
+          'alert',
+          '#285697',
+          2,
+        )
+        onDeleteRowDuplicateCombinacionEsquema()
+
+        modelTabVertical.value = 'option-1'
+        return
+      }
+
+      console.log('Datos empresa')
+
+      const esquemas = getItemsHabilitadosCombinacionEsquema.value
+
+      console.log('Esquemas habilitados:', esquemas)
+
+      // 🔹 Flags de negocio
+      const tieneContpaqi = esquemas.some((e) => e.contpaqi === true)
+      const tieneNoContpaqi = esquemas.some((e) => e.contpaqi === false)
+
+      // 🏢 Empresa CONTPAQi
+      // Se habilita si existe al menos un esquema CONTPAQi
+      btnDisabled.value.compEmpresa = !tieneContpaqi
+
+      // 🧾 Razón social y RFC
+      // Solo se habilitan si TODOS son NO CONTPAQi
+      btnDisabled.value.compRazonSocial = tieneContpaqi
+      btnDisabled.value.compRfc = tieneContpaqi
+
+      // 📧 Correo → siempre habilitado
+      btnDisabled.value.compCorreo = false
+
+      // 🧩 Campos NO fiscales
+      // Se habilitan si existe al menos un esquema NO CONTPAQi
+      btnDisabled.value.compNoFiscMascara = !tieneNoContpaqi
+      btnDisabled.value.compNoFiscCodigoInicial = !tieneNoContpaqi
     }
 
     // 8. Functions (fetch, metodos, async) | Datos empresa
@@ -2887,7 +2611,371 @@ export default defineComponent({
       }
     }
 
+    /** Parametrización */
+
+    // 3. Composables
+    // 4. Reactive
+    const itemsCombinacionParametrizacion = ref<TableCombinacionParametrizacion[]>([])
+    const headersParametrizacion = ref<
+      {
+        key: string
+        align?: 'start' | 'center' | 'end'
+        sortable?: boolean
+        title: string
+        width?: string
+      }[]
+    >([
+      {
+        key: 'estado',
+        align: 'center',
+        sortable: false,
+        title: '',
+        width: '5%',
+      },
+      {
+        key: 'esquemas',
+        sortable: false,
+        align: 'center',
+        title: 'Esquemas',
+        width: '20%',
+      },
+      {
+        key: 'periodo',
+        align: 'center',
+        sortable: false,
+        title: 'Perioricidad',
+        width: '5%',
+      },
+      {
+        key: 'fee',
+        align: 'center',
+        sortable: false,
+        title: 'FEE',
+        width: '15%',
+      },
+      {
+        key: 'baseFee',
+        align: 'center',
+        sortable: false,
+        title: 'Base FEE',
+        width: '20%',
+      },
+      {
+        key: 'provisiones',
+        align: 'center',
+        sortable: false,
+        title: 'Provisiones',
+        width: '10%',
+      },
+      {
+        key: 'previsiones',
+        align: 'center',
+        sortable: false,
+        title: 'Previsiones',
+        width: '20%',
+      },
+    ])
+    const itemsBaseFEE: Ref<BaseFeeModel[]> = ref(getDefaultBaseFee())
+    const itemsComprobacion = ref([
+      { concepto: 'Si', codigo: 'si' },
+      { concepto: 'No', codigo: 'no' },
+    ])
+
+    const itemsPrevisionSocial = ref([
+      { idContpaq: 1, concepto: 'Protección y bienestar' },
+      { idContpaq: 2, concepto: 'Inversión en talento' },
+      { idContpaq: 3, concepto: 'Solidaridad' },
+    ])
+
+    const modelSeleccionadosCombinacionParametrizacion = ref<TableCombinacionParametrizacion[]>([])
+
+    // 5. Computed
+
+    // 6. Watchers
+
+    // Clic en check de tabla cambia etiqueta habilitado / deshabilitado
+    watch(
+      () => modelSeleccionadosCombinacionParametrizacion.value,
+      (seleccionados) => {
+        itemsCombinacionParametrizacion.value.forEach((fila) => {
+          fila.estado = seleccionados.includes(fila)
+        })
+      },
+      { deep: true },
+    )
+
+    // 7. Lifecycle hooks (onMounted, mounted)
+    // 8. Functions (fetch, metodos, async)
+    function onClickTabParametrizacion() {
+      console.log('Parametrización')
+
+      const periodos = [
+        { id: 1, tipoPeriodo: 'Semanal' },
+        { id: 2, tipoPeriodo: 'Catorcenal' },
+        { id: 3, tipoPeriodo: 'Quincenal' },
+        { id: 4, tipoPeriodo: 'Mensual' },
+      ]
+
+      const resultado: TableCombinacionParametrizacion[] = []
+
+      modelSeleccionadosCombinacionEsquema.value.forEach((combinacion) => {
+        const combinacionTexto = combinacion.esquemas.map((e) => e.esquema).join(' + ')
+
+        periodos.forEach((periodo) => {
+          resultado.push({
+            estado: true,
+
+            combinacionKey: combinacion.combinacion,
+            combinacionTexto: combinacionTexto,
+            itemsEsquemas: combinacion.esquemas,
+            esquemas: combinacionTexto, // 👈 ahora ES STRING
+
+            idPeriodo: periodo.id,
+            periodo: periodo.tipoPeriodo,
+
+            fee: null,
+            baseFee: null,
+            provisiones: null,
+
+            prevision: null,
+          })
+        })
+      })
+
+      itemsCombinacionParametrizacion.value = resultado
+    }
+
+    function combinacionTieneContpaqi(combinacionKey: string): boolean {
+      const combinacion = itemsCombinacionEsquema.value.find(
+        (c) => c.combinacion === combinacionKey,
+      )
+
+      if (!combinacion) return false
+
+      return combinacion.esquemas.some((e) => e.contpaqi)
+    }
+
+    /** Bancos */
+    // 3. Composables
+    const bancoStore = useBancoStore()
+
+    // 4. Reactive
+    const formRefFiscalBanco = ref()
+    const formRefNoFiscalGral = ref()
+    const formRefNoFiscalBanco = ref()
+
+    type Banco = { id: number; banco: string; esActivo: boolean }
+    const itemsBanco: Banco[] = [
+      {
+        id: 1,
+        banco: 'Fondeadora',
+        esActivo: true,
+      },
+      {
+        id: 2,
+        banco: 'Azteca interbancario',
+        esActivo: true,
+      },
+      {
+        id: 3,
+        banco: 'Azteca bancario',
+        esActivo: true,
+      },
+      {
+        id: 4,
+        banco: 'Banorte terceros',
+        esActivo: true,
+      },
+    ]
+
+    const isActiveFondeadora = ref(false)
+    const isActiveAztecaInterbancario = ref(false)
+    const isActiveAztecaBancario = ref(false)
+    const isActiveBanorteTerceros = ref(false)
+
+    const headersAztecaInterbancario = ref<
+      {
+        key: string
+        align?: 'start' | 'center' | 'end'
+        sortable?: boolean
+        title: string
+        width?: string
+      }[]
+    >([
+      {
+        key: 'activo_dispersion',
+        sortable: false,
+        title: '',
+        width: '20%',
+      },
+      {
+        key: 'cuenta_origen',
+        align: 'center',
+        sortable: false,
+        title: '',
+      },
+      {
+        key: 'acciones',
+        align: 'end',
+        sortable: false,
+        title: '',
+        width: '20%',
+      },
+    ])
+    const headersAztecaBancario = ref<
+      {
+        key: string
+        align?: 'start' | 'center' | 'end'
+        sortable?: boolean
+        title: string
+        width?: string
+      }[]
+    >([
+      {
+        key: 'activo_dispersion',
+        sortable: false,
+        title: '',
+        width: '20%',
+      },
+      {
+        key: 'cuenta_origen',
+        align: 'center',
+        sortable: false,
+        title: '',
+      },
+      {
+        key: 'acciones',
+        align: 'end',
+        sortable: false,
+        title: '',
+        width: '20%',
+      },
+    ])
+    const headersBanorteTerceros = ref<
+      {
+        key: string
+        align?: 'start' | 'center' | 'end'
+        sortable?: boolean
+        title: string
+        width?: string
+      }[]
+    >([
+      {
+        key: 'activo_dispersion',
+        sortable: false,
+        title: '',
+        width: '20%',
+      },
+      {
+        key: 'cuenta_origen',
+        align: 'center',
+        sortable: false,
+        title: '',
+      },
+      {
+        key: 'clave_banco',
+        align: 'center',
+        sortable: false,
+        title: '',
+      },
+      {
+        key: 'acciones',
+        align: 'end',
+        sortable: false,
+        title: '',
+        width: '20%',
+      },
+    ])
+
+    const itemsAztecaInterbancario = ref<AztecaInterbancario[]>([])
+    const itemsAztecaBancario = ref<AztecaBancario[]>([])
+    const itemsBanorteTerceros = ref<BanorteTerceros[]>([])
+
+    const modalFormBancoAztecaInterbancario = ref({
+      dialog: false,
+      evento: '',
+      items: {},
+      titulo: '',
+    })
+    const modalFormBancoAztecaBancario = ref({
+      dialog: false,
+      evento: '',
+      items: {},
+      titulo: '',
+    })
+    const modalFormBancoBanorteTerceros = ref({
+      dialog: false,
+      evento: '',
+      items: {},
+      titulo: '',
+    })
+
+    const itemsTableBancos = ref<TableEsquemaBanco[]>([
+      {
+        id: 1,
+        banco: 'Fondeadora',
+        esActivo: true,
+      },
+      {
+        id: 2,
+        banco: 'Azteca interbancario',
+        esActivo: true,
+      },
+      {
+        id: 3,
+        banco: 'Azteca bancario',
+        esActivo: true,
+      },
+      {
+        id: 4,
+        banco: 'Banorte terceros',
+        esActivo: true,
+      },
+    ])
+
+    const headersBancos = ref<
+      {
+        key: string
+        align?: 'start' | 'center' | 'end'
+        sortable?: boolean
+        title: string
+        width?: string
+      }[]
+    >([
+      {
+        key: 'esActivo',
+        align: 'center',
+        sortable: false,
+        title: '',
+        width: '5%',
+      },
+      {
+        key: 'banco',
+        sortable: false,
+        align: 'center',
+        title: 'Esquemas',
+        width: '20%',
+      },
+      {
+        key: 'claves',
+        align: 'center',
+        sortable: false,
+        title: '',
+        width: '70%',
+      },
+    ])
+
+
+    // 5. Computed
+    // 6. Watchers
+    // 7. Lifecycle hooks (onMounted, mounted)
+    // 8. Functions (fetch, metodos, async)
     // 8. Functions (fetch, metodos, async) | Bancos
+
+    function onClickTabBancos() {
+      console.log('Bancos')
+    }
+
     const buscarDatosBancosPorId = async (id: any) => {
       await bancoStore.datosBancosPorCliente(props.id)
 
@@ -3132,89 +3220,94 @@ export default defineComponent({
     }
 
     return {
-      deshabilitarCampoTope,
-      onDeleteCombinacionEsquemaConfirmation,
-      onDeleteCombinacionEsquema,
-      modelSeleccionadosCombinacionEsquema,
-      tabsHabilitados,
-      isNullRowCombinacionEsquema,
-      onAddRowCombinacionEsquema,
-      esEsquemaContpaqi,
-      headersTope,
-      onUpdateItemsEsquemasDePago,
-      itemsCombinacionEsquema,
-      esFilaFija,
-      isDragging,
-      onDrop,
-      onDragStart,
-      headersCombinacionEsquema,
-      itemsBaseFEE,
-      itemsComprobacion,
-      onClickTabVertical,
-      itemsParametrizacion,
-      modelTabVertical,
-      itemsTabVertical,
-      itemsSeleccionados,
-      headersParametrizacion,
-      itemsEsquemasDePago,
+      getItemsHabilitadosCombinacionEsquema,
+      itemsTableBancos,
+      headersBancos,
+      combinacionTieneContpaqi,
+      itemsPrevisionSocial,
       btnDisabled,
       buscarDatosEmpresaNomina,
       buscarEmpresasNomina,
+      changeStatusAztecaBancario,
+      changeStatusAztecaInterbancario,
+      changeStatusBanorte,
       changeStatusFondeadora,
       dataModel,
+      deshabilitarCampoTope,
       dialogConfirmation,
-      formRefFiscalBanco,
-      formDatosEmpresaValido,
+      esEsquemaContpaqi,
+      esFilaFija,
       formDatosEmpresa,
+      formDatosEmpresaValido,
+      formRefFiscalBanco,
       formRefNoFiscalBanco,
       formRefNoFiscalGral,
+      getCardHeight,
+      getItemsClientesNomina,
+      getItemsEmpresaDatabase,
       getTableHeight,
       getTableNoDataHeight,
-      getCardHeight,
       headersAztecaBancario,
       headersAztecaInterbancario,
       headersBanorteTerceros,
+      headersCombinacionEsquema,
+      headersParametrizacion,
+      headersTope,
       inputFilters,
       isActiveAztecaBancario,
       isActiveAztecaInterbancario,
       isActiveBanorteTerceros,
       isActiveFondeadora,
+      isDragging,
+      isNullRowCombinacionEsquema,
       itemsAztecaBancario,
       itemsAztecaInterbancario,
       itemsBanco,
       itemsBanorteTerceros,
-      getItemsClientesNomina,
-      getItemsEmpresaDatabase,
+      itemsBaseFEE,
+      itemsCombinacionEsquema,
+      itemsComprobacion,
       itemsEmpresas,
+      itemsEsquemasDePago,
+      itemsCombinacionParametrizacion,
+      modelSeleccionadosCombinacionParametrizacion,
+      itemsTabVertical,
       loading,
       mergeProps,
       modalFormBancoAztecaBancario,
       modalFormBancoAztecaInterbancario,
       modalFormBancoBanorteTerceros,
       modelEmpresa,
+      modelSeleccionadosCombinacionEsquema,
+      modelTabVertical,
+      onAddRowCombinacionEsquema,
+      onClickTabVertical,
       onCloseModalFormAztecaBancario,
       onCloseModalFormAztecaInterbancario,
       onCloseModalFormBanorteTerceros,
       onDecision,
+      onDeleteCombinacionEsquema,
+      onDeleteCombinacionEsquemaConfirmation,
       onDeleteConfirmationAztecaInterbancario,
       onDeleteConfirmationBanorte,
       onDeleteItemAztecaBancario,
       onDeleteItemAztecaInterbancario,
+      onDragStart,
+      onDrop,
       onOpenModalFormAztecaBancario,
       onOpenModalFormAztecaInterbancario,
       onOpenModalFormBanorteTerceros,
       onSaveModalFormAztecaBancario,
       onSaveModalFormAztecaInterbancario,
       onSaveModalFormBanorteTerceros,
+      onUpdateItemsEsquemasDePago,
       smAndDown,
+      tabsHabilitados,
       validationRules,
       vbrePrincipalItems,
       vconPrincipalRef,
       vrowBarraDeAccionesRef,
       vrowFiltrosRef,
-      changeStatusAztecaInterbancario,
-      changeStatusAztecaBancario,
-      changeStatusBanorte,
     }
   },
 })
