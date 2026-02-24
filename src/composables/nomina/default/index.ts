@@ -1,4 +1,5 @@
 export * from './useDepartamento'
+export * from './useConcepto'
 export * from './useEmpresa'
 export * from './usePeriodo'
 export * from './usePuesto'

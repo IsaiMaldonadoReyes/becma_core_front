@@ -9,7 +9,7 @@
     />
     <v-app-bar app height="60" v-if="sessionUsuario">
       <v-btn-group divided>
-        <v-btn @click.stop="onClickDrawerParent" :icon="iconMenuParent" />
+        <!--v-btn @click.stop="onClickDrawerParent" :icon="iconMenuParent" /-->
         <v-btn @click.stop="onClickDrawerChildren" :icon="iconChildren" />
       </v-btn-group>
       <v-toolbar-title>
@@ -84,16 +84,19 @@
 </template>
 
 <script lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import { ref, getCurrentInstance, defineComponent, computed, mergeProps, onMounted } from 'vue'
+import logoDark from '@/assets/images/becma_logo.png'
+import logoLight from '@/assets/images/becma_logo_color.png'
+import adeltaLogo from '@/assets/images/adelta.png'
+
+import { ref,  defineComponent, computed, mergeProps, onMounted } from 'vue'
 import { useTheme } from 'vuetify'
 import NavigationDrawer from './components/core/NavigationDrawer.vue'
 import Notificacion from './components/core/Notification.vue'
 import Avatar from './components/core/Avatar.vue'
+
 import { sessionStore } from '@/stores/modules/Core/sesion'
 
 import DialogConfirmation from '@/components/core/dialogManager/DialogConfirmation.vue'
-
 import DialogInformation from '@/components/core/dialogManager/DialogInformation.vue'
 
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
@@ -111,7 +114,7 @@ export default defineComponent({
     const dialogStore = useDialogManagerStore()
     const session = sessionStore()
 
-    const sessionUsuario = computed(() => session.auth)
+    const sessionUsuario = computed(() => session.auth === true)
 
     const theme = useTheme()
     const changePrimaryColor = (color: string) => {
@@ -123,28 +126,10 @@ export default defineComponent({
     }
 
     const logoSrc = computed(() => {
-      return theme.global.current.value.dark
-        ? '/src/assets/images/becma_logo.png'
-        : '/src/assets/images/becma_logo_color.png'
+      return theme.global.current.value.dark ? logoDark : logoLight
     })
 
-    const logoSrcGape = computed(() => {
-      return theme.global.current.value.dark
-        ? 'https://static.wixstatic.com/media/b39cbd_eff5ff2e532f46a481354452f7c7e138~mv2.png/v1/fill/w_440,h_156,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/LOGO%20GAPE%20BLANCO%202024.png'
-        : 'https://static.wixstatic.com/media/b39cbd_db1477d2cd87416fa6f7257894b5035f~mv2.png/v1/fill/w_269,h_88,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/GAPE%202024.png'
-    })
-
-    const logoSrcGiefbsa = computed(() => {
-      return theme.global.current.value.dark
-        ? 'https://giefbsa.com/wp-content/uploads/2024/12/Logo-GIEFBSA-001.png'
-        : 'https://giefbsa.com/wp-content/uploads/2024/12/Logo-GIEFBSA-001.png'
-    })
-
-    const logoSrcAdelta = computed(() => {
-      return theme.global.current.value.dark
-        ? '/src/assets/images/adelta.png'
-        : '/src/assets/images/adelta.png'
-    })
+    const logoSrcAdelta = computed(() => adeltaLogo)
 
     const abrirSitio = () => {
       window.open('https://solucionesbecma.com', '_blank')
@@ -206,10 +191,6 @@ export default defineComponent({
       dialogStore.onConfirmDialog()
     }
 
-    onMounted(async () => {
-      await session.authUserInformation()
-    })
-
     return {
       dialogStore,
       handleClickYesDialog,
@@ -218,14 +199,12 @@ export default defineComponent({
       iconChildren,
       iconMenuParent,
       logoSrc,
-      logoSrcGiefbsa,
       mergeProps,
       navigationDrawerProps,
       onChageTheme,
       onClickDrawerChildren,
       onClickDrawerParent,
       sessionUsuario,
-      logoSrcGape,
       logoSrcAdelta,
     }
   },

@@ -154,7 +154,11 @@
           :placeholder="'Buscar'"
           :prepend-icon="'mdi-magnify'"
           :tooltip="'Puede buscar registros ingresando cualquier coincidencia con los datos de la tabla.'"
-        />
+        >
+          <template #tooltip>
+            <empresa-tooltips name="ayudaFiltroBuscador" />
+          </template>
+        </bec-text-field>
       </v-col>
       <v-col cols="12" lg="2" class="d-flex justify-end align-center">
         <v-tooltip interactive>
@@ -326,6 +330,7 @@ import { useDisplay } from 'vuetify'
 
 // import components
 import { BecTextField } from '@/components/core/becmaComponents'
+import { EmpresaTooltips } from '@/components/nomina/ayudas'
 
 // import interfaces
 import type { EmpresaModel } from '@/interfaces/nomina/gape'
@@ -333,10 +338,9 @@ import type { EmpresaModel } from '@/interfaces/nomina/gape'
 // import stores
 import { useEmpresaStore } from '@/stores/modules/Nomina/gape'
 
-
 export default defineComponent({
   name: 'EmpresaList',
-  components: { BecTextField },
+  components: { BecTextField, EmpresaTooltips },
 
   setup() {
     // 1. Imports
@@ -409,12 +413,6 @@ export default defineComponent({
         title: 'Empresa',
       },
       {
-        key: 'tipo',
-        align: 'start',
-        sortable: true,
-        title: 'Tipo de registro',
-      },
-      {
         key: 'razon_social',
         align: 'start',
         sortable: true,
@@ -425,12 +423,6 @@ export default defineComponent({
         align: 'start',
         sortable: true,
         title: 'RFC',
-      },
-      {
-        key: 'codigo_interno',
-        align: 'start',
-        sortable: true,
-        title: 'Código interno',
       },
       {
         key: 'fecha_creacion',

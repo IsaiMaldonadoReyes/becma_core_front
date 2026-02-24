@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialogVisible" max-width="500px" persistent>
     <div class="icon-animated">
-      <vue3-lottie :animation-link="animationLink" :loop="false" :speed="dialogSpeedIcon" />
+      <vue3-lottie :animation-data="animationData" :loop="false" :speed="dialogSpeedIcon" />
     </div>
 
     <v-card class="pa-8">
@@ -32,8 +32,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref, watch, computed } from 'vue'
 import { Vue3Lottie } from 'vue3-lottie'
+import { dialogAnimations } from '@/utils/dialogAnimations'
 
 export default defineComponent({
   name: 'DialogInformation',
@@ -51,15 +52,14 @@ export default defineComponent({
   emits: ['close'],
   setup(props, { emit }) {
     const dialogVisible = ref(props.dialogView)
-    const animationLink = ref(`/src/assets/images/${props.dialogIcon}.json`)
+    const animationData = computed(() => {
+      return dialogAnimations[props.dialogIcon] ?? dialogAnimations['alert']
+    })
 
     watch(
       () => props.dialogView,
       (newVal) => {
         dialogVisible.value = newVal
-        if (newVal) {
-          animationLink.value = `/src/assets/images/${props.dialogIcon}.json`
-        }
       },
       { immediate: true },
     )
@@ -70,7 +70,7 @@ export default defineComponent({
 
     return {
       dialogVisible,
-      animationLink,
+      animationData,
       onClose,
     }
   },

@@ -15,7 +15,9 @@
       </v-col>
       <v-col cols="11">
         <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
-        elija un cliente del cuál se dará de alta una nueva empresa.
+        elija el cliente del cuál se dará de alta una nueva
+        <b style="color: #2a73c5"><i>Empresa</i></b
+        >.
       </v-col>
     </v-row>
     <v-divider class="border-opacity-50 my-2 mx-2" />
@@ -25,8 +27,59 @@
       </v-col>
       <v-col cols="11">
         <span style="font-weight: bold; color: #2a73c5">Evento:</span>
-        al seleccionar una opción en este campo, se habilitará el botón:
-        <b style="color: #2a73c5"><i>Agregar nueva combinación de esquemas</i></b>
+        al seleccionar una opción en este campo, se <b>HABILITARÁN</b> los siguientes elementos:
+        <ul style="margin-top: 8px; padding-left: 20px">
+          <li>
+            El botón para
+            <b style="color: #2a73c5"><i>Agregar nueva combinación de esquemas de pago</i></b>
+          </li>
+          <li>
+            El formulario de <b style="color: #2a73c5"><i>Datos de empresa</i></b>
+          </li>
+          <li>
+            El formulario de <b style="color: #2a73c5"><i>Parametrización</i></b>
+          </li>
+          <li>
+            El formulario de <b style="color: #2a73c5"><i>Bancos</i></b>
+          </li>
+        </ul>
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon class="mr-1" color="white" icon="mdi-lightbulb-on-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Nota:</span>
+        al <b>NO</b> seleccionar una opción en este campo, se <b>DESHABILITARÁN</b> los siguientes
+        elementos:
+        <ul style="margin-top: 8px; padding-left: 20px">
+          <li>
+            El botón para
+            <b style="color: #2a73c5"><i>Agregar nueva combinación de esquemas de pago</i></b>
+          </li>
+          <li>
+            El formulario de <b style="color: #2a73c5"><i>Datos de empresa</i></b>
+          </li>
+          <li>
+            El formulario de <b style="color: #2a73c5"><i>Parametrización</i></b>
+          </li>
+          <li>
+            El formulario de <b style="color: #2a73c5"><i>Bancos</i></b>
+          </li>
+        </ul>
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon class="mr-1" color="white" icon="mdi-alert-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Advertencia:</span>
+        los campos marcados con (<b style="color: #2a73c5"><i>*</i></b
+        >) son obligatorios para continuar con el proceso.
       </v-col>
     </v-row>
   </v-card>
@@ -45,7 +98,9 @@
       </v-col>
       <v-col cols="11">
         <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
-        elija uno o más esquemas para configurar una combinación de esquemas de pago.
+        seleccione uno o más esquemas para configurar una combinación de esquemas de pago. Estos
+        permitirán definir los conceptos bajo los cuales se prorrateará una parte del pago del
+        empleado durante el cálculo de la prenómina.
       </v-col>
     </v-row>
     <v-divider class="border-opacity-50 my-2 mx-2" />
@@ -55,17 +110,38 @@
       </v-col>
       <v-col cols="11">
         <span style="font-weight: bold; color: #2a73c5">Evento:</span>
-        al seleccionar las opciones de este de campo de habilitarán los campos de la siguiente
-        forma: <br /><br />
-        - <b style="color: #2a73c5"><i>Sueldo IMSS:</i></b> Empresa CONTPAQi Nóminas <br />
-        - <b style="color: #2a73c5"><i>Previsión social:</i></b> Empresa CONTPAQi Nóminas <br />
-        - <b style="color: #2a73c5"><i>Fondos sindical:</i></b> Empresa CONTPAQi Nóminas <br />
-        - <b style="color: #2a73c5"><i>Honorarios asimilados:</i></b> Empresa CONTPAQi Nóminas
-        <br />
-        - <b style="color: #2a73c5"><i>Tarjeta fácil:</i></b> Razón Social, RFC, Mascara del código,
-        Código inicial<br />
-        - <b style="color: #2a73c5"><i>Gastos por comprobar:</i></b> Razón Social, RFC, Mascara del
-        código, Código inicial<br />
+        al seleccionar las opciones de este campo, se habilitarán los campos del formulario
+        <b style="color: #2a73c5"><i>Datos empresa</i></b> de la siguiente manera:<br /><br />
+        <ul style="margin-top: 8px; padding-left: 20px">
+          <li>
+            <b style="color: #2a73c5"><i>Sueldo IMSS:</i></b> Empresa CONTPAQi Nóminas
+          </li>
+          <li>
+            <b style="color: #2a73c5"><i>Honorarios asimilados:</i></b> Empresa CONTPAQi Nóminas
+          </li>
+          <li>
+            <b style="color: #2a73c5"><i>Fondo sindical:</i></b> Empresa CONTPAQi Nóminas
+          </li>
+          <li>
+            <b style="color: #2a73c5"><i>Gastos por comprobar:</i></b> Razón social, RFC, Máscara
+            del código y Código inicial
+          </li>
+          <li>
+            <b style="color: #2a73c5"><i>Tarjeta fácil:</i></b> Razón social, RFC, Máscara del
+            código y Código inicial
+          </li>
+        </ul>
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2 mx-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-cursor-default-click" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Evento 2:</span>
+        por cada opción seleccionada, se agregará el campo correspondiente para configurar el tope
+        de prorrateo que se utilizará durante el cálculo de la prenómina.
       </v-col>
     </v-row>
     <v-divider class="border-opacity-50 my-2" />
@@ -75,7 +151,8 @@
       </v-col>
       <v-col cols="11">
         <span style="font-weight: bold; color: #2a73c5">Advertencia:</span>
-        los campos marcados con (*) son obligatorios para continuar con el proceso.
+        los campos marcados con (<b style="color: #2a73c5"><i>*</i></b
+        >) son obligatorios para continuar con el proceso.
       </v-col>
     </v-row>
   </v-card>
@@ -332,9 +409,34 @@
       </v-col>
       <v-col cols="11">
         <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
-        arrastre y suelte los conceptos alternativos de pago para organizarlos en el orden deseado.
-        El sistema utilizará este orden para calcular los excedentes durante el proceso de cálculo
-        de la prenómina.
+        arrastre y suelte los conceptos alternativos de pago para definir el orden de aplicación.<br />
+        El sistema utilizará este orden durante el proceso de cálculo de la prenómina para
+        determinar los excedentes.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon class="mr-1" color="white" icon="mdi-lightbulb-on-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Nota:</span>
+        si está deshabilitado
+        <ul style="margin-top: 8px; padding-left: 20px">
+          <li>
+            El botón para
+            <b style="color: #2a73c5"><i>Agregar nueva combinación de esquemas de pago</i></b>
+          </li>
+          <li>
+            El formulario de <b style="color: #2a73c5"><i>Datos de empresa</i></b>
+          </li>
+          <li>
+            El formulario de <b style="color: #2a73c5"><i>Parametrización</i></b>
+          </li>
+          <li>
+            El formulario de <b style="color: #2a73c5"><i>Bancos</i></b>
+          </li>
+        </ul>
       </v-col>
     </v-row>
   </v-card>
@@ -393,7 +495,10 @@
       <v-col cols="1" class="d-flex align-center justify-center">
         <v-icon icon="mdi-information-slab-circle-outline" />
       </v-col>
-      <v-col cols="11">Formulario para configuración de la parametrización de las combinaciones de los esquemas de pago.</v-col>
+      <v-col cols="11"
+        >Formulario para configuración de la parametrización de las combinaciones de los esquemas de
+        pago.</v-col
+      >
     </v-row>
     <v-divider class="border-opacity-50 my-2 mx-2" />
     <v-row>
@@ -402,7 +507,9 @@
       </v-col>
       <v-col cols="11">
         <span style="font-weight: bold; color: #2a73c5">Formulario dependiente:</span>
-        debe completar el formulario de <b style="color: #2a73c5"><i>Datos de la empresa</i></b> parar poder acceder a esté apartado.
+        debe completar el formulario de
+        <b style="color: #2a73c5"><i>Datos de la empresa</i></b> parar poder acceder a esté
+        apartado.
       </v-col>
     </v-row>
   </v-card>
@@ -428,7 +535,99 @@
       </v-col>
       <v-col cols="11">
         <span style="font-weight: bold; color: #2a73c5">Formulario dependiente:</span>
-        debe completar el formulario de <b style="color: #2a73c5"><i>Datos de la empresa</i></b> parar poder acceder a esté apartado.
+        debe completar el formulario de
+        <b style="color: #2a73c5"><i>Datos de la empresa</i></b> parar poder acceder a esté
+        apartado.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaBtnAddRowCombinacionEsquema -->
+  <v-card
+    v-if="name === 'ayudaBtnAddRowCombinacionEsquema'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="py-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">Agregar nueva combinación de esquemas de pago. </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2 mx-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-file-rotate-left" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Acción dependiente: </span>
+        si este botón se encuentra deshabilitado, verifique que:
+        <ul style="margin-top: 8px; padding-left: 20px">
+          <li>
+            El campo <span style="font-weight: bold; color: #2a73c5"><i>Cliente</i></span> tenga un
+            cliente seleccionado
+          </li>
+          <li>No existan filas vacías en la tabla</li>
+        </ul>
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2 mx-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-cursor-default-click" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Evento:</span>
+        al dar clic en este botón, se agregará una nueva fila en la tabla para registrar una
+        combinación de esquemas de pago.
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaBtnHabilitarTodo -->
+  <v-card
+    v-if="name === 'ayudaBtnHabilitarTodo'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="pa-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11"> Habilitar todos los registros disponibles. </v-col>
+    </v-row>
+  </v-card>
+
+  <!-- ayudaFiltroBuscador -->
+  <v-card
+    v-if="name === 'ayudaFiltroBuscador'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="py-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Instrucción:</span>
+        puede buscar registros ingresando cualquier coincidencia con los datos de la tabla.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2 mx-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-cursor-default-click" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Evento:</span>
+        al ingresar su búsqueda, se mostrará en la tabla el listado con las coincidencias
+        encontradas.
       </v-col>
     </v-row>
   </v-card>
@@ -456,6 +655,9 @@ export default defineComponent({
         | 'ayudaEsquemasPago'
         | 'ayudaParametrizacion'
         | 'ayudaBancos'
+        | 'ayudaFiltroBuscador'
+        | 'ayudaBtnAddRowCombinacionEsquema'
+        | 'ayudaBtnHabilitarTodo'
         | string
       >,
       required: true,

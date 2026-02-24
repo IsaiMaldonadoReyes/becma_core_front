@@ -3,23 +3,21 @@
     <v-menu v-model="menu" :close-on-content-click="false">
       <template v-slot:activator="{ props }">
         <v-avatar v-bind="props" class="mx-2" color="primary">
-          <v-img v-if="item.imagen" :src="item.imagen" :alt="getIniciales" />
-          <span v-else class="text-h6">{{ getIniciales }}</span>
+          <span>{{ iniciales }}</span>
         </v-avatar>
       </template>
 
       <v-card min-width="300">
-        <v-list>
+        <v-list v-if="user">
           <v-list-item lines="three">
             <template v-slot:prepend>
               <v-avatar color="primary" size="x-large">
-                <v-img v-if="item.imagen" :src="item.imagen" :alt="getIniciales" />
-                <span v-else class="text-h5">{{ getIniciales }}</span>
+                <span class="text-h5">{{ iniciales }}</span>
               </v-avatar>
             </template>
-            <v-list-item-title>{{ item.nombre }} {{ item.apellidoPaterno }}</v-list-item-title>
-            <v-list-item-subtitle>{{ item.rol }}</v-list-item-subtitle>
-            <v-list-item-subtitle>{{ item.correo }}</v-list-item-subtitle>
+            <v-list-item-title>{{ user.nombre }} {{ user.apellidoPaterno }}</v-list-item-title>
+            <v-list-item-subtitle>{{ user.rol }}</v-list-item-subtitle>
+            <v-list-item-subtitle>{{ user.correo }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
 
@@ -31,7 +29,7 @@
             color="primary"
             title="Mi cuenta"
             value="cuenta"
-            @click="onOpenDialogForm('onEdit', item, 'Mi cuenta')"
+            @click="onOpenDialogForm('onEdit', user, 'Mi cuenta')"
           >
             <template v-slot:prepend>
               <v-icon icon="mdi-account-cog" size="30" />
@@ -43,7 +41,7 @@
             color="primary"
             title="Cerrar"
             value="cerrar"
-            @click="cerrarSesion()"
+            @click="cerrarSesion"
           >
             <template v-slot:prepend>
               <v-icon icon="mdi-logout" size="30" />
@@ -65,8 +63,8 @@
 <script lang="ts">
 import { ref, defineComponent, mergeProps, onMounted, computed } from 'vue'
 import DialogCuenta from '../core/dialogForm/DialogCuenta.vue'
-import { useRouter } from "vue-router";
-import { sessionStore } from '../../stores/modules/Core/sesion'
+import { useRouter } from 'vue-router'
+import { sessionStore } from '@/stores/modules/Core/sesion'
 
 export interface Item {
   id: number
@@ -85,48 +83,19 @@ export default defineComponent({
   name: 'Avatar',
   components: { DialogCuenta },
   setup() {
-    const router = useRouter();
+    const router = useRouter()
     const session = sessionStore()
 
-    const item = ref<Item | any>({})
     const menu = ref(false)
-
-    // Método para obtener datos desde la API
-    const getItems = async () => {
-      try {
-        await session.authUserInformation()
-
-        item.value = {
-          id: session.userInformation.id,
-          correo: session.userInformation.correo,
-          nombre: session.userInformation.nombre,
-          apellidoPaterno: session.userInformation.apellidoPaterno,
-          apellidoMaterno: session.userInformation.apellidoMaterno,
-          imagen:
-            import.meta.env.VITE_APP_API_URL +
-            '/storage/profile_images/' +
-            session.userInformation.imagen,
-          rol: session.userInformation.rol,
-          password: '',
-          passwordConfirm: '',
-        }
-      } catch (error) {
-        console.error('Error al obtener los datos:', error)
-      }
-    }
-
-    onMounted(() => {
-      getItems()
-    })
 
     const dialogCuentaPropiedades = ref({
       dialog: false,
       evento: '',
-      items: {},
+      items: {} as Partial<Item>,
       titulo: '',
     })
 
-    const onOpenDialogForm = (evento: string, items: object, titulo: string) => {
+    const onOpenDialogForm = (evento: string, items: any, titulo: string) => {
       menu.value = false
       dialogCuentaPropiedades.value = {
         dialog: true,
@@ -136,42 +105,40 @@ export default defineComponent({
       }
     }
 
+    const user = computed(() => session.userInformation)
+
+    const iniciales = computed(() => {
+      if (!user.value) return ''
+
+      const nombre = user.value.nombre?.trim()
+      const apellido = user.value.apellidoPaterno?.trim()
+
+      if (!nombre || !apellido) return ''
+
+      return `${nombre[0].toUpperCase()}${apellido[0].toUpperCase()}`
+    })
+
     const onCloseDialogForm = () => {
       dialogCuentaPropiedades.value.dialog = false
     }
 
-    // Computed properties
-    const getIniciales = computed(() => {
-      if (item.value && 'nombre' in item.value && 'apellidoPaterno' in item.value) {
-        const nombre = item.value.nombre
-        const apellidoPaterno = item.value.apellidoPaterno
-
-        const inicialNombre = nombre.charAt(0).toUpperCase()
-        const inicialApellido = apellidoPaterno.charAt(0).toUpperCase()
-
-        return `${inicialNombre}${inicialApellido}`
-      }
-      return ''
-    })
-
-    const cerrarSesion = () => {
+    const cerrarSesion = async () => {
       try {
-        session.logout()
+        await session.logout()
 
-        router.push({ name: "Login" });
+        router.replace({ name: 'Login' })
       } catch (err) {
-        alert('Ocurrió un error al cerrar sesión')
+        //alert('Ocurrió un error al cerrar sesión')
       }
     }
 
     return {
-      dialogCuentaPropiedades,
-      getIniciales,
-      item,
       menu,
-      mergeProps,
-      onCloseDialogForm,
+      user,
+      iniciales,
+      dialogCuentaPropiedades,
       onOpenDialogForm,
+      onCloseDialogForm,
       cerrarSesion,
     }
   },

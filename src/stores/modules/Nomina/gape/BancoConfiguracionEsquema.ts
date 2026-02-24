@@ -56,7 +56,7 @@ export const useBancoConfiguracionEsquemaStore = defineStore({
         link.href = url
         link.setAttribute(
           'download',
-          `formato_incidencias_${year}${month}${day}_${hours}${minutes}${seconds}.zip`,
+          `dispersion_pagos_${year}${month}${day}_${hours}${minutes}${seconds}.zip`,
         )
         document.body.appendChild(link)
         link.click()

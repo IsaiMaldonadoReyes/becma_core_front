@@ -1324,10 +1324,6 @@
                             :placeholder="'0.00'"
                             prefix="$"
                             :prepend-icon="'mdi-hospital-box-outline'"
-                            :rules="[
-                              (v: any) =>
-                                validationRules.validatePositiveNumber(v, { required: false }),
-                            ]"
                             @keypress="
                               (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldovariable)
                             "
@@ -1400,10 +1396,6 @@
                             :placeholder="'0.00'"
                             prefix="$"
                             :prepend-icon="'mdi-hospital-box-outline'"
-                            :rules="[
-                              (v: any) =>
-                                validationRules.validatePositiveNumber(v, { required: false }),
-                            ]"
                             @keypress="
                               (e: any) => inputFilters.onlyDecimal(e, dataModel.sueldopromedio)
                             "
@@ -1476,10 +1468,6 @@
                             :placeholder="'0.00'"
                             prefix="$"
                             :prepend-icon="'mdi-handshake'"
-                            :rules="[
-                              (v: any) =>
-                                validationRules.validatePositiveNumber(v, { required: false }),
-                            ]"
                             @keypress="
                               (e: any) =>
                                 inputFilters.onlyDecimal(e, dataModel.sueldobaseliquidacion)
@@ -1499,10 +1487,6 @@
                             :placeholder="'0.00'"
                             prefix="$"
                             :prepend-icon="'mdi-cash-sync'"
-                            :rules="[
-                              (v: any) =>
-                                validationRules.validatePositiveNumber(v, { required: false }),
-                            ]"
                             @keypress="
                               (e: any) => inputFilters.onlyDecimal(e, dataModel.ajustealneto)
                             "
@@ -1603,6 +1587,48 @@
                                 validationRules.validateNumericField(v, {
                                   required: false,
                                   min: 18,
+                                  max: 30,
+                                }),
+                            ]"
+                            @keypress="inputFilters.onlyNumbers"
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaCLABEInterbancaria" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+                        <v-col cols="12" lg="4">
+                          <bec-text-field
+                            v-model="dataModel.ccampoextranumerico3"
+                            :label="'Porcentaje de pensión'"
+                            :placeholder="'Porcentaje de pensión'"
+                            :prepend-icon="'mdi-hospital-box-outline'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validateNumericField(v, {
+                                  required: false,
+                                  min: 1,
+                                  max: 3,
+                                }),
+                            ]"
+                            @keypress="inputFilters.onlyNumbers"
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaCLABEInterbancaria" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+                        <v-col cols="12" lg="6">
+                          <bec-text-field
+                            v-model="dataModel.ccampoextranumerico4"
+                            :label="'Número tarjeta fácil'"
+                            :placeholder="'Número tarjeta fácil'"
+                            :prepend-icon="'mdi-hospital-box-outline'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validateNumericField(v, {
+                                  required: false,
+                                  min: 10,
                                   max: 30,
                                 }),
                             ]"
@@ -1919,6 +1945,48 @@
                             </template>
                           </bec-text-field>
                         </v-col>
+                        <v-col cols="12" lg="4">
+                          <bec-text-field
+                            v-model="dataModel.ccampoextranumerico3"
+                            :label="'Porcentaje de pensión'"
+                            :placeholder="'Porcentaje de pensión'"
+                            :prepend-icon="'mdi-hospital-box-outline'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validateNumericField(v, {
+                                  required: false,
+                                  min: 1,
+                                  max: 3,
+                                }),
+                            ]"
+                            @keypress="inputFilters.onlyNumbers"
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaCLABEInterbancaria" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
+                        <v-col cols="12" lg="4">
+                          <bec-text-field
+                            v-model="dataModel.ccampoextranumerico4"
+                            :label="'Número tarjeta fácil'"
+                            :placeholder="'Número tarjeta fácil'"
+                            :prepend-icon="'mdi-hospital-box-outline'"
+                            :rules="[
+                              (v: any) =>
+                                validationRules.validateNumericField(v, {
+                                  required: false,
+                                  min: 10,
+                                  max: 30,
+                                }),
+                            ]"
+                            @keypress="inputFilters.onlyNumbers"
+                          >
+                            <template #tooltip>
+                              <empleado-tooltips name="ayudaCLABEInterbancaria" />
+                            </template>
+                          </bec-text-field>
+                        </v-col>
                       </v-row>
                     </v-tabs-window-item>
 
@@ -2131,7 +2199,9 @@ export default defineComponent({
 
     const { dataModel, setEmpleado, resetModel } = useEmpleadoModel()
 
-    const { btnDisabled } = useEmpleadoDisableRules(dataModel)
+    const isEdit = computed(() => props.id !== undefined && props.id !== null)
+
+    const { btnDisabled } = useEmpleadoDisableRules(dataModel, isEdit)
 
     // 3. Composables vuetify
     const { name, mobile, smAndDown } = useDisplay()
@@ -2274,6 +2344,19 @@ export default defineComponent({
     })
 
     // 6. Watchers
+
+    watch(
+      esEsquemaContpaq,
+      (esContpaq) => {
+        if (esContpaq) {
+          vtabTipoEmpresa.value = 'tabTipoEmpresa01' // Contpaq
+        } else {
+          vtabTipoEmpresa.value = 'tabTipoEmpresa02' // Excedente
+        }
+      },
+      { immediate: true },
+    )
+
     watch(
       () => ({
         nombre: dataModel.value.nombre,
@@ -2370,6 +2453,9 @@ export default defineComponent({
 
     // 7. Lifecycle hooks | onMounted, onBeforeUnmount
 
+    const REGIMEN_SUELDO_IMSS = ['02', '03', '04']
+    const REGIMEN_ASIMILADOS = ['05', '06', '07', '08', '09', '10', '11']
+
     onMounted(async () => {
       nextTick(() => {})
       resetModel(false)
@@ -2389,13 +2475,39 @@ export default defineComponent({
 
         buscarEmpresasNomina()
 
+        buscarEsquemasPorEmpresa()
+
+        await fetchDatosEmpleado(data)
+
+        cargarPrimerCatalogoFiscal()
+
+        const tipoRegimen = dataModel.value.TipoRegimen
+
+        const esquema = obtenerEsquemaPorRegimen(tipoRegimen)
+
+        if (esquema) {
+          dataModel.value.id_nomina_gape_esquema = esquema.id
+        }
+
         if (fiscalParam) {
           await buscarCatalogosPorEmpresa()
         }
-
-        await fetchDatosEmpleado(data)
       }
     })
+
+    function obtenerEsquemaPorRegimen(tipoRegimen?: string) {
+      if (!tipoRegimen) return null
+
+      if (REGIMEN_SUELDO_IMSS.includes(tipoRegimen)) {
+        return itemsEsquemas.value.find((e) => e.esquema?.toUpperCase() === 'SUELDO IMSS') ?? null
+      }
+
+      if (REGIMEN_ASIMILADOS.includes(tipoRegimen)) {
+        return itemsEsquemas.value.find((e) => e.esquema?.toUpperCase() === 'ASIMILADOS') ?? null
+      }
+
+      return null
+    }
 
     onBeforeUnmount(() => {})
 
@@ -2415,6 +2527,7 @@ export default defineComponent({
 
     const buscarCatalogosPorEmpresa = async () => {
       const idEsquema = dataModel.value.id_nomina_gape_esquema
+
       if (!idEsquema) return
 
       // obtener esquema real
@@ -2487,6 +2600,10 @@ export default defineComponent({
     const sanitizeDate = (date: any) => {
       if (!date) return null
       return new Date(date).toISOString().split('T')[0]
+    }
+
+    const cargarPrimerCatalogoFiscal = async () => {
+      await tipoRegimenStore.catalogoTipoRegimen(buildData())
     }
 
     const cargarCatalogosPorEmpresa = async (data: any) => {

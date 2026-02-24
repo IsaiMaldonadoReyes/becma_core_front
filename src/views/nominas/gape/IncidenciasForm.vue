@@ -508,6 +508,7 @@ export default defineComponent({
           dataModel.value.fiscal = true
           await buscarEjerciciosPorTipoPeriodo()
         } else {
+          dataModel.value.fiscal = false
           resetEjercicioPeriodo()
         }
       },

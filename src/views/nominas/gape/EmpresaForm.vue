@@ -43,8 +43,9 @@
               height="40px"
               min-width="40px"
               width="40px"
-              :disabled="btnDisabled.importarRegistros"
-            >
+              @click="fetchCrearFormulasContpaq"
+              >
+              <!--:disabled="btnDisabled.importarRegistros"-->
               <v-icon color="white" icon="mdi-upload" size="24px" />
             </v-btn>
           </template>
@@ -176,13 +177,14 @@
           :item-title="'nombre'"
           :item-value="'id'"
           :items="getItemsClientesNomina"
-          :label="'Cliente'"
+          :label="'Cliente *'"
           :multiple="false"
           :prepend-icon="'mdi-account-box'"
           :return-object="false"
           :show-chips="false"
           @click:clear="console.log('onClickClear')"
           @update:model-value="buscarEmpresasNomina"
+          :rules="[(v) => v !== null || 'Debe seleccionar un cliente']"
         >
           <template #tooltip>
             <empresa-tooltips name="ayudaFiltroCliente" />
@@ -234,7 +236,7 @@
               <!-- Esquemas de pago -->
               <v-tabs-window-item value="option-1">
                 <v-row class="ml-2">
-                  <v-col cols="12" class="">
+                  <v-col cols="12">
                     <v-sheet border rounded>
                       <v-data-table
                         v-model="modelSeleccionadosCombinacionEsquema"
@@ -250,45 +252,84 @@
                         item-value="combinacion"
                         return-object
                         show-select
-                        :disabled="!dataModel.id_nomina_gape_cliente || isNullRowCombinacionEsquema"
                       >
                         <template
                           v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }"
                         >
-                          <v-btn-group
-                            class="border-opacity-25"
-                            color="primary"
-                            density="compact"
-                            divided
-                            variant="outlined"
-                          >
-                            <v-btn density="compact" stacked class="pa-2" style="min-width: auto">
-                              <v-tooltip>
-                                <template v-slot:activator="{ props: tooltip }">
-                                  <v-checkbox-btn
-                                    v-bind="mergeProps(tooltip)"
-                                    :indeterminate="someSelected && !allSelected"
-                                    :model-value="allSelected"
-                                    density="compact"
-                                    true-icon="mdi-checkbox-multiple-marked"
-                                    @update:model-value="selectAll(!allSelected)"
-                                    class="pa-0"
-                                  />
-                                </template>
-                                <span>Habilitar todo</span>
-                              </v-tooltip>
-                            </v-btn>
-                          </v-btn-group>
+                          <v-tooltip>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-btn
+                                class="ml-2"
+                                color="primary"
+                                height="40px"
+                                min-width="40px"
+                                variant="flat"
+                                width="40px"
+                                @click.stop
+                              >
+                                <v-checkbox-btn
+                                  v-bind="mergeProps(tooltip)"
+                                  :indeterminate="someSelected && !allSelected"
+                                  :model-value="allSelected"
+                                  true-icon="mdi-checkbox-multiple-marked"
+                                  @update:model-value="selectAll(!allSelected)"
+                                />
+                              </v-btn>
+                            </template>
+                            <template #default>
+                              <empresa-tooltips name="ayudaBtnHabilitarTodo" />
+                            </template>
+                          </v-tooltip>
                         </template>
 
                         <template
-                          v-slot:item.data-table-select="{ internalItem, isSelected, toggleSelect }"
+                          v-slot:item.data-table-select="{
+                            internalItem,
+                            isSelected,
+                            toggleSelect,
+                            item,
+                          }"
                         >
-                          <v-checkbox-btn
-                            :model-value="isSelected(internalItem)"
-                            color="primary"
-                            @update:model-value="toggleSelect(internalItem)"
-                          />
+                          <v-tooltip>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-btn
+                                class="ml-2"
+                                color="primary"
+                                height="40px"
+                                min-width="40px"
+                                variant="flat"
+                                width="40px"
+                                @click.stop
+                              >
+                                <v-checkbox-btn
+                                  v-bind="mergeProps(tooltip)"
+                                  :model-value="isSelected(internalItem)"
+                                  @update:model-value="toggleSelect(internalItem)"
+                                >
+                                </v-checkbox-btn>
+                              </v-btn>
+                            </template>
+                            <template #default>
+                              <v-card
+                                :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+                                class="pa-3"
+                                color="transparent"
+                                elevation="0"
+                              >
+                                <v-row>
+                                  <v-col cols="2" class="d-flex align-center justify-center">
+                                    <v-icon icon="mdi-information-slab-circle-outline" />
+                                  </v-col>
+                                  <v-col cols="10">
+                                    {{ item.estado ? 'Deshabilitar' : 'Habilitar' }} combinación:
+                                    <span style="font-weight: bold; color: #2a73c5">
+                                      <i>{{ item.combinacion }}</i>
+                                    </span>
+                                  </v-col>
+                                </v-row>
+                              </v-card>
+                            </template>
+                          </v-tooltip>
                         </template>
 
                         <template v-slot:item.estado="{ item }">
@@ -298,26 +339,30 @@
                             label
                             variant="flat"
                           >
-                            {{ item.estado ? 'Habilitado' : 'Inhabilitado' }}
+                            {{ item.estado ? 'Habilitado' : 'Deshabilitado' }}
                           </v-chip>
                         </template>
 
                         <template v-slot:item.esquemas="{ item }">
-                          <bec-autocomplete
+                          <bec-select
                             v-model="item.esquemas"
+                            :clearable="true"
+                            :closable-chips="true"
+                            :hide-selected="true"
                             :items="itemsEsquemasDePago"
-                            :label="'Esquemas de pago'"
+                            :label="'Esquemas de pago *'"
                             hide-details
                             item-title="esquema"
                             item-value="id"
                             multiple
                             return-object
                             @update:model-value="onUpdateItemsEsquemasDePago(item)"
+                            :auto-select-first="true"
                           >
                             <template #tooltip>
                               <empresa-tooltips name="ayudaEsquemasDePago" />
                             </template>
-                          </bec-autocomplete>
+                          </bec-select>
                         </template>
 
                         <template v-slot:item.topes="{ item }">
@@ -330,17 +375,120 @@
                               hide-default-header
                               item-key="id_nomina_gape_esquema"
                             >
-                              <template v-slot:item.tope="{ item: tope }">
+                              <template v-slot:item.tope="{ item: slotItem }">
                                 <bec-text-field
-                                  v-model="tope.tope"
+                                  v-model="slotItem.tope"
                                   :clearable="true"
-                                  :label="'Tope de ' + tope.esquema"
-                                  :placeholder="'Tope de ' + tope.esquema"
+                                  :label="
+                                    'Tope de ' +
+                                    slotItem.esquema +
+                                    (!esFilaFija(slotItem as TableTopeEsquema) ? ' *' : '')
+                                  "
+                                  :placeholder="'Tope de ' + slotItem.esquema"
                                   class="my-4"
-                                  @keypress="inputFilters.onlyDecimal"
                                   prefix="$"
+                                  @keypress="inputFilters.onlyDecimal"
                                 >
                                   <!--:disabled="deshabilitarCampoTope(tope, item)"-->
+                                  <template #tooltip>
+                                    <v-card
+                                      v-if="esFilaFija(slotItem as TableTopeEsquema)"
+                                      :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+                                      class="py-3"
+                                      color="transparent"
+                                      elevation="0"
+                                    >
+                                      <v-row>
+                                        <v-col cols="1" class="d-flex align-center justify-center">
+                                          <v-icon icon="mdi-information-slab-circle-outline" />
+                                        </v-col>
+                                        <v-col cols="11">
+                                          <span style="font-weight: bold; color: #2a73c5"
+                                            >Instrucción:</span
+                                          >
+                                          la configuración del tope del esquema
+                                          <b style="color: #2a73c5"
+                                            ><i>{{ slotItem.esquema }}</i></b
+                                          >
+                                          es opcional. Puede configurarlo o dejarlo sin definir.
+                                        </v-col>
+                                      </v-row>
+                                      <v-divider class="border-opacity-50 my-2" />
+                                      <v-row>
+                                        <v-col cols="1" class="d-flex align-center justify-center">
+                                          <v-icon
+                                            class="mr-1"
+                                            color="white"
+                                            icon="mdi-alert-outline"
+                                          />
+                                        </v-col>
+                                        <v-col cols="11">
+                                          <span style="font-weight: bold; color: #2a73c5"
+                                            >Advertencia:</span
+                                          >
+                                          los campos marcados con (<b style="color: #2a73c5"
+                                            ><i>*</i></b
+                                          >) son obligatorios para continuar con el proceso.
+                                        </v-col>
+                                      </v-row>
+                                    </v-card>
+                                    <v-card
+                                      v-if="!esFilaFija(slotItem as TableTopeEsquema)"
+                                      :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+                                      class="py-3"
+                                      color="transparent"
+                                      elevation="0"
+                                    >
+                                      <v-row>
+                                        <v-col cols="1" class="d-flex align-center justify-center">
+                                          <v-icon icon="mdi-information-slab-circle-outline" />
+                                        </v-col>
+                                        <v-col cols="11">
+                                          <span style="font-weight: bold; color: #2a73c5"
+                                            >Instrucción:</span
+                                          >
+                                          ingrese el valor del tope de
+                                          <b style="color: #2a73c5"
+                                            ><i>{{ slotItem.esquema }}</i></b
+                                          >.
+                                        </v-col>
+                                      </v-row>
+                                      <v-divider class="border-opacity-50 my-2 mx-2" />
+                                      <v-row>
+                                        <v-col cols="1" class="d-flex align-center justify-center">
+                                          <v-icon icon="mdi-cursor-default-click" />
+                                        </v-col>
+                                        <v-col cols="11">
+                                          <span style="font-weight: bold; color: #2a73c5"
+                                            >Evento:</span
+                                          >
+                                          al ingresar el valor de este campo, se habilitará el
+                                          formulario
+                                          <b style="color: #2a73c5"><i>Datos empresa</i></b
+                                          >. Si no se ingresa ningún valor, dicho formulario
+                                          permanecerá deshabilitado.
+                                        </v-col>
+                                      </v-row>
+                                      <v-divider class="border-opacity-50 my-2" />
+                                      <v-row>
+                                        <v-col cols="1" class="d-flex align-center justify-center">
+                                          <v-icon
+                                            class="mr-1"
+                                            color="white"
+                                            icon="mdi-alert-outline"
+                                          />
+                                        </v-col>
+                                        <v-col cols="11">
+                                          <span style="font-weight: bold; color: #2a73c5"
+                                            >Advertencia:</span
+                                          >
+                                          los campos marcados con (<b style="color: #2a73c5"
+                                            ><i>*</i></b
+                                          >) son obligatorios para continuar con el proceso.
+                                        </v-col>
+                                      </v-row>
+                                    </v-card>
+                                  </template>
                                 </bec-text-field>
                               </template>
 
@@ -348,24 +496,93 @@
                                 <div style="pointer-events: auto">
                                   <v-tooltip location="bottom" :disabled="isDragging">
                                     <template #activator="{ props: tooltipProps }">
-                                      <v-icon
+                                      <span
                                         v-bind="mergeProps(tooltipProps)"
-                                        :color="
-                                          esFilaFija(slotItem as TableTopeEsquema)
-                                            ? 'grey'
-                                            : 'primary'
-                                        "
-                                        :draggable="!esFilaFija(slotItem as TableTopeEsquema)"
-                                        class="draggable-row"
-                                        icon="mdi-drag"
-                                        style="cursor: grab"
-                                        @dragover.prevent
-                                        @dragstart="onDragStart(index, item.topes)"
-                                        @drop="onDrop(index, item.topes)"
-                                      />
+                                        class="d-inline-block"
+                                      >
+                                        <v-btn
+                                          :disabled="esFilaFija(slotItem as TableTopeEsquema)"
+                                          :draggable="!esFilaFija(slotItem as TableTopeEsquema)"
+                                          class="ml-2"
+                                          color="primary"
+                                          height="40px"
+                                          min-width="40px"
+                                          style="cursor: grab"
+                                          variant="flat"
+                                          width="40px"
+                                          @click.stop
+                                          @dragover.prevent
+                                          @dragstart="onDragStart(index, item.topes)"
+                                          @drop="onDrop(index, item.topes)"
+                                        >
+                                          <v-icon icon="mdi-drag" size="24px" />
+                                        </v-btn>
+                                      </span>
                                     </template>
                                     <template #default>
-                                      <empresa-tooltips name="ayudaInstruccionConcepto" />
+                                      <v-card
+                                        v-if="esFilaFija(slotItem as TableTopeEsquema)"
+                                        :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+                                        class="py-3"
+                                        color="transparent"
+                                        elevation="0"
+                                      >
+                                        <v-row>
+                                          <v-col
+                                            cols="1"
+                                            class="d-flex align-center justify-center"
+                                          >
+                                            <v-icon
+                                              class="mr-1"
+                                              color="white"
+                                              icon="mdi-lightbulb-on-outline"
+                                            />
+                                          </v-col>
+                                          <v-col cols="11">
+                                            <span style="font-weight: bold; color: #2a73c5"
+                                              >Nota:</span
+                                            >
+                                            el esquema
+                                            <b style="color: #2a73c5"
+                                              ><i>{{ slotItem.esquema }}</i></b
+                                            >
+                                            corresponde a un esquema fiscal gestionado y
+                                            sincronizado con el sistema <i>CONTPAQi Nóminas</i>. Por
+                                            esta razón, su orden no puede ser modificado y se
+                                            establece como el primer esquema de forma
+                                            predeterminada; en consecuencia, el botón para arrastrar
+                                            se muestra deshabilitado.
+                                          </v-col>
+                                        </v-row>
+                                      </v-card>
+                                      <v-card
+                                        v-if="!esFilaFija(slotItem as TableTopeEsquema)"
+                                        :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+                                        class="py-3"
+                                        color="transparent"
+                                        elevation="0"
+                                      >
+                                        <v-row>
+                                          <v-col
+                                            cols="1"
+                                            class="d-flex align-center justify-center"
+                                          >
+                                            <v-icon icon="mdi-information-slab-circle-outline" />
+                                          </v-col>
+                                          <v-col cols="11">
+                                            <span style="font-weight: bold; color: #2a73c5"
+                                              >Instrucción:</span
+                                            >
+                                            arrastre y suelte el esquema de pago
+                                            <b style="color: #2a73c5"
+                                              ><i>{{ slotItem.esquema }}</i></b
+                                            >
+                                            para definir el orden de prorrateo. El sistema utilizará
+                                            este orden durante el proceso de cálculo de la prenómina
+                                            para determinar los excedentes.
+                                          </v-col>
+                                        </v-row>
+                                      </v-card>
                                     </template>
                                   </v-tooltip>
                                 </div>
@@ -398,7 +615,6 @@
                             <template v-slot:activator="{ props: tooltipProps }">
                               <v-btn
                                 v-bind="mergeProps(tooltipProps)"
-                                class="me-2"
                                 color="primary"
                                 height="40px"
                                 min-width="40px"
@@ -409,7 +625,26 @@
                                 <v-icon color="white" icon="mdi-delete" size="24px" />
                               </v-btn>
                             </template>
-                            <span>Agregar nueva combinación de esquemas</span>
+                            <template #default>
+                              <v-card
+                                :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+                                class="pa-3"
+                                color="transparent"
+                                elevation="0"
+                              >
+                                <v-row>
+                                  <v-col cols="2" class="d-flex align-center justify-center">
+                                    <v-icon icon="mdi-information-slab-circle-outline" />
+                                  </v-col>
+                                  <v-col cols="10">
+                                    Eliminar combinación:
+                                    <span style="font-weight: bold; color: #2a73c5">
+                                      <i>{{ item.combinacion }}</i>
+                                    </span>
+                                  </v-col>
+                                </v-row>
+                              </v-card>
+                            </template>
                           </v-tooltip>
                         </template>
 
@@ -419,25 +654,29 @@
                               Configuración de las combinaciones de esquemas de pago
                             </v-toolbar-title>
 
-                            <v-tooltip bottom interactive location="bottom">
+                            <v-tooltip>
                               <template v-slot:activator="{ props: tooltipProps }">
-                                <v-btn
-                                  v-bind="mergeProps(tooltipProps)"
-                                  :disabled="
-                                    !dataModel.id_nomina_gape_cliente || isNullRowCombinacionEsquema
-                                  "
-                                  class="me-2"
-                                  color="primary"
-                                  height="40px"
-                                  min-width="40px"
-                                  variant="flat"
-                                  width="40px"
-                                  @click="onAddRowCombinacionEsquema"
-                                >
-                                  <v-icon color="white" icon="mdi-plus" size="24px" />
-                                </v-btn>
+                                <span v-bind="mergeProps(tooltipProps)" class="d-inline-block">
+                                  <v-btn
+                                    :disabled="
+                                      !dataModel.id_nomina_gape_cliente ||
+                                      isNullRowCombinacionEsquema
+                                    "
+                                    class="me-4"
+                                    color="primary"
+                                    height="40px"
+                                    min-width="40px"
+                                    variant="flat"
+                                    width="40px"
+                                    @click="onAddRowCombinacionEsquema"
+                                  >
+                                    <v-icon color="white" icon="mdi-plus" size="24px" />
+                                  </v-btn>
+                                </span>
                               </template>
-                              <span>Agregar nueva combinación de esquemas</span>
+                              <template #default>
+                                <empresa-tooltips name="ayudaBtnAddRowCombinacionEsquema" />
+                              </template>
                             </v-tooltip>
                           </v-toolbar>
                         </template>
@@ -595,7 +834,7 @@
                                   new RegExp(
                                     `^\\d{${dataModel.mascara_codigo?.length ?? 0}}$`,
                                   ).test(v) ||
-                                  `Debe tener ${dataModel.mascara_codigo?.length ?? 0} dígitos`,
+                                  `Debe contener exactamente ${dataModel.mascara_codigo?.length ?? 0} dígitos, conforme a la máscara del código definida.`,
                               ]
                         "
                         @keypress="inputFilters.onlyNumbers"
@@ -681,6 +920,23 @@
                           />
                         </template>
 
+                        <template v-slot:item.itemsEsquemas="{ item }">
+                          <template
+                            v-for="(esquema, index) in item.itemsEsquemas"
+                            :key="esquema.id"
+                          >
+                            <v-chip
+                              :color="item.estado ? 'primary' : 'grey'"
+                              size="small"
+                              label
+                              variant="flat"
+                              class="ma-1"
+                            >
+                              {{ esquema.esquema }}
+                            </v-chip>
+                          </template>
+                        </template>
+
                         <template v-slot:item.estado="{ item }">
                           <v-chip
                             :color="item.estado ? 'primary' : 'grey'"
@@ -698,29 +954,31 @@
                             :clearable="true"
                             :rules="btnDisabled.compRazonSocial ? [] : [validationRules.required]"
                             placeholder="0.00"
-                            prefix="$"
+                            prefix="%"
                           >
                           </bec-text-field>
                         </template>
 
                         <template v-slot:item.baseFee="{ item }">
-                          <bec-select
+                          <bec-autocomplete
                             v-model="item.baseFee"
-                            :items="itemsBaseFEE"
+                            :disabled="!combinacionTieneContpaqi(item.combinacionKey)"
                             :item-title="'concepto'"
                             :item-value="'codigo'"
+                            :items="itemsBaseFEE"
                             :multiple="false"
                             :placeholder="'Seleccione'"
                           >
-                          </bec-select>
+                          </bec-autocomplete>
                         </template>
 
                         <template v-slot:item.provisiones="{ item }">
                           <bec-select
                             v-model="item.provisiones"
-                            :items="itemsComprobacion"
+                            :disabled="!combinacionTieneContpaqi(item.combinacionKey)"
                             :item-title="'concepto'"
                             :item-value="'codigo'"
+                            :items="itemsComprobacion"
                             :multiple="false"
                             :placeholder="'Seleccione'"
                           >
@@ -728,16 +986,18 @@
                         </template>
 
                         <template v-slot:item.previsiones="{ item }">
-                          <bec-select
+                          <bec-autocomplete
                             v-model="item.prevision"
-                            :disabled="!combinacionTieneContpaqi(item.combinacionKey)"
-                            :item-title="'concepto'"
-                            :item-value="'id'"
+                            :disabled="!combinacionTieneContpaqi(String(item.combinacionKey))"
+                            :hide-selected="true"
+                            :item-title="'descripcion'"
+                            :item-value="'idconcepto'"
                             :items="itemsPrevisionSocial"
-                            :multiple="false"
+                            :multiple="true"
                             :placeholder="'Seleccione'"
+                            :return-object="true"
                           >
-                          </bec-select>
+                          </bec-autocomplete>
                         </template>
 
                         <template v-slot:top>
@@ -776,663 +1036,271 @@
 
               <!-- Bancos  -->
               <v-tabs-window-item value="option-4" eager>
-                <!--v-form ref="formRefFiscalBanco"></v-form>
-                    <v-form ref="formRefNoFiscalGral"></v-form>
-                    <v-form ref="formRefNoFiscalBanco"></v-form-->
-                <v-row class="ml-2">
-                  <v-col key="id" cols="12" md="12">
-                    <v-card
-                      class="rounded mb-4 mr-4 pa-2 border"
-                      elevation="3"
-                      min-height="60px"
-                      v-for="(item, index) in getItemsHabilitadosCombinacionEsquema"
-                      :key="item.esquema"
-                    >
-                      <v-row>
-                        <v-col>
-                          <v-card-title color="primary" class="text-primary text-body-1">
-                            Configuración de bancos para: {{ item.esquema }}
-                          </v-card-title>
-                          <v-divider class="border-opacity-25 ma-0 pa-0" />
-                        </v-col>
-                      </v-row>
-                      <v-row class="pa-2">
-                        <v-col cols="12">
-                          <v-expansion-panels elevation="0" class="border-0">
-                            <!-- Fondeadora -->
-                            <v-expansion-panel class="border" expand-icon="" readonly>
-                              <v-expansion-panel-title v-slot="{ expanded }">
-                                <v-row>
-                                  <v-col cols="12" md="2">
-                                    <v-tooltip interactive location="bottom">
-                                      <template #activator="{ props: tooltipProps }">
-                                        <v-switch
-                                          v-model="isActiveFondeadora"
-                                          v-bind="mergeProps(tooltipProps)"
-                                          class="text-medium-emphasis"
-                                          color="primary"
-                                          density="compact"
-                                          false-icon="mdi-bank-off"
-                                          hide-details
-                                          inset
-                                          true-icon="mdi-bank"
-                                          @click.stop
-                                          @click="changeStatusFondeadora"
-                                        />
-                                      </template>
+                <v-row
+                  class="mx-2"
+                  v-for="esquema in getItemsHabilitadosCombinacionEsquema"
+                  :key="esquema.id"
+                >
+                  <v-col cols="12">
+                    <v-sheet border rounded>
+                      <v-data-table
+                        v-model="modelSeleccionadosEsquemaBanco[esquema.id]"
+                        :headers="headersBancos"
+                        :hover="true"
+                        :items="bancosPorEsquema[esquema.id]"
+                        :mobile="smAndDown"
+                        eager
+                        hide-default-footer
+                        item-value="id"
+                        return-object
+                        show-select
+                      >
+                        <template
+                          v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }"
+                        >
+                          <v-tooltip>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-btn
+                                class="ml-2"
+                                color="primary"
+                                height="40px"
+                                min-width="40px"
+                                variant="flat"
+                                width="40px"
+                                @click.stop
+                              >
+                                <v-checkbox-btn
+                                  v-bind="mergeProps(tooltip)"
+                                  :indeterminate="someSelected && !allSelected"
+                                  :model-value="allSelected"
+                                  true-icon="mdi-checkbox-multiple-marked"
+                                  @update:model-value="selectAll(!allSelected)"
+                                />
+                              </v-btn>
+                            </template>
+                            <template #default>
+                              <empresa-tooltips name="ayudaBtnHabilitarTodo" />
+                            </template>
+                          </v-tooltip>
+                        </template>
 
-                                      <template #default>
-                                        <v-card color="transparent" elevation="0" class="py-3">
-                                          <v-row>
-                                            <v-col
-                                              cols="1"
-                                              class="d-flex align-center justify-center"
-                                            >
-                                              <v-icon
-                                                class="mr-1"
-                                                color="white"
-                                                :icon="
-                                                  !isActiveFondeadora ? 'mdi-bank-off' : 'mdi-bank'
-                                                "
-                                              />
-                                            </v-col>
-                                            <v-col cols="11" v-if="!isActiveFondeadora">
-                                              Haga clic aquí para <b>HABILITAR</b> el Banco
-                                              Fondeadora.
-                                            </v-col>
-                                            <v-col cols="11" v-else>
-                                              Haga clic aquí para <b>DESHABILITAR</b> el Banco
-                                              Fodeadora.<br />
-                                            </v-col>
-                                          </v-row>
-
-                                          <v-divider class="border-opacity-50 my-2 mx-4" />
-
-                                          <v-row>
-                                            <v-col
-                                              cols="1"
-                                              class="d-flex align-center justify-center"
-                                            >
-                                              <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                            </v-col>
-                                            <v-col cols="11" v-if="isActiveFondeadora">
-                                              <span style="font-weight: bold"> Nota: </span>
-                                              si el banco se encuentra
-                                              <b>HABILITADO</b>, podrá generar el layout de
-                                              dispersión de nómina correspondiente para esta
-                                              empresa.
-                                            </v-col>
-                                            <v-col cols="11" v-else>
-                                              <span style="font-weight: bold"> Nota: </span>
-                                              si el banco se encuentra
-                                              <b>DESHABILITADO</b>, no podrá generar el layout de
-                                              dispersión de nómina correspondiente para esta
-                                              empresa.
-                                            </v-col>
-                                          </v-row>
-                                        </v-card>
-                                      </template>
-                                    </v-tooltip>
-                                  </v-col>
-                                  <v-col
-                                    class="d-flex align-center justify-center"
-                                    cols="12"
-                                    md="8"
-                                  >
-                                    Fondeadora
-                                  </v-col>
-                                </v-row>
-                              </v-expansion-panel-title>
-                            </v-expansion-panel>
-
-                            <!-- Azteca interbancario -->
-                            <v-expansion-panel
-                              class="border"
-                              collapse-icon="mdi-menu-up"
-                              expand-icon="mdi-menu-down"
-                            >
-                              <v-expansion-panel-title class="border-b" v-slot="{ expanded }">
-                                <v-row>
-                                  <v-col cols="12" md="2">
-                                    <v-tooltip interactive location="bottom">
-                                      <template #activator="{ props: tooltipProps }">
-                                        <v-switch
-                                          v-model="isActiveAztecaInterbancario"
-                                          v-bind="mergeProps(tooltipProps)"
-                                          class="text-medium-emphasis"
-                                          color="primary"
-                                          density="compact"
-                                          false-icon="mdi-bank-off"
-                                          hide-details
-                                          inset
-                                          true-icon="mdi-bank"
-                                          @click.stop
-                                          @click="changeStatusAztecaInterbancario"
-                                        />
-                                      </template>
-
-                                      <template #default>
-                                        <v-card color="transparent" elevation="0" class="py-3">
-                                          <v-row>
-                                            <v-col
-                                              cols="1"
-                                              class="d-flex align-center justify-center"
-                                            >
-                                              <v-icon
-                                                class="mr-1"
-                                                color="white"
-                                                :icon="
-                                                  !isActiveAztecaInterbancario
-                                                    ? 'mdi-bank-off'
-                                                    : 'mdi-bank'
-                                                "
-                                              />
-                                            </v-col>
-                                            <v-col cols="11" v-if="!isActiveAztecaInterbancario">
-                                              Haga clic aquí para <b>HABILITAR</b> el Banco Azteca
-                                              Interbancario.
-                                            </v-col>
-                                            <v-col cols="11" v-else>
-                                              Haga clic aquí para <b>DESHABILITAR</b> el Banco
-                                              Azteca Interbancario.<br />
-                                            </v-col>
-                                          </v-row>
-
-                                          <v-divider class="border-opacity-50 my-2 mx-4" />
-
-                                          <v-row>
-                                            <v-col
-                                              cols="1"
-                                              class="d-flex align-center justify-center"
-                                            >
-                                              <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                            </v-col>
-                                            <v-col cols="11" v-if="isActiveAztecaInterbancario">
-                                              <span style="font-weight: bold"> Nota: </span>
-                                              si el banco se encuentra
-                                              <b>HABILITADO</b>, podrá generar el layout de
-                                              dispersión de nómina correspondiente para esta
-                                              empresa.
-                                            </v-col>
-                                            <v-col cols="11" v-else>
-                                              <span style="font-weight: bold"> Nota: </span>
-                                              si el banco se encuentra
-                                              <b>DESHABILITADO</b>, no podrá generar el layout de
-                                              dispersión de nómina correspondiente para esta
-                                              empresa.
-                                            </v-col>
-                                          </v-row>
-                                        </v-card>
-                                      </template>
-                                    </v-tooltip>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    class="d-flex align-center justify-center"
-                                    md="8"
-                                  >
-                                    Azteca Interbancario
-                                  </v-col>
-                                  <v-col
-                                    v-if="expanded"
-                                    class="d-flex align-center justify-end"
-                                    cols="12"
-                                    md="2"
-                                  >
-                                    <v-tooltip bottom color="primary" interactive location="bottom">
-                                      <template v-slot:activator="{ props: tooltipProps }">
-                                        <v-btn
-                                          v-bind="mergeProps(tooltipProps)"
-                                          color="primary"
-                                          flat
-                                          height="40px"
-                                          min-width="40px"
-                                          width="40px"
-                                          @click.stop="
-                                            onOpenModalFormAztecaInterbancario(
-                                              'onSave',
-                                              {},
-                                              'Nuevo',
-                                            )
-                                          "
-                                        >
-                                          <v-icon color="white" icon="mdi-plus" size="24px" />
-                                        </v-btn>
-                                      </template>
-                                      <span>Agregar clave de banco ID</span>
-                                    </v-tooltip>
-                                    <v-divider vertical class="ml-5 mr-3 my-1 border-opacity-25" />
-                                  </v-col>
-                                </v-row>
-                              </v-expansion-panel-title>
-                              <v-expansion-panel-text>
-                                <v-data-table
-                                  :headers="headersAztecaInterbancario"
-                                  :hover="true"
-                                  :items="itemsAztecaInterbancario"
-                                  :mobile="smAndDown"
-                                  hide-default-footer
-                                  hide-default-header
-                                  item-value="title"
+                        <template
+                          v-slot:item.data-table-select="{
+                            internalItem,
+                            isSelected,
+                            toggleSelect,
+                            item,
+                          }"
+                        >
+                          <v-tooltip>
+                            <template v-slot:activator="{ props: tooltip }">
+                              <v-btn
+                                class="ml-2"
+                                color="primary"
+                                height="40px"
+                                min-width="40px"
+                                variant="flat"
+                                width="40px"
+                                @click.stop
+                              >
+                                <v-checkbox-btn
+                                  v-bind="mergeProps(tooltip)"
+                                  :model-value="isSelected(internalItem)"
+                                  @update:model-value="toggleSelect(internalItem)"
                                 >
-                                  <template v-slot:item.activo_dispersion="{ item }">
-                                    <v-chip
-                                      :color="item.activo_dispersion ? 'primary' : 'grey'"
-                                      label
-                                      size="small"
-                                      variant="flat"
-                                    >
-                                      {{ item.activo_dispersion ? 'Habilitado' : 'Inhabilitado' }}
-                                    </v-chip>
-                                  </template>
-
-                                  <template v-slot:item.acciones="{ item }">
-                                    <v-tooltip interactive location="bottom">
-                                      <template v-slot:activator="{ props: tooltipProps }">
-                                        <v-btn
-                                          v-bind="mergeProps(tooltipProps)"
-                                          class="mr-1"
-                                          color="primary"
-                                          height="40px"
-                                          min-width="40px"
-                                          width="40px"
-                                          variant="elevated"
-                                          @click.stop="
-                                            onOpenModalFormAztecaInterbancario(
-                                              'onSave',
-                                              item,
-                                              'Editar',
-                                            )
-                                          "
-                                        >
-                                          <v-icon color="white" icon="mdi-pencil" />
-                                        </v-btn>
-                                      </template>
-                                      <span>Editar</span>
-                                    </v-tooltip>
-                                    <v-tooltip interactive location="bottom">
-                                      <template v-slot:activator="{ props: tooltipProps }">
-                                        <v-btn
-                                          v-bind="mergeProps(tooltipProps)"
-                                          class="mr-1"
-                                          color="primary"
-                                          height="40px"
-                                          min-width="40px"
-                                          width="40px"
-                                          variant="elevated"
-                                          @click="onDeleteConfirmationAztecaInterbancario(item)"
-                                        >
-                                          <v-icon color="white" icon="mdi-delete" />
-                                        </v-btn>
-                                      </template>
-                                      <span>Eliminar</span>
-                                    </v-tooltip>
-                                  </template>
-                                </v-data-table>
-                              </v-expansion-panel-text>
-                            </v-expansion-panel>
-
-                            <!-- Azteca bancario -->
-                            <v-expansion-panel
-                              class="border"
-                              collapse-icon="mdi-menu-up"
-                              expand-icon="mdi-menu-down"
-                            >
-                              <v-expansion-panel-title class="border-b" v-slot="{ expanded }">
+                                </v-checkbox-btn>
+                              </v-btn>
+                            </template>
+                            <template #default>
+                              <v-card
+                                :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+                                class="pa-3"
+                                color="transparent"
+                                elevation="0"
+                              >
                                 <v-row>
-                                  <v-col cols="12" md="2">
-                                    <v-tooltip interactive location="bottom">
-                                      <template #activator="{ props: tooltipProps }">
-                                        <v-switch
-                                          v-model="isActiveAztecaBancario"
-                                          v-bind="mergeProps(tooltipProps)"
-                                          class="text-medium-emphasis"
-                                          color="primary"
-                                          density="compact"
-                                          false-icon="mdi-bank-off"
-                                          hide-details
-                                          inset
-                                          true-icon="mdi-bank"
-                                          @click.stop
-                                          @click="changeStatusAztecaBancario"
-                                        />
-                                      </template>
-
-                                      <template #default>
-                                        <v-card color="transparent" elevation="0" class="py-3">
-                                          <v-row>
-                                            <v-col
-                                              cols="1"
-                                              class="d-flex align-center justify-center"
-                                            >
-                                              <v-icon
-                                                class="mr-1"
-                                                color="white"
-                                                :icon="
-                                                  !isActiveAztecaBancario
-                                                    ? 'mdi-bank-off'
-                                                    : 'mdi-bank'
-                                                "
-                                              />
-                                            </v-col>
-                                            <v-col cols="11" v-if="!isActiveAztecaBancario">
-                                              Haga clic aquí para <b>HABILITAR</b> el Banco Azteca
-                                              Bancario.
-                                            </v-col>
-                                            <v-col cols="11" v-else>
-                                              Haga clic aquí para <b>DESHABILITAR</b> el Banco
-                                              Azteca Bancario.<br />
-                                            </v-col>
-                                          </v-row>
-
-                                          <v-divider class="border-opacity-50 my-2 mx-4" />
-
-                                          <v-row>
-                                            <v-col
-                                              cols="1"
-                                              class="d-flex align-center justify-center"
-                                            >
-                                              <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                            </v-col>
-                                            <v-col cols="11" v-if="isActiveAztecaBancario">
-                                              <span style="font-weight: bold"> Nota: </span>
-                                              si el banco se encuentra
-                                              <b>HABILITADO</b>, podrá generar el layout de
-                                              dispersión de nómina correspondiente para esta
-                                              empresa.
-                                            </v-col>
-                                            <v-col cols="11" v-else>
-                                              <span style="font-weight: bold"> Nota: </span>
-                                              si el banco se encuentra
-                                              <b>DESHABILITADO</b>, no podrá generar el layout de
-                                              dispersión de nómina correspondiente para esta
-                                              empresa.
-                                            </v-col>
-                                          </v-row>
-                                        </v-card>
-                                      </template>
-                                    </v-tooltip>
+                                  <v-col cols="2" class="d-flex align-center justify-center">
+                                    <v-icon icon="mdi-information-slab-circle-outline" />
                                   </v-col>
-                                  <v-col
-                                    cols="12"
-                                    class="d-flex align-center justify-center"
-                                    md="8"
-                                  >
-                                    Azteca Bancario
-                                  </v-col>
-                                  <v-col
-                                    v-if="expanded"
-                                    class="d-flex align-center justify-end"
-                                    cols="12"
-                                    md="2"
-                                  >
-                                    <v-tooltip bottom color="primary" interactive location="bottom">
-                                      <template v-slot:activator="{ props: tooltipProps }">
-                                        <v-btn
-                                          v-bind="mergeProps(tooltipProps)"
-                                          color="primary"
-                                          flat
-                                          height="40px"
-                                          min-width="40px"
-                                          width="40px"
-                                          @click.stop="
-                                            onOpenModalFormAztecaBancario('onSave', {}, 'Nuevo')
-                                          "
-                                        >
-                                          <v-icon color="white" icon="mdi-plus" size="24px" />
-                                        </v-btn>
-                                      </template>
-                                      <span>Agregar clave de banco ID</span>
-                                    </v-tooltip>
-                                    <v-divider vertical class="ml-5 mr-3 my-1 border-opacity-25" />
+                                  <v-col cols="10">
+                                    {{ item.estado ? 'Deshabilitar' : 'Habilitar' }} combinación:
+                                    <span style="font-weight: bold; color: #2a73c5">
+                                      <i>{{ item.combinacion }}</i>
+                                    </span>
                                   </v-col>
                                 </v-row>
-                              </v-expansion-panel-title>
-                              <v-expansion-panel-text>
-                                <v-data-table
-                                  :headers="headersAztecaBancario"
-                                  :hover="true"
-                                  :items="itemsAztecaBancario"
-                                  :mobile="smAndDown"
-                                  hide-default-footer
-                                  hide-default-header
-                                  item-value="title"
+                              </v-card>
+                            </template>
+                          </v-tooltip>
+                        </template>
+
+                        <template v-slot:item.estado="{ item }">
+                          <v-chip
+                            :color="item.estado ? 'primary' : 'grey'"
+                            size="small"
+                            label
+                            variant="flat"
+                          >
+                            {{ item.estado ? 'Habilitado' : 'Deshabilitado' }}
+                          </v-chip>
+                        </template>
+
+                        <template v-slot:item.add="{ item }">
+                          <v-tooltip v-if="item.tieneCuentasAdicionales">
+                            <template v-slot:activator="{ props: tooltipProps }">
+                              <span v-bind="mergeProps(tooltipProps)" class="d-inline-block">
+                                <v-btn
+                                  v-bind="mergeProps(tooltipProps)"
+                                  color="primary"
+                                  flat
+                                  height="40px"
+                                  min-width="40px"
+                                  width="40px"
+                                  @click.stop="onAddItemCuentaOrigen(item)"
                                 >
-                                  <template v-slot:item.activo_dispersion="{ item }">
-                                    <v-chip
-                                      :color="item.activo_dispersion ? 'primary' : 'grey'"
-                                      label
-                                      size="small"
-                                      variant="flat"
-                                    >
-                                      {{ item.activo_dispersion ? 'Habilitado' : 'Inhabilitado' }}
-                                    </v-chip>
-                                  </template>
+                                  <v-icon color="white" icon="mdi-plus" size="24px" />
+                                </v-btn>
+                              </span>
+                            </template>
+                            <template #default>
+                              <empresa-tooltips name="ayudaBtnAddRowCombinacionEsquema" />
+                            </template>
+                          </v-tooltip>
+                        </template>
 
-                                  <template v-slot:item.acciones="{ item }">
-                                    <v-tooltip interactive location="bottom">
-                                      <template v-slot:activator="{ props: tooltipProps }">
-                                        <v-btn
-                                          v-bind="mergeProps(tooltipProps)"
-                                          class="mr-1"
-                                          color="primary"
-                                          height="40px"
-                                          min-width="40px"
-                                          width="40px"
-                                          variant="elevated"
-                                          @click.stop="
-                                            onOpenModalFormAztecaBancario('onSave', item, 'Editar')
-                                          "
-                                        >
-                                          <v-icon color="white" icon="mdi-pencil" />
-                                        </v-btn>
-                                      </template>
-                                      <span>Editar</span>
-                                    </v-tooltip>
-                                    <v-tooltip interactive location="bottom">
-                                      <template v-slot:activator="{ props: tooltipProps }">
-                                        <v-btn
-                                          v-bind="mergeProps(tooltipProps)"
-                                          class="mr-1"
-                                          color="primary"
-                                          height="40px"
-                                          min-width="40px"
-                                          width="40px"
-                                          variant="elevated"
-                                          @click="onDeleteConfirmationAztecaInterbancario(item)"
-                                        >
-                                          <v-icon color="white" icon="mdi-delete" />
-                                        </v-btn>
-                                      </template>
-                                      <span>Eliminar</span>
-                                    </v-tooltip>
-                                  </template>
-                                </v-data-table>
-                              </v-expansion-panel-text>
-                            </v-expansion-panel>
-
-                            <!-- Banorte terceros -->
-                            <v-expansion-panel
-                              class="border"
-                              collapse-icon="mdi-menu-up"
-                              expand-icon="mdi-menu-down"
+                        <template v-slot:item.cuentasOrigen="{ item }">
+                          <v-sheet v-if="item.tieneCuentasAdicionales" border rounded class="my-2">
+                            <v-data-table
+                              :headers="headersCuentasOrigen"
+                              :items="item.cuentasOrigen ?? []"
+                              density="compact"
+                              hide-default-footer
+                              hide-default-header
+                              item-key="id_nomina_gape_esquema"
                             >
-                              <v-expansion-panel-title class="border-b" v-slot="{ expanded }">
-                                <v-row>
-                                  <v-col cols="12" md="2">
-                                    <v-tooltip interactive location="bottom">
-                                      <template #activator="{ props: tooltipProps }">
-                                        <v-switch
-                                          v-model="isActiveBanorteTerceros"
-                                          v-bind="mergeProps(tooltipProps)"
-                                          class="text-medium-emphasis"
-                                          color="primary"
-                                          density="compact"
-                                          false-icon="mdi-bank-off"
-                                          hide-details
-                                          inset
-                                          true-icon="mdi-bank"
-                                          @click.stop
-                                          @click="changeStatusBanorte"
-                                        />
-                                      </template>
-
-                                      <template #default>
-                                        <v-card color="transparent" elevation="0" class="py-3">
-                                          <v-row>
-                                            <v-col
-                                              cols="1"
-                                              class="d-flex align-center justify-center"
-                                            >
-                                              <v-icon
-                                                class="mr-1"
-                                                color="white"
-                                                :icon="
-                                                  !isActiveBanorteTerceros
-                                                    ? 'mdi-bank-off'
-                                                    : 'mdi-bank'
-                                                "
-                                              />
-                                            </v-col>
-                                            <v-col cols="11" v-if="!isActiveBanorteTerceros">
-                                              Haga clic aquí para <b>HABILITAR</b> el Banco Banorte
-                                              terceros.
-                                            </v-col>
-                                            <v-col cols="11" v-else>
-                                              Haga clic aquí para <b>DESHABILITAR</b> el Banco
-                                              Banorte terceros.<br />
-                                            </v-col>
-                                          </v-row>
-
-                                          <v-divider class="border-opacity-50 my-2 mx-4" />
-
-                                          <v-row>
-                                            <v-col
-                                              cols="1"
-                                              class="d-flex align-center justify-center"
-                                            >
-                                              <v-icon class="mr-1" color="white" icon="mdi-alert" />
-                                            </v-col>
-                                            <v-col cols="11" v-if="isActiveAztecaBancario">
-                                              <span style="font-weight: bold"> Nota: </span>
-                                              si el banco se encuentra
-                                              <b>HABILITADO</b>, podrá generar el layout de
-                                              dispersión de nómina correspondiente para esta
-                                              empresa.
-                                            </v-col>
-                                            <v-col cols="11" v-else>
-                                              <span style="font-weight: bold"> Nota: </span>
-                                              si el banco se encuentra
-                                              <b>DESHABILITADO</b>, no podrá generar el layout de
-                                              dispersión de nómina correspondiente para esta
-                                              empresa.
-                                            </v-col>
-                                          </v-row>
-                                        </v-card>
-                                      </template>
-                                    </v-tooltip>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    class="d-flex align-center justify-center"
-                                    md="8"
-                                  >
-                                    Banorte terceros
-                                  </v-col>
-                                  <v-col
-                                    v-if="expanded"
-                                    class="d-flex align-center justify-end"
-                                    cols="12"
-                                    md="2"
-                                  >
-                                    <v-tooltip bottom color="primary" interactive location="bottom">
-                                      <template v-slot:activator="{ props: tooltipProps }">
-                                        <v-btn
-                                          v-bind="mergeProps(tooltipProps)"
-                                          color="primary"
-                                          flat
-                                          height="40px"
-                                          min-width="40px"
-                                          width="40px"
-                                          @click.stop="
-                                            onOpenModalFormBanorteTerceros('onSave', {}, 'Nuevo')
-                                          "
-                                        >
-                                          <v-icon color="white" icon="mdi-plus" size="24px" />
-                                        </v-btn>
-                                      </template>
-                                      <span>Agregar clave de banco ID</span>
-                                    </v-tooltip>
-                                    <v-divider vertical class="ml-5 mr-3 my-1 border-opacity-25" />
-                                  </v-col>
-                                </v-row>
-                              </v-expansion-panel-title>
-                              <v-expansion-panel-text>
-                                <v-data-table
-                                  :headers="headersBanorteTerceros"
-                                  :hover="true"
-                                  :items="itemsBanorteTerceros"
-                                  :mobile="smAndDown"
-                                  hide-default-footer
-                                  hide-default-header
-                                  item-value="title"
+                              <template v-slot:item.cuenta="{ item: slotItem }">
+                                <bec-text-field
+                                  v-model="slotItem.cuentaOrigen"
+                                  :clearable="true"
+                                  :label="'Cuenta de origen'"
+                                  :placeholder="'Cuenta de origen'"
+                                  class="my-4"
                                 >
-                                  <template v-slot:item.activo_dispersion="{ item }">
-                                    <v-chip
-                                      :color="item.activo_dispersion ? 'primary' : 'grey'"
-                                      label
-                                      size="small"
-                                      variant="flat"
+                                  <!--:disabled="deshabilitarCampoTope(tope, item)"-->
+                                  <template #tooltip>
+                                    <v-card
+                                      :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+                                      class="py-3"
+                                      color="transparent"
+                                      elevation="0"
                                     >
-                                      {{ item.activo_dispersion ? 'Habilitado' : 'Inhabilitado' }}
-                                    </v-chip>
+                                      <v-row>
+                                        <v-col cols="1" class="d-flex align-center justify-center">
+                                          <v-icon icon="mdi-information-slab-circle-outline" />
+                                        </v-col>
+                                        <v-col cols="11">
+                                          <span style="font-weight: bold; color: #2a73c5"
+                                            >Instrucción:</span
+                                          >
+                                          la configuración del tope del esquema
+                                        </v-col>
+                                      </v-row>
+                                    </v-card>
                                   </template>
+                                </bec-text-field>
+                              </template>
 
-                                  <template v-slot:item.acciones="{ item }">
-                                    <v-tooltip interactive location="bottom">
-                                      <template v-slot:activator="{ props: tooltipProps }">
-                                        <v-btn
-                                          v-bind="mergeProps(tooltipProps)"
-                                          class="mr-1"
-                                          color="primary"
-                                          height="40px"
-                                          min-width="40px"
-                                          width="40px"
-                                          variant="elevated"
-                                          @click.stop="
-                                            onOpenModalFormBanorteTerceros('onSave', item, 'Editar')
-                                          "
-                                        >
-                                          <v-icon color="white" icon="mdi-pencil" />
-                                        </v-btn>
-                                      </template>
-                                      <span>Editar</span>
-                                    </v-tooltip>
-                                    <v-tooltip interactive location="bottom">
-                                      <template v-slot:activator="{ props: tooltipProps }">
-                                        <v-btn
-                                          v-bind="mergeProps(tooltipProps)"
-                                          class="mr-1"
-                                          color="primary"
-                                          height="40px"
-                                          min-width="40px"
-                                          width="40px"
-                                          variant="elevated"
-                                          @click="onDeleteConfirmationBanorte(item)"
-                                        >
-                                          <v-icon color="white" icon="mdi-delete" />
-                                        </v-btn>
-                                      </template>
-                                      <span>Eliminar</span>
-                                    </v-tooltip>
+                              <template v-slot:item.eliminar="{ item: slotItem }">
+                                <v-tooltip bottom interactive location="bottom">
+                                  <template v-slot:activator="{ props: tooltipProps }">
+                                    <v-btn
+                                      v-bind="mergeProps(tooltipProps)"
+                                      color="primary"
+                                      height="40px"
+                                      min-width="40px"
+                                      variant="flat"
+                                      width="40px"
+                                      @click="onDeleteItemCuentaOrigenConfirmation(item, slotItem)"
+                                    >
+                                      <v-icon color="white" icon="mdi-delete" size="24px" />
+                                    </v-btn>
                                   </template>
-                                </v-data-table>
-                              </v-expansion-panel-text>
-                            </v-expansion-panel>
-                          </v-expansion-panels>
-                        </v-col>
-                      </v-row>
-                    </v-card>
+                                  <template #default>
+                                    <v-card
+                                      :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+                                      class="pa-3"
+                                      color="transparent"
+                                      elevation="0"
+                                    >
+                                      <v-row>
+                                        <v-col cols="2" class="d-flex align-center justify-center">
+                                          <v-icon icon="mdi-information-slab-circle-outline" />
+                                        </v-col>
+                                        <v-col cols="10">
+                                          Eliminar combinación:
+                                          <span style="font-weight: bold; color: #2a73c5">
+                                            <i>{{ item.combinacion }}</i>
+                                          </span>
+                                        </v-col>
+                                      </v-row>
+                                    </v-card>
+                                  </template>
+                                </v-tooltip>
+                              </template>
+
+                              <template v-slot:no-data>
+                                <v-card
+                                  border
+                                  class="my-4 d-flex align-center justify-center"
+                                  color="transparent"
+                                  elevation="0"
+                                >
+                                  <v-card-text class="text-grey-darken-1">
+                                    <v-icon
+                                      class="mr-2"
+                                      color="grey-lighten-1"
+                                      icon="mdi-selection-search"
+                                      size="24"
+                                    />
+                                    <span
+                                      >No hay cuentas de origen configuradas para
+                                      {{ item.banco }}</span
+                                    >
+                                  </v-card-text>
+                                </v-card>
+                              </template>
+                            </v-data-table>
+                          </v-sheet>
+                        </template>
+
+                        <template v-slot:top>
+                          <v-toolbar flat>
+                            <v-toolbar-title color="primary" class="text-primary text-body-1">
+                              Configuración de bancos del esquema {{ esquema.esquema }}
+                            </v-toolbar-title>
+                          </v-toolbar>
+                        </template>
+
+                        <template v-slot:no-data>
+                          <v-card
+                            border
+                            class="ma-5 d-flex align-center justify-center"
+                            color="transparent"
+                            elevation="0"
+                          >
+                            <v-card-text class="text-grey-darken-1">
+                              <v-icon
+                                class="mr-2"
+                                color="grey-lighten-1"
+                                icon="mdi-selection-search"
+                                size="40"
+                              />
+                              <span>No hay esquemas configurados</span>
+                            </v-card-text>
+                          </v-card>
+                        </template>
+                      </v-data-table>
+                    </v-sheet>
                   </v-col>
                 </v-row>
               </v-tabs-window-item>
@@ -1441,34 +1309,6 @@
         </div>
       </v-col>
     </v-row>
-
-    <banco-azteca-interbancario-modal-form
-      :dialog-event="modalFormBancoAztecaInterbancario.evento"
-      :dialog-items="modalFormBancoAztecaInterbancario.items"
-      :dialog-title="modalFormBancoAztecaInterbancario.titulo"
-      :dialog-view="modalFormBancoAztecaInterbancario.dialog"
-      @cancel="onCloseModalFormAztecaInterbancario"
-      @close="onCloseModalFormAztecaInterbancario"
-      @save="onSaveModalFormAztecaInterbancario"
-    />
-    <banco-azteca-bancario-modal-form
-      :dialog-event="modalFormBancoAztecaBancario.evento"
-      :dialog-items="modalFormBancoAztecaBancario.items"
-      :dialog-title="modalFormBancoAztecaBancario.titulo"
-      :dialog-view="modalFormBancoAztecaBancario.dialog"
-      @cancel="onCloseModalFormAztecaBancario"
-      @close="onCloseModalFormAztecaBancario"
-      @save="onSaveModalFormAztecaBancario"
-    />
-    <banco-banorte-terceros-modal-form
-      :dialog-event="modalFormBancoBanorteTerceros.evento"
-      :dialog-items="modalFormBancoBanorteTerceros.items"
-      :dialog-title="modalFormBancoBanorteTerceros.titulo"
-      :dialog-view="modalFormBancoBanorteTerceros.dialog"
-      @cancel="onCloseModalFormBanorteTerceros"
-      @close="onCloseModalFormBanorteTerceros"
-      @save="onSaveModalFormBanorteTerceros"
-    />
   </v-container>
 </template>
 
@@ -1495,11 +1335,13 @@ import { EmpresaTooltips } from '@/components/nomina/ayudas'
 import { useEmpresaModel } from '@/composables/nomina/gape/useEmpresa'
 
 // import interface
-import type { ConceptosPagoModel } from '@/interfaces/nomina/gape'
+import type { ConceptoModel } from '@/interfaces/nomina/default'
 import type { BaseFeeModel, ClasePrimaRiesgoModel } from '@/interfaces/nomina/gape'
 
 // import stores
 import { useClienteStore, useEmpresaStore, useBancoStore } from '@/stores/modules/Nomina/gape'
+
+import { useTipoPeriodoStore, useConceptoStore } from '@/stores/modules/Nomina/default'
 
 import { useEmpresasStore } from '@/stores/modules/Core'
 import { useDialogManagerStore } from '@/stores/modules/Core/dialog'
@@ -1515,35 +1357,7 @@ import {
 
 // import router
 import { useRouter } from 'vue-router'
-
-// import views
-import BancoAztecaInterbancarioModalForm from '@/views/nominas/gape/BancoAztecaInterbancarioModalForm.vue'
-import BancoAztecaBancarioModalForm from '@/views/nominas/gape/BancoAztecaBancarioModalForm.vue'
-import BancoBanorteTercerosModalForm from '@/views/nominas/gape/BancoBanorteTercerosModalForm.vue'
-
-export interface AztecaInterbancario {
-  id: number
-  id_nomina_gape_empresa: number | null
-  activo_dispersion: boolean | null
-  cuenta_origen: string | null
-  tipo_banco: string | null
-}
-
-export interface AztecaBancario {
-  id: number
-  id_nomina_gape_empresa: number | null
-  activo_dispersion: boolean | null
-  cuenta_origen: string | null
-  tipo_banco: string | null
-}
-
-export interface BanorteTerceros {
-  id: number
-  id_nomina_gape_empresa: number | null
-  activo_dispersion: boolean | null
-  cuenta_origen: string | null
-  clave_banco: string | null
-}
+import { id } from 'vuetify/locale'
 
 interface EsquemaPago {
   id: number
@@ -1592,8 +1406,7 @@ interface TableCombinacionParametrizacion {
   baseFee: string | null
   provisiones: string | null
 
-  // 👇 SOLO UNA previsión
-  prevision: CombinacionPrevision | null
+  prevision: ConceptoModel[]
 }
 
 interface CombinacionParametrizacion {
@@ -1612,13 +1425,21 @@ interface CombinacionParametrizacion {
 interface CombinacionPrevision {
   id: number
   nomina_gape_empresa_periodo_combinacion_parametrizacion: number
-  id_concepto: number
+  idconcepto: number
 }
 
 interface TableEsquemaBanco {
-  esActivo: boolean
   id: number
+  estado: boolean
   banco: string
+  cuentasOrigen: BancosCuentas[] | null
+  tieneCuentasAdicionales: boolean
+  combinacion: string
+}
+
+interface BancosCuentas {
+  id: number
+  cuentaOrigen: string
 }
 
 export default defineComponent({
@@ -1628,9 +1449,6 @@ export default defineComponent({
     BecAutocomplete,
     BecTextField,
     EmpresaTooltips,
-    BancoAztecaInterbancarioModalForm,
-    BancoAztecaBancarioModalForm,
-    BancoBanorteTercerosModalForm,
   },
   props: {
     id: {
@@ -1648,14 +1466,16 @@ export default defineComponent({
     // 7. Lifecycle hooks (onMounted, mounted)
     // 8. Functions (fetch, metodos, async)
 
-    /** General */
+    /**|  General */
+
+    const pageSize = ref()
 
     // 3. Composables
     const { name, mobile, smAndDown } = useDisplay()
     const router = useRouter()
     const clienteStore = useClienteStore()
     const dialogConfirmation = useDialogManagerStore()
-    const idEditar = ref(1)
+    const idEditar = computed(() => props.id !== undefined && props.id !== null)
 
     // 4. Reactive
     const vrowBarraDeAccionesRef = ref()
@@ -1766,16 +1586,29 @@ export default defineComponent({
       return `${alto.value}px !important`
     })
 
-    const esRegistroNuevo = computed(() => idEditar.value === 0)
+    const esRegistroNuevo = computed(() => idEditar.value)
 
     const getItemsClientesNomina = computed(() => clienteStore.clientes)
 
-    const tabsHabilitados = computed<Record<TabKey, boolean>>(() => ({
-      'option-1': true,
-      'option-2': getEsValidoTab1.value,
-      'option-3': getEsValidoTab1.value && getEsValidoTab2.value,
-      'option-4': getEsValidoTab1.value && getEsValidoTab2.value,
-    }))
+    const tabsHabilitados = computed<Record<TabKey, boolean>>(() => {
+      // ✏️ EDICIÓN → todo habilitado
+      if (idEditar.value) {
+        return {
+          'option-1': true,
+          'option-2': true,
+          'option-3': true,
+          'option-4': true,
+        }
+      }
+
+      // 🆕 NUEVO → lógica actual
+      return {
+        'option-1': true,
+        'option-2': getEsValidoTab1.value,
+        'option-3': getEsValidoTab1.value && getEsValidoTab2.value,
+        'option-4': getEsValidoTab1.value && getEsValidoTab2.value,
+      }
+    })
 
     // 6. Watchers
     // 7. Lifecycle hooks (onMounted, mounted)
@@ -1804,8 +1637,6 @@ export default defineComponent({
         btnDisabled.value.compNoFiscCodigoInicial = true
 
         await fetchDatosEmpresasNominaPorClienteId(props.id)
-
-        await buscarDatosBancosPorId(props.id)
       }
       // new
       else {
@@ -1847,26 +1678,40 @@ export default defineComponent({
       return true
     }
 
-    const validateForm = async (tabFiscal: boolean, tabInfo: string) => {
-      dialogConfirmation.onCloseDialogConfirmation()
+    function onClickTabVertical(tab: string) {
+      handlersTabsVertical[tab]?.()
+    }
 
-      let formRef = null
-      let idEmpresaCreada = null
+    const onDecision = () => {
+      let mensaje = ''
+      let titulo = ''
 
-      if (tabFiscal) {
-        // Empresa FISCAL
-        formRef = tabInfo == 'option-1' ? formDatosEmpresa.value : formRefFiscalBanco.value
+      if (props.id !== undefined && props.id !== null) {
+        titulo = 'Actualización de datos'
+        mensaje = `¿Está seguro de que desea actualizar el registro? Los cambios realizados serán guardados de forma permanente.`
       } else {
-        // Empresa NO FISCAL
-        formRef = tabInfo == 'option-1' ? formRefNoFiscalGral.value : formRefNoFiscalBanco.value
+        titulo = 'Registro de datos'
+        mensaje = `¿Está seguro de que desea registrar los datos? Esta acción no se puede deshacer.`
       }
 
-      if (!formRef) return
+      dialogConfirmation.onOpenDialogConfirmation(
+        mensaje,
+        () => validateForm(), // << callback directo
+        [],
+        titulo,
+        'alert',
+      )
+    }
 
-      // Validar el formulario seleccionado
-      const form = await formRef.validate()
+    const fetchCrearFormulasContpaq = async () => {
 
-      if (!form || !form.valid) return
+      console.log('Creando fórmulas en Contpaq...')
+
+      dialogConfirmation.onCloseDialogConfirmation()
+
+      const payload = {
+        empresa: { ...dataModel.value },
+      }
 
       try {
         loading.value = true
@@ -1874,29 +1719,12 @@ export default defineComponent({
         let titulo = 'Registro guardado'
         let mensaje = 'Los datos se guardaron de forma exitosa.'
 
-        // Aquí va tu guardado real
-        if (props.id !== undefined && props.id !== null) {
-          await empresaStore.updateNominaGapeEmpresa(dataModel.value, props.id)
-          mensaje = 'Los datos se actualizaron de forma exitosa.'
-          titulo = 'Registro actualizado'
+        dataModel.value.codigo_actual = dataModel.value.codigo_inicial
+        const response = await empresaStore.crearFormulasContpaq(payload)
 
-          dialogConfirmation.onOpenDialogInformation(mensaje, titulo, 'correct', '#438701', 2)
+        dialogConfirmation.onOpenDialogInformation(mensaje, titulo, 'correct', '#438701', 2)
+        //router.push({ name: 'EmpresaList' })
 
-          router.push({ name: 'EmpresaList' })
-        } else {
-          dataModel.value.codigo_actual = dataModel.value.codigo_inicial
-          const response = await empresaStore.storeNominaGapeEmpresa(dataModel.value)
-
-          idEmpresaCreada = response.id
-
-          dialogConfirmation.onOpenDialogInformation(mensaje, titulo, 'correct', '#438701', 2)
-
-          if (idEmpresaCreada) {
-            router.push({ path: `/nominas/gape/empresaForm/${idEmpresaCreada}` })
-          }
-        }
-
-        await formRef.reset()
       } catch (error: any) {
         if (error.type === 'validation') {
           const errores = Object.values(error.errors).flat().join('<br>')
@@ -1921,48 +1749,19 @@ export default defineComponent({
       }
     }
 
-    function onClickTabVertical(tab: string) {
-      handlersTabsVertical[tab]?.()
-    }
-
-    const onDecision = () => {
-      let mensaje = ''
-      let titulo = ''
-
-      if (props.id !== undefined && props.id !== null) {
-        titulo = 'Actualización de datos'
-        mensaje = `¿Está seguro de que desea actualizar el registro? Los cambios realizados serán guardados de forma permanente.`
-      } else {
-        titulo = 'Registro de datos'
-        mensaje = `¿Está seguro de que desea registrar los datos? Esta acción no se puede deshacer.`
-      }
-
-      dialogConfirmation.onOpenDialogConfirmation(
-        mensaje,
-        () => validateForm(fiscal, tabInfo), // << callback directo
-        [],
-        titulo,
-        'alert',
-      )
-    }
-
-    /** Esquemas de pago */
+    /**|  Esquemas de pago */
 
     // 3. Composables
     // 4. Reactive
     const itemsEsquemasDePago = ref<EsquemaPago[]>([
       { id: 1, esquema: 'Sueldo IMSS', contpaqi: true },
-      { id: 2, esquema: 'Honorarios asimilados', contpaqi: true },
-      { id: 3, esquema: 'Fondo sindicato', contpaqi: false },
+      { id: 2, esquema: 'Asimilados', contpaqi: true },
+      { id: 3, esquema: 'Sindicato', contpaqi: false },
       { id: 4, esquema: 'Gastos por comprobar', contpaqi: false },
-      { id: 5, esquema: 'Tarjeta fácil', contpaqi: false },
+      { id: 5, esquema: 'Tarjeta facil', contpaqi: false },
     ])
-    const modelSeleccionadosCombinacionEsquema = ref<TableCombinacionEsquema[]>([
-
-    ])
-    const itemsCombinacionEsquema = ref<TableCombinacionEsquema[]>([
-
-    ])
+    const modelSeleccionadosCombinacionEsquema = ref<TableCombinacionEsquema[]>([])
+    const itemsCombinacionEsquema = ref<TableCombinacionEsquema[]>([])
     const headersCombinacionEsquema = ref<
       {
         key: string
@@ -2002,7 +1801,7 @@ export default defineComponent({
       },
       {
         key: 'eliminar',
-        align: 'center',
+        align: 'end',
         sortable: false,
         title: '',
         width: '5%',
@@ -2234,8 +2033,7 @@ export default defineComponent({
 
       // ❌ Caso inválido: más de un CONTPAQi
       const mensaje =
-        'Solo se puede seleccionar un esquema de tipo CONTPAQi por combinación. ' +
-        'La selección duplicada fue descartada.'
+        'En cada combinación solo es posible seleccionar un esquema de tipo CONTPAQi. Por este motivo, la selección duplicada se descartó automáticamente.'
 
       dialogConfirmation.onOpenDialogInformation(
         mensaje,
@@ -2289,14 +2087,15 @@ export default defineComponent({
     }
 
     function generarClaveCombinacion() {
-      const existentes = itemsCombinacionEsquema.value.map((i) => i.combinacion)
+      const existentes = itemsCombinacionEsquema.value.map((i) => String(i.combinacion))
+
       let index = 1
 
-      while (existentes.includes(`${index}`)) {
+      while (existentes.includes(String(index))) {
         index++
       }
 
-      return `${index}`
+      return String(index)
     }
 
     function onAddRowCombinacionEsquema() {
@@ -2409,7 +2208,7 @@ export default defineComponent({
         )
     }
 
-    /** Datos empresa */
+    /**|  Datos empresa*/
 
     // 3. Composables
     const empresasStore = useEmpresasStore()
@@ -2478,6 +2277,11 @@ export default defineComponent({
 
       // 🏢 Empresa CONTPAQi
       // Se habilita si existe al menos un esquema CONTPAQi
+
+      if (!tieneContpaqi) {
+        dataModel.value.id_empresa_database = undefined
+      }
+
       btnDisabled.value.compEmpresa = !tieneContpaqi
 
       // 🧾 Razón social y RFC
@@ -2504,23 +2308,6 @@ export default defineComponent({
     const buscarDatosEmpresaNomina = async (codigo: number) => {
       resetModelEmpresa(true)
 
-      const itemsEsquemasConContpaqi = new Set([1, 2, 3, 4])
-      const itemsEsquemasSinContpaqi = new Set([5, 6])
-
-      const conEsquemaContpaqi = modelEsquemasDePagoSeleccionados.value.some((item) =>
-        itemsEsquemasConContpaqi.has(item.id),
-      )
-
-      const sinEsquemaContpaqi = modelEsquemasDePagoSeleccionados.value.some((item) =>
-        itemsEsquemasSinContpaqi.has(item.id),
-      )
-
-      btnDisabled.value.compEmpresa = !conEsquemaContpaqi
-      btnDisabled.value.compRazonSocial = !sinEsquemaContpaqi || conEsquemaContpaqi
-      btnDisabled.value.compRfc = !sinEsquemaContpaqi || conEsquemaContpaqi
-      btnDisabled.value.compNoFiscMascara = !sinEsquemaContpaqi
-      btnDisabled.value.compNoFiscCodigoInicial = !sinEsquemaContpaqi
-
       const empresaSeleccionada = getItemsEmpresaDatabase.value.find((item) => item.id === codigo)
       const nombreBase = empresaSeleccionada?.nombre_base ?? ''
 
@@ -2529,35 +2316,6 @@ export default defineComponent({
         codigo,
         nombreBase,
       )
-    }
-
-    const validarMascaraYActualizarCampos = (mascara: string) => {
-      const regexMascara = /^[Xx]{3,10}$/ // solo X o x, entre 3 y 10
-      const esValida = regexMascara.test(mascara)
-
-      btnDisabled.value.compNoFiscCodigoInicial = !esValida
-
-      if (!esValida) {
-        dataModel.value.codigo_inicial = ''
-      }
-    }
-
-    const fetchDatosEmpresasNominaPorClienteId = async (idCliente: any) => {
-      try {
-        await empresaStore.empresasDatosNominasPorClienteId(idCliente)
-
-        if (empresaStore.empresa && !Array.isArray(empresaStore.empresa)) {
-          const idClienteEdit = empresaStore.empresa.id_nomina_gape_cliente
-          const idEmpresa = empresaStore.empresa.id_empresa_database
-          const estado = empresaStore.empresa.estado
-
-          await fetchEmpresasNominaPorClienteAsignadas(idClienteEdit)
-
-          setEmpresa(empresaStore.empresa)
-        }
-      } catch (error) {
-        console.error('Error al cargar datps catálogos por empresa:', error)
-      }
     }
 
     const fetchDatosEmpresasNominaPorCliente = async (
@@ -2576,6 +2334,92 @@ export default defineComponent({
         }
       } catch (error) {
         console.error('Error al cargar datps catálogos por empresa:', error)
+      }
+    }
+
+    const validarMascaraYActualizarCampos = (mascara: string) => {
+      const regexMascara = /^[Xx]{3,10}$/ // solo X o x, entre 3 y 10
+      const esValida = regexMascara.test(mascara)
+
+      btnDisabled.value.compNoFiscCodigoInicial = !esValida
+
+      if (!esValida) {
+        dataModel.value.codigo_inicial = ''
+      }
+    }
+
+    const fetchDatosEmpresasNominaPorClienteId = async (idEmpresa: number) => {
+      try {
+        const data = await empresaStore.empresasDatosNominasPorClienteId(idEmpresa)
+
+        // 1️⃣ Empresa
+        setEmpresa(data.empresa)
+
+        await conceptoStore.catalogoConceptoPrevision(buildData())
+
+        // 2️⃣ Combinaciones
+        //itemsCombinacionEsquema.value = data.combinaciones
+
+        itemsCombinacionEsquema.value = data.combinaciones.map((c: any) => ({
+          ...c,
+          topes: c.topes.map((t: any) => ({
+            id: t.id,
+            id_nomina_gape_esquema: t.id_esquema,
+            tope: t.tope,
+            orden: t.orden,
+          })),
+        }))
+
+        modelSeleccionadosCombinacionEsquema.value = data.combinaciones.filter((c: any) => c.estado)
+
+        // todo ok arriba
+        // 3️⃣ Parametrización (hidratar campos derivados)
+        itemsCombinacionParametrizacion.value = data.parametrizacion.map((p: any) => {
+          // 🔹 buscar combinación
+          const combinacion = data.combinaciones.find((c: any) => c.combinacion == p.combinacionKey)
+
+          const combinacionTexto = combinacion
+            ? combinacion.esquemas.map((e: any) => e.esquema).join(' + ')
+            : ''
+
+          return {
+            ...p,
+            // 🔹 campos que la tabla necesita
+            combinacionTexto,
+            itemsEsquemas: combinacion?.esquemas ?? [],
+            esquemas: combinacionTexto,
+
+            // 🔹 asegurar periodo
+            periodo: p.periodo ?? p.nombre_periodo ?? '',
+          }
+        })
+
+        modelSeleccionadosCombinacionParametrizacion.value =
+          itemsCombinacionParametrizacion.value.filter((p) => p.estado)
+
+        // 4️⃣ Bancos
+        bancosPorEsquema.value = Object.fromEntries(
+          data.bancos.map((b: any) => [
+            b.id_esquema,
+            b.bancos.map((bk: any) => {
+              const cuentas = (bk.cuentasOrigen ?? []).map((c: any) => ({
+                cuentaOrigen: c.cuentaOrigen,
+              }))
+
+              return {
+                ...bk,
+
+                // 🔑 AQUÍ LA CLAVE
+                tieneCuentasAdicionales:
+                  cuentas.length > 0 || bk.banco === 'Banorte' || bk.banco === 'Azteca',
+
+                cuentasOrigen: cuentas,
+              }
+            }),
+          ]),
+        )
+      } catch (error) {
+        console.error('Error al cargar empresa', error)
       }
     }
 
@@ -2611,9 +2455,12 @@ export default defineComponent({
       }
     }
 
-    /** Parametrización */
+    /**|  Parametrización*/
 
     // 3. Composables
+    const tipoPeriodoStore = useTipoPeriodoStore()
+    const conceptoStore = useConceptoStore()
+
     // 4. Reactive
     const itemsCombinacionParametrizacion = ref<TableCombinacionParametrizacion[]>([])
     const headersParametrizacion = ref<
@@ -2626,6 +2473,13 @@ export default defineComponent({
       }[]
     >([
       {
+        key: 'combinacionKey',
+        align: 'center',
+        sortable: false,
+        title: '',
+        width: '2%',
+      },
+      {
         key: 'estado',
         align: 'center',
         sortable: false,
@@ -2633,17 +2487,17 @@ export default defineComponent({
         width: '5%',
       },
       {
-        key: 'esquemas',
+        key: 'itemsEsquemas',
         sortable: false,
         align: 'center',
-        title: 'Esquemas',
-        width: '20%',
+        title: 'Combinación de esquemas',
+        width: '10%',
       },
       {
         key: 'periodo',
         align: 'center',
         sortable: false,
-        title: 'Perioricidad',
+        title: 'Periodicidad',
         width: '5%',
       },
       {
@@ -2658,7 +2512,7 @@ export default defineComponent({
         align: 'center',
         sortable: false,
         title: 'Base FEE',
-        width: '20%',
+        width: '25%',
       },
       {
         key: 'provisiones',
@@ -2681,15 +2535,10 @@ export default defineComponent({
       { concepto: 'No', codigo: 'no' },
     ])
 
-    const itemsPrevisionSocial = ref([
-      { idContpaq: 1, concepto: 'Protección y bienestar' },
-      { idContpaq: 2, concepto: 'Inversión en talento' },
-      { idContpaq: 3, concepto: 'Solidaridad' },
-    ])
-
     const modelSeleccionadosCombinacionParametrizacion = ref<TableCombinacionParametrizacion[]>([])
 
     // 5. Computed
+    const itemsPrevisionSocial = computed(() => conceptoStore.concepto)
 
     // 6. Watchers
 
@@ -2704,19 +2553,52 @@ export default defineComponent({
       { deep: true },
     )
 
+    const buildData = (extras: any = {}) => {
+      return {
+        idCliente: dataModel.value.id_nomina_gape_cliente,
+        idEmpresaDatabase: dataModel.value.id_empresa_database,
+        ...extras,
+      }
+    }
+
+    watch(
+      () => itemsPrevisionSocial.value,
+      (catalogo) => {
+        if (!catalogo.length) return
+
+        itemsCombinacionParametrizacion.value.forEach((item) => {
+          if (!Array.isArray(item.prevision)) return
+
+          item.prevision = item.prevision
+            .map((p: any) => {
+              // si ya es objeto completo, no tocar
+              if (p.descripcion) return p
+
+              return catalogo.find((c: any) => c.idconcepto === p.idconcepto)
+            })
+            .filter(Boolean)
+        })
+      },
+      { immediate: true },
+    )
+
     // 7. Lifecycle hooks (onMounted, mounted)
     // 8. Functions (fetch, metodos, async)
-    function onClickTabParametrizacion() {
-      console.log('Parametrización')
+    async function onClickTabParametrizacion() {
 
-      const periodos = [
-        { id: 1, tipoPeriodo: 'Semanal' },
-        { id: 2, tipoPeriodo: 'Catorcenal' },
-        { id: 3, tipoPeriodo: 'Quincenal' },
-        { id: 4, tipoPeriodo: 'Mensual' },
-      ]
+      // Si tiene al menos una de cotpaq va a buscar a la base de contpaq los periodos
+
+      await tipoPeriodoStore.tipoPeriodoPorEmpresa(buildData())
+
+      const periodos = tipoPeriodoStore.tipoPeriodo
+
+      await conceptoStore.catalogoConceptoPrevision(buildData())
 
       const resultado: TableCombinacionParametrizacion[] = []
+
+      if (idEditar.value) {
+        return
+      }
 
       modelSeleccionadosCombinacionEsquema.value.forEach((combinacion) => {
         const combinacionTexto = combinacion.esquemas.map((e) => e.esquema).join(' + ')
@@ -2730,14 +2612,16 @@ export default defineComponent({
             itemsEsquemas: combinacion.esquemas,
             esquemas: combinacionTexto, // 👈 ahora ES STRING
 
-            idPeriodo: periodo.id,
-            periodo: periodo.tipoPeriodo,
+            idPeriodo: periodo.idtipoperiodo,
+            periodo: periodo.nombretipoperiodo ?? '',
 
             fee: null,
-            baseFee: null,
+            baseFee: !combinacionTieneContpaqi(combinacion.combinacion)
+              ? getDefaultBaseFee2()
+              : null,
             provisiones: null,
 
-            prevision: null,
+            prevision: [],
           })
         })
       })
@@ -2745,193 +2629,29 @@ export default defineComponent({
       itemsCombinacionParametrizacion.value = resultado
     }
 
+    function getDefaultBaseFee2(): string | null {
+      return itemsBaseFEE.value.length ? itemsBaseFEE.value[0].codigo : null
+    }
+    const combinacionesConContpaqi = computed<Record<string, boolean>>(() => {
+      const map: Record<string, boolean> = {}
+
+      itemsCombinacionEsquema.value.forEach((c) => {
+        map[c.combinacion] = c.esquemas.some((e) => e.contpaqi)
+      })
+
+      return map
+    })
+
     function combinacionTieneContpaqi(combinacionKey: string): boolean {
-      const combinacion = itemsCombinacionEsquema.value.find(
-        (c) => c.combinacion === combinacionKey,
-      )
-
-      if (!combinacion) return false
-
-      return combinacion.esquemas.some((e) => e.contpaqi)
+      return combinacionesConContpaqi.value[combinacionKey] ?? false
     }
 
-    /** Bancos */
+    /**|  Bancos*/
     // 3. Composables
     const bancoStore = useBancoStore()
 
     // 4. Reactive
-    const formRefFiscalBanco = ref()
-    const formRefNoFiscalGral = ref()
-    const formRefNoFiscalBanco = ref()
-
-    type Banco = { id: number; banco: string; esActivo: boolean }
-    const itemsBanco: Banco[] = [
-      {
-        id: 1,
-        banco: 'Fondeadora',
-        esActivo: true,
-      },
-      {
-        id: 2,
-        banco: 'Azteca interbancario',
-        esActivo: true,
-      },
-      {
-        id: 3,
-        banco: 'Azteca bancario',
-        esActivo: true,
-      },
-      {
-        id: 4,
-        banco: 'Banorte terceros',
-        esActivo: true,
-      },
-    ]
-
-    const isActiveFondeadora = ref(false)
-    const isActiveAztecaInterbancario = ref(false)
-    const isActiveAztecaBancario = ref(false)
-    const isActiveBanorteTerceros = ref(false)
-
-    const headersAztecaInterbancario = ref<
-      {
-        key: string
-        align?: 'start' | 'center' | 'end'
-        sortable?: boolean
-        title: string
-        width?: string
-      }[]
-    >([
-      {
-        key: 'activo_dispersion',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-      {
-        key: 'cuenta_origen',
-        align: 'center',
-        sortable: false,
-        title: '',
-      },
-      {
-        key: 'acciones',
-        align: 'end',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-    ])
-    const headersAztecaBancario = ref<
-      {
-        key: string
-        align?: 'start' | 'center' | 'end'
-        sortable?: boolean
-        title: string
-        width?: string
-      }[]
-    >([
-      {
-        key: 'activo_dispersion',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-      {
-        key: 'cuenta_origen',
-        align: 'center',
-        sortable: false,
-        title: '',
-      },
-      {
-        key: 'acciones',
-        align: 'end',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-    ])
-    const headersBanorteTerceros = ref<
-      {
-        key: string
-        align?: 'start' | 'center' | 'end'
-        sortable?: boolean
-        title: string
-        width?: string
-      }[]
-    >([
-      {
-        key: 'activo_dispersion',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-      {
-        key: 'cuenta_origen',
-        align: 'center',
-        sortable: false,
-        title: '',
-      },
-      {
-        key: 'clave_banco',
-        align: 'center',
-        sortable: false,
-        title: '',
-      },
-      {
-        key: 'acciones',
-        align: 'end',
-        sortable: false,
-        title: '',
-        width: '20%',
-      },
-    ])
-
-    const itemsAztecaInterbancario = ref<AztecaInterbancario[]>([])
-    const itemsAztecaBancario = ref<AztecaBancario[]>([])
-    const itemsBanorteTerceros = ref<BanorteTerceros[]>([])
-
-    const modalFormBancoAztecaInterbancario = ref({
-      dialog: false,
-      evento: '',
-      items: {},
-      titulo: '',
-    })
-    const modalFormBancoAztecaBancario = ref({
-      dialog: false,
-      evento: '',
-      items: {},
-      titulo: '',
-    })
-    const modalFormBancoBanorteTerceros = ref({
-      dialog: false,
-      evento: '',
-      items: {},
-      titulo: '',
-    })
-
-    const itemsTableBancos = ref<TableEsquemaBanco[]>([
-      {
-        id: 1,
-        banco: 'Fondeadora',
-        esActivo: true,
-      },
-      {
-        id: 2,
-        banco: 'Azteca interbancario',
-        esActivo: true,
-      },
-      {
-        id: 3,
-        banco: 'Azteca bancario',
-        esActivo: true,
-      },
-      {
-        id: 4,
-        banco: 'Banorte terceros',
-        esActivo: true,
-      },
-    ])
+    const modelSeleccionadosEsquemaBanco = ref<Record<number, TableEsquemaBanco[]>>({})
 
     const headersBancos = ref<
       {
@@ -2943,7 +2663,7 @@ export default defineComponent({
       }[]
     >([
       {
-        key: 'esActivo',
+        key: 'estado',
         align: 'center',
         sortable: false,
         title: '',
@@ -2953,144 +2673,156 @@ export default defineComponent({
         key: 'banco',
         sortable: false,
         align: 'center',
-        title: 'Esquemas',
+        title: 'Bancos',
         width: '20%',
       },
       {
-        key: 'claves',
+        key: 'add',
+        sortable: false,
+        align: 'center',
+        title: '',
+        width: '5%',
+      },
+      {
+        key: 'cuentasOrigen',
         align: 'center',
         sortable: false,
-        title: '',
+        title: 'Cuentas de origen',
         width: '70%',
       },
     ])
 
+    const headersCuentasOrigen = [
+      { title: '', key: 'cuenta', width: '95%' },
+      { title: '', key: 'eliminar', width: '5%' },
+    ]
 
     // 5. Computed
     // 6. Watchers
+    watch(
+      modelSeleccionadosEsquemaBanco,
+      (seleccionadosPorEsquema) => {
+        Object.entries(bancosPorEsquema.value).forEach(([idEsquema, bancos]) => {
+          const seleccionados = seleccionadosPorEsquema[Number(idEsquema)] ?? []
+
+          bancos.forEach((banco) => {
+            banco.estado = seleccionados.includes(banco)
+          })
+        })
+      },
+      { deep: true },
+    )
+
+    watch(
+      getItemsHabilitadosCombinacionEsquema,
+      (esquemas) => {
+        esquemas.forEach((esquema) => {
+          if (!bancosPorEsquema.value[esquema.id]) {
+            bancosPorEsquema.value[esquema.id] = crearBancosBase().map((b) => ({
+              ...b,
+              cuentasOrigen: [],
+            }))
+          }
+        })
+      },
+      { immediate: true },
+    )
+
+    const bancosPorEsquema = ref<Record<number, TableEsquemaBanco[]>>({})
+
     // 7. Lifecycle hooks (onMounted, mounted)
     // 8. Functions (fetch, metodos, async)
-    // 8. Functions (fetch, metodos, async) | Bancos
 
     function onClickTabBancos() {
-      console.log('Bancos')
+
     }
 
-    const buscarDatosBancosPorId = async (id: any) => {
-      await bancoStore.datosBancosPorCliente(props.id)
-
-      itemsAztecaInterbancario.value = bancoStore.aztecaInter
-      itemsAztecaBancario.value = bancoStore.aztecaBancario
-      itemsBanorteTerceros.value = bancoStore.banorte
-
-      isActiveFondeadora.value = bancoStore.bancosDispersion?.fondeadora ?? false
-      isActiveAztecaInterbancario.value = bancoStore.bancosDispersion?.azteca_interbancario ?? false
-      isActiveAztecaBancario.value = bancoStore.bancosDispersion?.azteca_bancario ?? false
-      isActiveBanorteTerceros.value = bancoStore.bancosDispersion?.banorte ?? false
+    function crearBancosBase(): TableEsquemaBanco[] {
+      return [
+        {
+          id: 1,
+          estado: true,
+          banco: 'Fondeadora',
+          cuentasOrigen: [],
+          tieneCuentasAdicionales: false,
+          combinacion: '',
+        },
+        {
+          id: 2,
+          estado: true,
+          banco: 'Banorte',
+          cuentasOrigen: [],
+          tieneCuentasAdicionales: true,
+          combinacion: '',
+        },
+        {
+          id: 4,
+          estado: true,
+          banco: 'Azteca',
+          cuentasOrigen: [],
+          tieneCuentasAdicionales: true,
+          combinacion: '',
+        },
+        {
+          id: 5,
+          estado: true,
+          banco: 'Tarjeta facil',
+          cuentasOrigen: [],
+          tieneCuentasAdicionales: false,
+          combinacion: '',
+        },
+      ]
     }
 
-    const changeStatusAztecaInterbancario = async () => {
-      const datos = {
-        id_nomina_gape_empresa: props.id,
-        azteca_interbancario: !isActiveAztecaInterbancario.value,
-      }
-      await bancoStore.upsertBancoDispersion(datos)
+    //-----
+    function onAddItemCuentaOrigen(item: TableEsquemaBanco) {
+      if (!item.tieneCuentasAdicionales) return
+
+      if (!item.cuentasOrigen) item.cuentasOrigen = []
+
+      if (item.cuentasOrigen.some((c) => !c.cuentaOrigen.trim())) return
+
+      item.cuentasOrigen.push({
+        id: 1, // o uuid si prefieres
+        cuentaOrigen: '',
+      })
     }
 
-    const changeStatusAztecaBancario = async () => {
-      const datos = {
-        id_nomina_gape_empresa: props.id,
-        azteca_bancario: !isActiveAztecaBancario.value,
-      }
-      await bancoStore.upsertBancoDispersion(datos)
-    }
+    const cuentaOrigenAEliminar = ref<{
+      banco: TableEsquemaBanco
+      cuenta: { id: number; cuentaOrigen: string }
+    } | null>(null)
 
-    const changeStatusBanorte = async () => {
-      const datos = {
-        id_nomina_gape_empresa: props.id,
-        banorte: !isActiveBanorteTerceros.value,
-      }
-      await bancoStore.upsertBancoDispersion(datos)
-    }
+    function onDeleteItemCuentaOrigenConfirmation(banco: TableEsquemaBanco, cuenta: BancosCuentas) {
+      cuentaOrigenAEliminar.value = { banco, cuenta }
 
-    const changeStatusFondeadora = async () => {
-      const datos = {
-        id_nomina_gape_empresa: props.id,
-        fondeadora: !isActiveFondeadora.value,
-      }
-      await bancoStore.upsertBancoDispersion(datos)
-    }
-
-    type Eventos = 'onSave' | 'onEdit'
-
-    const methodsModalFormAztecaInterbancario: Record<Eventos, (...args: any[]) => void> = {
-      onSave: () => {
-        modalFormBancoAztecaInterbancario.value.dialog = false
-        //fnCargarListado()
-      },
-      onEdit: () => {
-        modalFormBancoAztecaInterbancario.value.dialog = false
-        //fnCargarListado()
-      },
-    }
-
-    const methodsModalFormAztecaBancario: Record<Eventos, (...args: any[]) => void> = {
-      onSave: () => {
-        modalFormBancoAztecaBancario.value.dialog = false
-        //fnCargarListado()
-      },
-      onEdit: () => {
-        modalFormBancoAztecaBancario.value.dialog = false
-        //fnCargarListado()
-      },
-    }
-
-    const methodsModalFormBanorteTerceros: Record<Eventos, (...args: any[]) => void> = {
-      onSave: () => {
-        modalFormBancoBanorteTerceros.value.dialog = false
-        //fnCargarListado()
-      },
-      onEdit: () => {
-        modalFormBancoBanorteTerceros.value.dialog = false
-        //fnCargarListado()
-      },
-    }
-
-    const onDeleteConfirmationAztecaInterbancario = (
-      item: AztecaInterbancario | AztecaBancario,
-    ) => {
-      let mensaje = `¿Está seguro de que desea eliminar el registro seleccionado? Esta acción no se puede deshacer.`
-      let titulo = 'Eliminiar registro'
+      const mensaje =
+        '¿Está seguro de que desea eliminar el registro seleccionado? Esta acción no se puede deshacer.'
+      const titulo = 'Eliminar registro'
 
       dialogConfirmation.onOpenDialogConfirmation(
         mensaje,
-        () => onDeleteItemAztecaInterbancario(item),
+        onDeleteItemCuentaOrigen,
         [],
         titulo,
         'alert',
       )
     }
 
-    async function onDeleteItemAztecaInterbancario(item: AztecaInterbancario | AztecaBancario) {
+    async function onDeleteItemCuentaOrigen() {
       try {
-        // Llamar a la API para eliminar los registros por sus IDs
-        await bancoStore.deleteBancoAzteca(item.id) // Asegúrate de que esta función exista en tu store
+        if (!cuentaOrigenAEliminar.value) return
 
-        await buscarDatosBancosPorId(props.id)
-        // Mostrar mensaje de éxito
-        dialogConfirmation.onOpenDialogInformation(
-          bancoStore.responseMessage,
-          'Registro eliminado',
-          'correct',
-          '#438701',
-          1,
-        )
-        // Refrescar la lista
-        //fnCargarListado()
+        const { banco, cuenta } = cuentaOrigenAEliminar.value
+
+        if (!banco.cuentasOrigen) return
+
+        banco.cuentasOrigen = banco.cuentasOrigen.filter((c) => c.id !== cuenta.id)
+
+        cuentaOrigenAEliminar.value = null
       } catch (error) {
-        // Mostrar mensaje de error
         dialogConfirmation.onOpenDialogInformation(
-          bancoStore.responseMessage,
+          bancoStore.responseMessage || 'Ocurrió un error inesperado',
           'Error al eliminar',
           'incorrect',
           '#B00000',
@@ -3099,139 +2831,135 @@ export default defineComponent({
       }
     }
 
-    const onOpenModalFormAztecaInterbancario = (evento: string, items: object, titulo: string) => {
-      if (titulo == 'Nuevo') {
-        items = {
-          id_nomina_gape_empresa: props.id,
-        }
+    const validateForm = async () => {
+      const combinacionesPayload = itemsCombinacionEsquema.value.map((c) => ({
+        combinacion: c.combinacion,
+        estado: c.estado,
+        esquemas: c.esquemas.map((e) => ({
+          id_esquema: e.id,
+          esquema: e.esquema,
+          contpaqi: e.contpaqi,
+        })),
+        topes: c.topes.map((t) => ({
+          id: t.id,
+          id_esquema: t.id_nomina_gape_esquema,
+          tope: Number(t.tope),
+          orden: t.orden,
+        })),
+      }))
+
+      const parametrizacionPayload = itemsCombinacionParametrizacion.value.map((p) => ({
+        estado: p.estado,
+        combinacion_key: p.combinacionKey,
+        combinacion_texto: p.combinacionTexto,
+        id_periodo: p.idPeriodo,
+        fee: p.fee ? Number(p.fee) : null,
+        base_fee: p.baseFee,
+        provisiones: p.provisiones,
+        previsiones: p.prevision.map((pr) => ({
+          idconcepto: pr.idconcepto,
+        })),
+      }))
+
+      const bancosPayload = Object.entries(bancosPorEsquema.value).map(([idEsquema, bancos]) => ({
+        id_esquema: Number(idEsquema),
+        bancos: bancos.map((b) => ({
+          banco: b.banco,
+          estado: b.estado,
+          cuentas_origen:
+            b.cuentasOrigen?.map((c) => ({
+              cuenta: c.cuentaOrigen,
+            })) ?? [],
+        })),
+      }))
+
+      const payload = {
+        empresa: { ...dataModel.value },
+        combinaciones: combinacionesPayload,
+        parametrizacion: parametrizacionPayload,
+        bancos: bancosPayload,
       }
+      dialogConfirmation.onCloseDialogConfirmation()
 
-      modalFormBancoAztecaInterbancario.value = {
-        dialog: true,
-        evento: evento,
-        items: items,
-        titulo: titulo,
-      }
-    }
+      let formRef = null
+      let idEmpresaCreada = null
 
-    const onCloseModalFormAztecaInterbancario = async () => {
-      modalFormBancoAztecaInterbancario.value.dialog = false
-      await buscarDatosBancosPorId(props.id)
-      //fnCargarListado()
-    }
+      formRef = formDatosEmpresa.value
 
-    const onSaveModalFormAztecaInterbancario = async (evento: Eventos) => {
-      methodsModalFormAztecaInterbancario[evento]()
-      await buscarDatosBancosPorId(props.id)
-    }
+      if (!formRef) return
 
-    const onDeleteConfirmationBanorte = (item: BanorteTerceros) => {
-      let mensaje = `¿Está seguro de que desea eliminar el registro seleccionado? Esta acción no se puede deshacer.`
-      let titulo = 'Eliminiar registro'
+      const form = await formRef.validate()
 
-      dialogConfirmation.onOpenDialogConfirmation(
-        mensaje,
-        () => onDeleteItemBanorte(item),
-        [],
-        titulo,
-        'alert',
-      )
-    }
+      if (!form || !form.valid) return
 
-    async function onDeleteItemBanorte(item: BanorteTerceros) {
       try {
-        // Llamar a la API para eliminar los registros por sus IDs
-        await bancoStore.deleteBancoBanorte(item.id) // Asegúrate de que esta función exista en tu store
+        loading.value = true
 
-        await buscarDatosBancosPorId(props.id)
-        // Mostrar mensaje de éxito
-        dialogConfirmation.onOpenDialogInformation(
-          bancoStore.responseMessage,
-          'Registro eliminado',
-          'correct',
-          '#438701',
-          1,
-        )
-        // Refrescar la lista
-        //fnCargarListado()
-      } catch (error) {
-        // Mostrar mensaje de error
-        dialogConfirmation.onOpenDialogInformation(
-          bancoStore.responseMessage,
-          'Error al eliminar',
-          'incorrect',
-          '#B00000',
-          1,
-        )
-      }
-    }
+        let titulo = 'Registro guardado'
+        let mensaje = 'Los datos se guardaron de forma exitosa.'
 
-    function onDeleteItemAztecaBancario(item: AztecaBancario) {
-      itemsAztecaBancario.value = itemsAztecaBancario.value.filter((i) => i.id !== item.id)
-    }
+        // Aquí va tu guardado real
+        if (props.id !== undefined && props.id !== null) {
+          await empresaStore.updateNominaGapeEmpresa(payload, props.id)
+          mensaje = 'Los datos se actualizaron de forma exitosa.'
+          titulo = 'Registro actualizado'
 
-    const onOpenModalFormAztecaBancario = (evento: string, items: object, titulo: string) => {
-      if (titulo == 'Nuevo') {
-        items = {
-          id_nomina_gape_empresa: props.id,
+          dialogConfirmation.onOpenDialogInformation(mensaje, titulo, 'correct', '#438701', 2)
+
+          router.push({ name: 'EmpresaList' })
+        } else {
+          dataModel.value.codigo_actual = dataModel.value.codigo_inicial
+          const response = await empresaStore.storeNominaGapeEmpresa(payload)
+
+          //idEmpresaCreada = response.id
+
+          dialogConfirmation.onOpenDialogInformation(mensaje, titulo, 'correct', '#438701', 2)
+          router.push({ name: 'EmpresaList' })
+          /*
+          if (idEmpresaCreada) {
+            router.push({ path: `/nominas/gape/empresaForm/${idEmpresaCreada}` })
+          }*/
         }
-      }
 
-      modalFormBancoAztecaBancario.value = {
-        dialog: true,
-        evento: evento,
-        items: items,
-        titulo: titulo,
-      }
-    }
-
-    const onCloseModalFormAztecaBancario = async () => {
-      modalFormBancoAztecaBancario.value.dialog = false
-      await buscarDatosBancosPorId(props.id)
-    }
-
-    const onSaveModalFormAztecaBancario = async (evento: Eventos) => {
-      methodsModalFormAztecaBancario[evento]()
-      await buscarDatosBancosPorId(props.id)
-    }
-
-    const onOpenModalFormBanorteTerceros = (evento: string, items: object, titulo: string) => {
-      if (titulo == 'Nuevo') {
-        items = {
-          id_nomina_gape_empresa: props.id,
+        //await formRef.reset()
+      } catch (error: any) {
+        if (error.type === 'validation') {
+          const errores = Object.values(error.errors).flat().join('<br>')
+          dialogConfirmation.onOpenDialogInformation(
+            errores,
+            'Verifique los siguientes errores',
+            'incorrect',
+            '#B00000',
+            2,
+          )
+        } else {
+          dialogConfirmation.onOpenDialogInformation(
+            'Ocurrió un error inesperado al guardar.',
+            'Error',
+            'incorrect',
+            '#B00000',
+            2,
+          )
         }
+      } finally {
+        loading.value = false
       }
-      modalFormBancoBanorteTerceros.value = {
-        dialog: true,
-        evento: evento,
-        items: items,
-        titulo: titulo,
-      }
-    }
-
-    const onCloseModalFormBanorteTerceros = async () => {
-      modalFormBancoBanorteTerceros.value.dialog = false
-      await buscarDatosBancosPorId(props.id)
-    }
-
-    const onSaveModalFormBanorteTerceros = async (evento: Eventos) => {
-      methodsModalFormBanorteTerceros[evento]()
-      await buscarDatosBancosPorId(props.id)
     }
 
     return {
+      fetchCrearFormulasContpaq,
+      pageSize,
+      bancosPorEsquema,
+      onDeleteItemCuentaOrigenConfirmation,
+      onAddItemCuentaOrigen,
+      headersCuentasOrigen,
       getItemsHabilitadosCombinacionEsquema,
-      itemsTableBancos,
       headersBancos,
       combinacionTieneContpaqi,
       itemsPrevisionSocial,
       btnDisabled,
       buscarDatosEmpresaNomina,
       buscarEmpresasNomina,
-      changeStatusAztecaBancario,
-      changeStatusAztecaInterbancario,
-      changeStatusBanorte,
-      changeStatusFondeadora,
       dataModel,
       deshabilitarCampoTope,
       dialogConfirmation,
@@ -3239,31 +2967,17 @@ export default defineComponent({
       esFilaFija,
       formDatosEmpresa,
       formDatosEmpresaValido,
-      formRefFiscalBanco,
-      formRefNoFiscalBanco,
-      formRefNoFiscalGral,
       getCardHeight,
       getItemsClientesNomina,
       getItemsEmpresaDatabase,
       getTableHeight,
       getTableNoDataHeight,
-      headersAztecaBancario,
-      headersAztecaInterbancario,
-      headersBanorteTerceros,
       headersCombinacionEsquema,
       headersParametrizacion,
       headersTope,
       inputFilters,
-      isActiveAztecaBancario,
-      isActiveAztecaInterbancario,
-      isActiveBanorteTerceros,
-      isActiveFondeadora,
       isDragging,
       isNullRowCombinacionEsquema,
-      itemsAztecaBancario,
-      itemsAztecaInterbancario,
-      itemsBanco,
-      itemsBanorteTerceros,
       itemsBaseFEE,
       itemsCombinacionEsquema,
       itemsComprobacion,
@@ -3274,32 +2988,17 @@ export default defineComponent({
       itemsTabVertical,
       loading,
       mergeProps,
-      modalFormBancoAztecaBancario,
-      modalFormBancoAztecaInterbancario,
-      modalFormBancoBanorteTerceros,
       modelEmpresa,
+      modelSeleccionadosEsquemaBanco,
       modelSeleccionadosCombinacionEsquema,
       modelTabVertical,
       onAddRowCombinacionEsquema,
       onClickTabVertical,
-      onCloseModalFormAztecaBancario,
-      onCloseModalFormAztecaInterbancario,
-      onCloseModalFormBanorteTerceros,
       onDecision,
       onDeleteCombinacionEsquema,
       onDeleteCombinacionEsquemaConfirmation,
-      onDeleteConfirmationAztecaInterbancario,
-      onDeleteConfirmationBanorte,
-      onDeleteItemAztecaBancario,
-      onDeleteItemAztecaInterbancario,
       onDragStart,
       onDrop,
-      onOpenModalFormAztecaBancario,
-      onOpenModalFormAztecaInterbancario,
-      onOpenModalFormBanorteTerceros,
-      onSaveModalFormAztecaBancario,
-      onSaveModalFormAztecaInterbancario,
-      onSaveModalFormBanorteTerceros,
       onUpdateItemsEsquemasDePago,
       smAndDown,
       tabsHabilitados,
@@ -3312,9 +3011,3 @@ export default defineComponent({
   },
 })
 </script>
-
-<style scoped>
-.draggable-row {
-  cursor: grab;
-}
-</style>

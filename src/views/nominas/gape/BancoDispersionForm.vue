@@ -109,7 +109,7 @@
               <v-icon icon="mdi-replay" color="white" size="24px" />
             </v-btn>
           </template>
-          <template #default>Ejecutar cálculo de prenómina</template>
+          <template #default>Ejecutar dispersión de bancos</template>
         </v-tooltip>
 
         <!-- vbtnActivar -->
@@ -771,7 +771,7 @@ export default defineComponent({
       let mensaje = ''
       let titulo = ''
 
-      titulo = 'Generación de prenomina'
+      titulo = 'Generación de dispersión'
       mensaje = `¿Está seguro de que desea generar con los datos seleccionados?`
 
       dialogConfirmation.onOpenDialogConfirmation(
@@ -832,9 +832,7 @@ export default defineComponent({
 
           const payload = buildPrenominaPayload()
 
-          console.log(payload)
-
-          bancoConfiguracionEsquemaStore.exportarFormatos(payload)
+          await bancoConfiguracionEsquemaStore.exportarFormatos(payload)
 
           await form.value?.reset()
         } catch (error: any) {
