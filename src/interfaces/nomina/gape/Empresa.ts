@@ -18,4 +18,5 @@ export interface EmpresaModel {
   mascara_codigo: string
   codigo_inicial: string
   codigo_actual: string
+  formula_con_falta: boolean | null | undefined
 }

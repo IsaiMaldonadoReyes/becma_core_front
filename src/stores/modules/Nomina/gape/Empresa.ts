@@ -29,7 +29,7 @@ export const useEmpresaStore = defineStore({
         this.responseMessage = error.message
       }
     },
-    async storeNominaGapeEmpresa(data: EmpresaModel) {
+    async storeNominaGapeEmpresa(data: any) {
       try {
         const response = await axios.post('/api/nominaGapeEmpresa/store', data)
         this.empresa = response.data
@@ -39,7 +39,7 @@ export const useEmpresaStore = defineStore({
         throw error
       }
     },
-    async updateNominaGapeEmpresa(data: EmpresaModel, id: number) {
+    async updateNominaGapeEmpresa(data: any, id: number) {
       try {
         const response = await axios.put(`/api/nominaGapeEmpresa/update/${id}`, data)
         this.empresa = response.data
@@ -50,16 +50,13 @@ export const useEmpresaStore = defineStore({
     },
     async empresasDatosNominasPorClienteId(id: number) {
       try {
-        const payload = {
-          id: id,
-        }
-        const response = await axios.post(
-          `/api/nominaGapeEmpresa/datosNominasPorClienteId`,
-          payload,
-        )
+        const response = await axios.post(`/api/nominaGapeEmpresa/show/${id}`)
         this.empresa = response.data.data
+
+        return response.data.data
       } catch (error: any) {
         this.responseMessage = error.message
+        throw error // 👈 CLAVE
       }
     },
     async empresasDatosNominasPorCliente(clienteId: number, empresaId: any, rutaBD: string) {
@@ -82,6 +79,16 @@ export const useEmpresaStore = defineStore({
         this.empresasList = response.data.data
       } catch (error: any) {
         this.responseMessage = error.message
+      }
+    },
+    async crearFormulasContpaq(data: any) {
+      try {
+        const response = await axios.post('/api/nominaGapeEmpresa/crearFormulasContpaq', data)
+        this.empresa = response.data
+        return response.data
+      } catch (error: any) {
+        this.responseMessage = error.message
+        throw error
       }
     },
   },

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 
-export const useEmpleadoDisableRules = (dataModel: any) => {
+export const useEmpleadoDisableRules = (dataModel: any, isEdit: { value: boolean }) => {
   //
   // 1️⃣ Helpers atómicos
   //
@@ -27,9 +27,8 @@ export const useEmpleadoDisableRules = (dataModel: any) => {
 
     compCliente: false,
     compTipoEmp: true,
-    compEmpresa: !hasCliente.value,
-    compEsquema: !canSelectEsquema.value,
-
+    compEmpresa: isEdit.value || !hasCliente.value,
+    compEsquema: isEdit.value || !canSelectEsquema.value,
     dmCodigoEmpleado: true,
   }))
 

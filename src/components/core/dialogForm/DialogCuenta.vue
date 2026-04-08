@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="dialogPropiedades.dialog" max-width="800px" persistent>
+    <v-dialog v-model="dialogPropiedades.dialog" :width="smAndDown ? '95vw' : '40vw'" persistent>
       <v-card>
         <v-form ref="form" v-model="isValid">
           <v-card-title
@@ -20,7 +20,7 @@
               </v-col>
               <v-col cols="12" md="6" class="d-flex align-center justify-end">
                 <v-btn-group variant="outlined" divided>
-                  <v-btn color="primary" icon="mdi-format-align-right">
+                  <v-btn :disabled="isDisableForm" color="primary" icon="mdi-format-align-right">
                     <v-tooltip>
                       <template v-slot:activator="{ props: tooltip }">
                         <v-checkbox-btn
@@ -64,169 +64,99 @@
 
           <v-card-text class="dialog-content px-5" :style="getDialogContentPaddingTop">
             <v-row>
-              <v-col cols="12" sm="6">
-                <v-card class="bg-surface-light" elevation="0">
-                  <v-card-text class="d-flex justify-center align-center">
-                    <v-avatar size="80%">
-                      <v-img
-                        :src="
-                          propsAvatar.avatar
-                            ? propsAvatar.avatar
-                            : dialogPropiedades.elementos.imagen
-                        "
-                        :alt="dialogPropiedades.elementos.iniciales"
-                      />
-                    </v-avatar>
-                  </v-card-text>
-                  <v-card-actions class="border-t d-flex justify-center align-center">
-                    <v-btn-group variant="outlined" divided>
-                      <v-tooltip>
-                        <template v-slot:activator="{ props: tooltip }">
-                          <v-btn
-                            v-bind="mergeProps(tooltip)"
-                            color="primary"
-                            icon="mdi-pencil"
-                            @click="show = true"
-                          />
-                        </template>
-                        <span>Clic aquí para modificar</span>
-                      </v-tooltip>
-
-                      <v-tooltip>
-                        <template v-slot:activator="{ props: tooltip }">
-                          <v-btn
-                            v-bind="mergeProps(tooltip)"
-                            color="primary"
-                            icon="mdi-delete"
-                            @click="onClose"
-                          />
-                        </template>
-                        <span>Clic aquí para salir</span>
-                      </v-tooltip>
-                    </v-btn-group>
-                  </v-card-actions>
-                </v-card>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field
+              <v-col cols="12">
+                <bec-text-field
                   v-model="dialogPropiedades.elementos.nombre"
-                  clearable
-                  label="Nombre *"
-                  placeholder="Nombre"
-                  prepend-inner-icon="mdi-account-cog"
-                  variant="outlined"
+                  :clearable="true"
                   :disabled="isDisableForm"
+                  :label="'Nombre(s)'"
+                  :placeholder="'Nombre(s)'"
+                  :prepend-icon="'mdi-account-cog'"
                 >
-                  <template v-slot:prepend>
-                    <v-tooltip>
-                      <template v-slot:activator="{ props: tooltip }">
-                        <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
-                      </template>
-                      <span>Mensaje de ayuda o informativo del campo.</span>
-                    </v-tooltip>
+                  <template #tooltip>
+                    <cuenta-tooltips name="ayudaNombre" />
                   </template>
-                </v-text-field>
-                <v-text-field
+                </bec-text-field>
+              </v-col>
+              <v-col cols="12">
+                <bec-text-field
                   v-model="dialogPropiedades.elementos.apellidoPaterno"
-                  clearable
-                  label="Apellido paterno"
-                  placeholder="Apellido paterno"
-                  prepend-inner-icon="mdi-account-cog"
-                  variant="outlined"
+                  :clearable="true"
                   :disabled="isDisableForm"
+                  :label="'Apellido paterno'"
+                  :placeholder="'Apellido paterno'"
+                  :prepend-icon="'mdi-account-cog'"
                 >
-                  <template v-slot:prepend>
-                    <v-tooltip>
-                      <template v-slot:activator="{ props: tooltip }">
-                        <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
-                      </template>
-                      <span>Mensaje de ayuda o informativo del campo.</span>
-                    </v-tooltip>
+                  <template #tooltip>
+                    <cuenta-tooltips name="ayudaApellidoPaterno" />
                   </template>
-                </v-text-field>
-                <v-text-field
+                </bec-text-field>
+              </v-col>
+              <v-col cols="12">
+                <bec-text-field
                   v-model="dialogPropiedades.elementos.apellidoMaterno"
-                  clearable
-                  label="Apellido materno"
-                  placeholder="Apellido materno"
-                  prepend-inner-icon="mdi-account-cog"
-                  variant="outlined"
+                  :clearable="true"
                   :disabled="isDisableForm"
+                  :label="'Apellido materno'"
+                  :placeholder="'Apellido materno'"
+                  :prepend-icon="'mdi-account-cog'"
                 >
-                  <template v-slot:prepend>
-                    <v-tooltip>
-                      <template v-slot:activator="{ props: tooltip }">
-                        <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
-                      </template>
-                      <span>Mensaje de ayuda o informativo del campo.</span>
-                    </v-tooltip>
+                  <template #tooltip>
+                    <cuenta-tooltips name="ayudaApellidoMaterno" />
                   </template>
-                </v-text-field>
-                <v-text-field
+                </bec-text-field>
+              </v-col>
+              <v-col cols="12">
+                <bec-text-field
                   v-model="dialogPropiedades.elementos.correo"
-                  clearable
-                  label="Correo"
-                  placeholder="Correo electrónico"
-                  prepend-inner-icon="mdi-email-fast"
-                  variant="outlined"
+                  :clearable="true"
                   :disabled="isDisableForm"
+                  :label="'Correo electrónico'"
+                  :placeholder="' *'"
+                  :prepend-icon="'mdi-email'"
                 >
-                  <template v-slot:prepend>
-                    <v-tooltip>
-                      <template v-slot:activator="{ props: tooltip }">
-                        <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
-                      </template>
-                      <span>Mensaje de ayuda o informativo del campo.</span>
-                    </v-tooltip>
+                  <template #tooltip>
+                    <cuenta-tooltips name="ayudaCorreo" />
                   </template>
-                </v-text-field>
-                <v-text-field
+                </bec-text-field>
+              </v-col>
+              <v-col cols="12">
+                <bec-text-field
                   v-model="dialogPropiedades.elementos.password"
                   :append-inner-icon="visiblePassword ? 'mdi-eye-off' : 'mdi-eye'"
+                  :clearable="true"
+                  :label="'Contraseña'"
+                  :placeholder="'Contraseña'"
+                  :prepend-icon="'mdi-lock-question'"
                   :rules="[rules.requiredEmpty, rules.validatePasswordUpdate]"
                   :type="visiblePassword ? 'text' : 'password'"
-                  class="custom-text-field"
-                  clearable
                   counter
                   hint="Ingresa al menos 8 caracteres"
-                  label="Contraseña"
-                  name="input-10-1"
-                  prepend-inner-icon="mdi-lock-question"
-                  variant="outlined"
                   @click:append-inner="visiblePassword = !visiblePassword"
                 >
-                  <template v-slot:prepend>
-                    <v-tooltip>
-                      <template v-slot:activator="{ props: tooltip }">
-                        <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
-                      </template>
-                      <span>Mensaje de ayuda o informativo del campo.</span>
-                    </v-tooltip>
+                  <template #tooltip>
+                    <cuenta-tooltips name="ayudaPassword" />
                   </template>
-                </v-text-field>
-                <v-text-field
+                </bec-text-field>
+              </v-col>
+              <v-col cols="12">
+                <bec-text-field
                   v-model="dialogPropiedades.elementos.passwordConfirm"
                   :append-inner-icon="visiblePasswordConfirm ? 'mdi-eye-off' : 'mdi-eye'"
+                  :clearable="true"
+                  :label="'Confirmación de contraseña'"
+                  :placeholder="'Confirmación de contraseña'"
+                  :prepend-icon="'mdi-lock-alert'"
                   :rules="[rules.requiredEmpty, rules.validatePasswordUpdate]"
                   :type="visiblePasswordConfirm ? 'text' : 'password'"
-                  class="custom-text-field"
-                  clearable
                   counter
                   hint="Ingresa al menos 8 caracteres"
-                  label="Confirmación de contraseña"
-                  prepend-inner-icon="mdi-lock-alert"
-                  variant="outlined"
                   @click:append-inner="visiblePasswordConfirm = !visiblePasswordConfirm"
                 >
-                  <template v-slot:prepend>
-                    <v-tooltip>
-                      <template v-slot:activator="{ props: tooltip }">
-                        <v-icon icon="mdi-information-outline" v-bind="mergeProps(tooltip)" />
-                      </template>
-                      <span>Mensaje de ayuda o informativo del campo.</span>
-                    </v-tooltip>
+                  <template #tooltip>
+                    <cuenta-tooltips name="ayudaPasswordConfirm" />
                   </template>
-                </v-text-field>
+                </bec-text-field>
               </v-col>
             </v-row>
           </v-card-text>
@@ -251,38 +181,20 @@
         :dialog-view="dialogInformation.dialog"
         @close="onCloseDialogInformation"
       />
-      <VueAvatarUpload
-        v-if="show"
-        v-show="show"
-        lang="en"
-        :width="propsAvatar.width"
-        :height="propsAvatar.height"
-        :show-preview="true"
-        :preview-size="propsAvatar.previewSize"
-        :avatar="propsAvatar.avatar"
-        :disable-select="propsAvatar.disableSelect"
-        @custom-request="handleSuccess"
-      >
-        <template #cancel>
-          <v-btn color="primary" @click="onCloseAvatar" class="ma-3">Cancelar</v-btn>
-        </template>
-        <template #confirm>
-          <v-btn color="primary" @click="onCloseAvatar" class="ma-3">Confirmar</v-btn>
-        </template>
-        <!--template #closeIcon>
-          <v-btn color="primary" @click="onCloseAvatar">Confirmare </v-btn>
-        </template-->
-      </VueAvatarUpload>
     </v-dialog>
   </div>
 </template>
 <script lang="ts">
 import { ref, computed, defineComponent, mergeProps, onMounted, onUnmounted, watch } from 'vue'
-import VueAvatarUpload from '@pkhadson/vue-avatar-upload'
-import '@pkhadson/vue-avatar-upload/lib/style.css'
+import { useDisplay } from 'vuetify'
+
+// import components
+import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becmaComponents'
+import { CuentaTooltips } from '@/components/nomina/ayudas'
+
 import { validationRules } from '@/utils/validationRules'
-import DialogConfirmation from '../../../components/core/dialogMessage/DialogConfirmation.vue'
-import DialogInformation from '../../../components/core/dialogMessage/DialogInformation.vue'
+import DialogConfirmation from '@/components/core/dialogMessage/DialogConfirmation.vue'
+import DialogInformation from '@/components/core/dialogMessage/DialogInformation.vue'
 import { sessionStore } from '@/stores/modules/Core/sesion'
 
 export interface Item {
@@ -300,7 +212,14 @@ export interface Item {
 
 export default defineComponent({
   name: 'DialogCuenta ',
-  components: { DialogConfirmation, DialogInformation, VueAvatarUpload },
+  components: {
+    DialogConfirmation,
+    DialogInformation,
+    BecSelect,
+    BecAutocomplete,
+    BecTextField,
+    CuentaTooltips,
+  },
   props: {
     dialogEvent: String,
     dialogItems: {
@@ -311,6 +230,8 @@ export default defineComponent({
     dialogView: Boolean,
   },
   setup(props, { emit }) {
+    // 3. Composables | Vuetify
+    const { name, mobile, smAndDown } = useDisplay()
     const sesion = sessionStore()
 
     // Estado reactivo
@@ -539,61 +460,30 @@ export default defineComponent({
       )
     })
 
-    const show = ref(false)
-    const propsAvatar = ref({
-      url: '',
-      field: 'avatar',
-      width: 400,
-      height: 400,
-      withCredentials: false,
-      selectSize: 300,
-      accept: 'image/*',
-      method: 'POST',
-      fixed: true,
-      rotate: true,
-      format: 'png',
-      lang: 'en',
-      showPreview: false,
-      previewSize: 180,
-      avatar: '',
-      disableSelect: false,
-      data: undefined,
-    })
-
-    const onCloseAvatar = () => {
-      show.value = false
-    }
-    const handleSuccess = (file: File) => {
-      propsAvatar.value.avatar = URL.createObjectURL(file)
-    }
-
     const isDisableForm = ref(true)
 
     return {
       dialogConfirmation,
-      dialogInformation,
-      visiblePassword,
-      visiblePasswordConfirm,
-      isDisableForm,
-      handleSuccess,
       dialogHeader,
+      dialogInformation,
       dialogPropiedades,
       form,
       getDialogContentPaddingTop,
+      isDisableForm,
+      isPasswordFilled,
+      isSavingBtn,
       isValid,
       mergeProps,
       onCancel,
-      onClose,
-      onDecision,
-      onCloseDialogConfirmation,
       onClickYesDialogConfirmation,
+      onClose,
+      onCloseDialogConfirmation,
       onCloseDialogInformation,
-      onCloseAvatar,
+      onDecision,
       rules,
-      show,
-      propsAvatar,
-      isSavingBtn,
-      isPasswordFilled,
+      smAndDown,
+      visiblePassword,
+      visiblePasswordConfirm,
     }
   },
 })

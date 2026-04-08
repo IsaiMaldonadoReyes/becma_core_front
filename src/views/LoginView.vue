@@ -10,16 +10,13 @@
       <v-row>
         <v-col cols="12" lg="6">
           <v-card color="#F0F0F0" elevation="0">
-            <vue3-lottie
-              width="100%"
-              :animation-link="'/src/assets/images/recursos_humano.json'"
-            />
+            <vue3-lottie width="100%" :animation-data="recursosHumanos" />
           </v-card>
         </v-col>
         <v-col cols="12" lg="6" class="d-flex align-stretch justify-stretch">
           <v-card elevation="0" width="100%">
             <v-row class="d-flex align-center justify-center" style="height: 30%">
-              <v-img src="/src/assets/images/adelta.png" contain height="80%" />
+              <v-img :src="adelta" contain height="80%" />
               <!--div class="pt-10">
                 <div class="containe-x">
                   <div class="box">
@@ -88,7 +85,7 @@
               <v-divider class="border-opacity-25" color="white" width="60%"></v-divider>
 
               <a href="https://solucionesbecma.com" target="_blank">
-                <v-img class="ml-1" src="/src/assets/images/becma_logo_color.png" width="50"></v-img>
+                <v-img class="ml-1" :src="becmaLogoColor" width="50"></v-img>
               </a>
               <span class="text-body-2"> &nbsp;&#169; {{ new Date().getFullYear() }} </span>
             </v-row>
@@ -113,6 +110,10 @@ import { Vue3Lottie } from 'vue3-lottie'
 import { useRouter } from 'vue-router'
 import { sessionStore } from '../stores/modules/Core/sesion'
 import DialogInformation from '../components/core/dialogMessage/DialogInformation.vue'
+
+import recursosHumanos from '@/assets/images/recursos_humano.json'
+import becmaLogoColor from '@/assets/images/becma_logo_color.png'
+import adelta from '@/assets/images/adelta.png'
 
 export default defineComponent({
   name: 'Login',
@@ -158,7 +159,7 @@ export default defineComponent({
         try {
           await session.login(data)
           await form.value?.reset()
-          router.push({ name: 'CoreSistemaList' })
+          router.push({ name: 'ClienteList' })
         } catch (error) {
           onOpenDialogInformation('#438701', `Datos incorrectos`, 'incorrect', 'Login', 1)
         }
@@ -196,6 +197,9 @@ export default defineComponent({
       login,
       onCloseDialogInformation,
       onOpenDialogInformation,
+      recursosHumanos,
+      becmaLogoColor,
+      adelta,
     }
   },
 })

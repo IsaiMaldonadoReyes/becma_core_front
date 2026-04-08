@@ -109,7 +109,7 @@
               <v-icon icon="mdi-replay" color="white" size="24px" />
             </v-btn>
           </template>
-          <template #default>Ejecutar cálculo de prenómina</template>
+          <template #default>Ejecutar dispersión de bancos</template>
         </v-tooltip>
 
         <!-- vbtnActivar -->
@@ -401,6 +401,18 @@
         </v-form>
       </v-col>
     </v-row>
+
+    <v-overlay :model-value="loading" persistent class="align-center justify-center">
+      <v-card width="420" class="pa-6 text-center rounded-xl">
+        <v-icon size="40" color="primary">mdi-file-excel</v-icon>
+        <div class="text-h6 mt-2">Generando layout de dispersón</div>
+        <div class="text-caption mb-4 text-medium-emphasis">
+          Estamos procesando la información y preparando el archivo para su descarga.
+          Este proceso puede tardar dependiendo del volumen de datos.
+        </div>
+        <v-progress-linear indeterminate color="primary" height="6" rounded />
+      </v-card>
+    </v-overlay>
   </v-container>
 </template>
 
@@ -771,7 +783,7 @@ export default defineComponent({
       let mensaje = ''
       let titulo = ''
 
-      titulo = 'Generación de prenomina'
+      titulo = 'Generación de dispersión'
       mensaje = `¿Está seguro de que desea generar con los datos seleccionados?`
 
       dialogConfirmation.onOpenDialogConfirmation(
@@ -832,9 +844,7 @@ export default defineComponent({
 
           const payload = buildPrenominaPayload()
 
-          console.log(payload)
-
-          bancoConfiguracionEsquemaStore.exportarFormatos(payload)
+          await bancoConfiguracionEsquemaStore.exportarFormatos(payload)
 
           await form.value?.reset()
         } catch (error: any) {

@@ -3,9 +3,6 @@ import { sessionStore } from '../stores/modules/Core/sesion'
 import Login from '../views/LoginView.vue'
 //import SistemaForm from '../views/core/SistemaForm.vue'
 import SistemaList from '../views/core/SistemaList.vue'
-import VentasPorMarcasChart from '@/views/comercial/VentasPorMarcasChart.vue'
-import VentasPorConcepto from '@/views/comercial/VentaPorConceptoChart.vue'
-import PresupuestosChart from '@/views/comercial/PresupuestosChart.vue'
 import EmpleadoList from '@/views/nominas/gape/EmpleadoList.vue'
 import EmpleadoForm from '@/views/nominas/gape/EmpleadoForm.vue'
 import EmpresaForm from '@/views/nominas/gape/EmpresaForm.vue'
@@ -23,6 +20,13 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/',
+      redirect: () => {
+        const session = sessionStore()
+        return session.auth ? '/nominas/gape/clienteList' : '/login'
+      },
+    },
+    {
       component: Login,
       name: 'Login',
       path: '/login',
@@ -39,24 +43,6 @@ const router = createRouter({
       name: 'CoreSistemaList',
       path: '/core/sistemaList',
       meta: { requiresAuth: true, sistema: 'core' },
-    },
-    {
-      component: VentasPorMarcasChart,
-      name: 'ComercialVentasPorMarcasChart',
-      path: '/comercial/ventasPorMarcasChart',
-      meta: { requiresAuth: true, sistema: 'comercial' },
-    },
-    {
-      component: VentasPorConcepto,
-      name: 'ComercialVentasPorConceptoChart',
-      path: '/comercial/ventasPorConceptoChart',
-      meta: { requiresAuth: true, sistema: 'comercial' },
-    },
-    {
-      component: PresupuestosChart,
-      name: 'PresupuestosChart',
-      path: '/comercial/presupuestosChart',
-      meta: { requiresAuth: true, sistema: 'comercial' },
     },
 
     {
@@ -158,30 +144,20 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const session = sessionStore()
 
-  if (!session.auth) {
+  // 1️⃣ Solo validar sesión UNA VEZ
+  if (session.auth === null) {
     await session.authUserInformation()
   }
 
-  /*
-
-  const isAuthenticated = session.authRoutes
-  const userRoutes = session.userRoutes
-
-  // Verifica si la ruta actual está permitida
-  const hasAccess = userRoutes.some(
-    (route: { sistema: string; ruta: string }) =>
-      route.sistema === to.meta.sistema && route.ruta === to.path,
-  )
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next({ name: 'Login' }) // Si no está autenticado, lo manda a login
-  } else if (to.name === 'Login' && isAuthenticated) {
-    next({ name: 'CoreSistemaList' }) // Si ya está autenticado, lo manda al dashboard
-  } else if (to.meta.requiresAuth && !hasAccess) {
-    next({ path: '/error' }) // Si no tiene acceso, lo manda a /error
-  } else {
-    next() // Si todo está bien, deja que navegue normalmente
+  // 2️⃣ Ruta protegida y NO autenticado
+  if (to.meta.requiresAuth && session.auth === false) {
+    return next({ name: 'Login' })
   }
-  */
+
+  // 3️⃣ Usuario autenticado intentando ir a Login
+  if (to.name === 'Login' && session.auth === true) {
+    return next({ name: 'ClienteList' })
+  }
 
   next()
 })

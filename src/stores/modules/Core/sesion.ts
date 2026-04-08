@@ -1,19 +1,6 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
 
-axios.defaults.withCredentials = true
-axios.defaults.withXSRFToken = true
-axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL
-
-interface sessionState {
-  object: any
-  responseMessage: string
-  type: string
-  auth: boolean
-  userInformation: UserInformation
-  userRoutes: UserRoute[]
-  authRoutes: boolean
-}
+import axios from '@/plugins/axios'
 
 interface UserRoute {
   sistema: string
@@ -30,13 +17,23 @@ interface UserInformation {
   rol: string
 }
 
+interface sessionState {
+  auth: boolean | null
+  object: any
+  userInformation: UserInformation | null
+  userRoutes: UserRoute[]
+  authRoutes: boolean
+  responseMessage: string
+  type: string
+}
+
 export const sessionStore = defineStore({
   id: 'session',
   state: (): sessionState => ({
-    auth: false,
+    auth: null,
     object: {},
-    userInformation: {} as UserInformation,
-    userRoutes: [] as UserRoute[],
+    userInformation: null,
+    userRoutes: [],
     authRoutes: false,
     responseMessage: '',
     type: '',
@@ -53,26 +50,27 @@ export const sessionStore = defineStore({
         // 3. Almacenar los datos de la sesión
         this.auth = true
         this.object = response.data
+
+        await this.authUserInformation()
       } catch (error: any) {
         // 4. Manejo de errores
+        this.auth = false
         console.error('Error en login:', error)
-
-        // 5. Guardar solo el mensaje de error (si existe)
         this.object = error.response?.data?.message || 'Error desconocido'
-
-        // Opcional: Lanzar el error si necesitas manejarlo en otro lugar
-        //throw error
       }
     },
 
     async logout() {
-      try {
-        const response = await axios.post('/api/logout')
+      this.auth = false
+      this.object = {}
+      this.userInformation = null
+      this.userRoutes = []
+      this.authRoutes = false
 
-        this.auth = false
-        this.object = {}
-      } catch (error) {
-        //throw new Error("Error al cerrar la sesión");
+      try {
+        await axios.post('/api/logout')
+      } catch {
+        // aunque falle backend, frontend ya está deslogueado
       }
     },
 
@@ -94,14 +92,13 @@ export const sessionStore = defineStore({
 
     async authUserInformation() {
       try {
-        // 1. Intentar la petición
         const response = await axios.get('/api/authUserInformation')
+
         this.auth = true
         this.userInformation = response.data
-      } catch (error: any) {
-        // 4. Manejo de errores
-        //console.error('Error en obtener información:', error)
-        //throw error
+      } catch {
+        this.auth = false
+        this.userInformation = null
       }
     },
 
@@ -117,26 +114,6 @@ export const sessionStore = defineStore({
 
         this.responseMessage = error.message
         //throw error
-      }
-    },
-
-    async userInformation() {
-      try {
-        const params = {
-          datos: {
-            cuenta_rfc: '',
-          },
-        }
-
-        const response = await axios.get('/users/informacion', {
-          params,
-        })
-
-        //console.log(response.data);
-        if (response.data.type === 'success') {
-        }
-      } catch (error) {
-        //throw new Error("Error al cargar los ejercicios Dashboard");
       }
     },
 

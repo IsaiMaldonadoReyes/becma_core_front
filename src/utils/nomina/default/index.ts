@@ -1,4 +1,5 @@
 export * from './getDefaultDepartamento'
+export * from './getDefaultConcepto'
 export * from './getDefaultEmpresa'
 export * from './getDefaultPeriodo'
 export * from './getDefaultPuesto'

@@ -1,6 +1,7 @@
 export * from './nom10000'
 export * from './nom10002'
 export * from './nom10003'
+export * from './nom10004'
 export * from './nom10006'
 export * from './nom10023'
 export * from './nom10032'

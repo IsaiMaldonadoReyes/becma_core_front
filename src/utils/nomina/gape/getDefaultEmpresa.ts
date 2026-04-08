@@ -21,5 +21,6 @@ export function getDefaultEmpresa(): EmpresaModel {
     mascara_codigo: '',
     codigo_inicial: '',
     codigo_actual: '',
+    formula_con_falta: undefined,
   }
 }

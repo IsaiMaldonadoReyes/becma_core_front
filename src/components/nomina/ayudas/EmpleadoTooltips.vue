@@ -35,7 +35,7 @@
   <v-card
     v-if="name === 'ayudaFiltroTipoEmpresa'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -78,7 +78,7 @@
   <v-card
     v-if="name === 'ayudaFiltroEmpresa'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -110,7 +110,7 @@
   <v-card
     v-if="name === 'ayudaCodigo'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -157,7 +157,7 @@
       <template #default>
         <v-card
           :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-          class="pa-3"
+          class="py-3"
           color="transparent"
           elevation="0"
         >
@@ -190,7 +190,7 @@
   <v-card
     v-if="name === 'ayudaTipoDeContrato'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -218,7 +218,7 @@
   <v-card
     v-if="name === 'ayudaApellidoPaterno'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -244,7 +244,7 @@
   <v-card
     v-if="name === 'ayudaApellidoMaterno'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -270,7 +270,7 @@
   <v-card
     v-if="name === 'ayudaNombres'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -296,7 +296,7 @@
   <v-card
     v-if="name === 'ayudaTipoDePeriodo'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -322,7 +322,7 @@
   <v-card
     v-if="name === 'ayudaSalarioDiario'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -348,7 +348,7 @@
   <v-card
     v-if="name === 'ayudaBaseCotizacion'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -377,7 +377,7 @@
   <v-card
     v-if="name === 'ayudaSBCParteFija'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -405,7 +405,7 @@
   <v-card
     v-if="name === 'ayudaSBCParteVariable'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -421,7 +421,7 @@
   <v-card
     v-if="name === 'ayudaSBCTopado'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -441,7 +441,7 @@
   <v-card
     v-if="name === 'ayudaDepartamento'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -457,7 +457,7 @@
   <v-card
     v-if="name === 'ayudaPuesto'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -473,7 +473,7 @@
   <v-card
     v-if="name === 'ayudaSindicalizado'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -502,7 +502,7 @@
   <v-card
     v-if="name === 'ayudaTipoDePrestacion'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -528,7 +528,7 @@
   <v-card
     v-if="name === 'ayudaBaseDePago'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -556,7 +556,7 @@
   <v-card
     v-if="name === 'ayudaMetodoDePago'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -585,7 +585,7 @@
   <v-card
     v-if="name === 'ayudaTurnoDeTrabajo'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -613,7 +613,7 @@
   <v-card
     v-if="name === 'ayudaZonaDeSalario'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -642,7 +642,7 @@
   <v-card
     v-if="name === 'ayudaTipoJornada'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -671,7 +671,7 @@
   <v-card
     v-if="name === 'ayudaRegimenFiscal'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -700,7 +700,7 @@
   <v-card
     v-if="name === 'ayudaNumeroFonacot'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -730,7 +730,7 @@
   <v-card
     v-if="name === 'ayudaAfore'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -759,7 +759,7 @@
   <v-card
     v-if="name === 'ayudaCorreoElectronico'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -790,7 +790,7 @@
   <v-card
     v-if="name === 'ayudaNumeroSeguridadSocial'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -819,7 +819,7 @@
   <v-card
     v-if="name === 'ayudaRegistroPatronal'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -848,7 +848,7 @@
   <v-card
     v-if="name === 'ayudaUMF'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -877,7 +877,7 @@
   <v-card
     v-if="name === 'ayudaEstadoCivil'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -905,7 +905,7 @@
   <v-card
     v-if="name === 'ayudaSexo'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -936,7 +936,7 @@
       <template #default>
         <v-card
           :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-          class="pa-3"
+          class="py-3"
           color="transparent"
           elevation="0"
         >
@@ -968,7 +968,7 @@
   <v-card
     v-if="name === 'ayudaEntidadFederativaNacimiento'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -996,7 +996,7 @@
   <v-card
     v-if="name === 'ayudaCiudadNacimiento'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1025,7 +1025,7 @@
   <v-card
     v-if="name === 'ayudaHomoclave'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1054,7 +1054,7 @@
   <v-card
     v-if="name === 'ayudaCURP'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1094,7 +1094,7 @@
   <v-card
     v-if="name === 'ayudaExtranjeroSinCurp'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1113,7 +1113,7 @@
   <v-card
     v-if="name === 'ayudaDireccion'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1132,7 +1132,7 @@
   <v-card
     v-if="name === 'ayudaPoblacion'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1151,7 +1151,7 @@
   <v-card
     v-if="name === 'ayudaEntidadFederativaDomicilio'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1170,7 +1170,7 @@
   <v-card
     v-if="name === 'ayudaCodigoPostal'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1188,7 +1188,7 @@
   <v-card
     v-if="name === 'ayudaTelefono'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1207,7 +1207,7 @@
   <v-card
     v-if="name === 'ayudaPadre'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1226,7 +1226,7 @@
   <v-card
     v-if="name === 'ayudaMadre'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1246,7 +1246,7 @@
   <v-card
     v-if="name === 'ayudaSueldoVariable'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1269,7 +1269,7 @@
       <template #default>
         <v-card
           :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-          class="pa-3"
+          class="py-3"
           color="transparent"
           elevation="0"
         >
@@ -1307,7 +1307,7 @@
       <template #default>
         <v-card
           :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-          class="pa-3"
+          class="py-3"
           color="transparent"
           elevation="0"
         >
@@ -1339,7 +1339,7 @@
   <v-card
     v-if="name === 'ayudaSueldoPromedio'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1360,7 +1360,7 @@
       <template #default>
         <v-card
           :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-          class="pa-3"
+          class="py-3"
           color="transparent"
           elevation="0"
         >
@@ -1387,7 +1387,7 @@
       <template #default>
         <v-card
           :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-          class="pa-3"
+          class="py-3"
           color="transparent"
           elevation="0"
         >
@@ -1409,7 +1409,7 @@
   <v-card
     v-if="name === 'ayudaSueldoBaseLiquidacion'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1427,7 +1427,7 @@
   <v-card
     v-if="name === 'ayudaSueldoDelAjusteAlNeto'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1447,7 +1447,7 @@
   <v-card
     v-if="name === 'ayudaBancoParaPagoElectronico'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1477,7 +1477,7 @@
   <v-card
     v-if="name === 'ayudaSucursalParaPagoElectronico'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1505,7 +1505,7 @@
   <v-card
     v-if="name === 'ayudaNumeroDeCuentaParaPagoElectronico'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1533,7 +1533,7 @@
   <v-card
     v-if="name === 'ayudaCLABEInterbancaria'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1567,7 +1567,7 @@
       <template #default>
         <v-card
           :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-          class="pa-3"
+          class="py-3"
           color="transparent"
           elevation="0"
         >
@@ -1612,7 +1612,7 @@
   <v-card
     v-if="name === 'ayudaSueldoReal'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
@@ -1642,7 +1642,7 @@
   <v-card
     v-if="name === 'ayudaSueldoIMSSGape'"
     :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
-    class="pa-3"
+    class="py-3"
     color="transparent"
     elevation="0"
   >
