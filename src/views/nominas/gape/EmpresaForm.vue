@@ -722,6 +722,7 @@
                     <v-col cols="12">
                       <bec-autocomplete
                         v-model="dataModel.id_empresa_database"
+                        :clearable="false"
                         :disabled="btnDisabled.compEmpresa"
                         :item-subtitle="(item) => `${item.nombre_base}`"
                         :item-title="'nombre_empresa'"
@@ -777,7 +778,7 @@
                         :rules="
                           btnDisabled.compCorreo
                             ? []
-                            : [validationRules.required, validationRules.emailIfNotEmpty]
+                            : [validationRules.emailIfNotEmpty]
                         "
                       >
                         <template #tooltip>
@@ -785,7 +786,23 @@
                         </template>
                       </bec-text-field>
                     </v-col>
-                    <v-col cols="12" lg="6" md="12">
+                    <v-col cols="12">
+                      <bec-select
+                        v-model="dataModel.formula_con_falta"
+                        :item-title="'concepto'"
+                        :item-value="'codigo'"
+                        :items="itemsVerificacion"
+                        :multiple="false"
+                        :label="'¿Considerar faltas en fórmulas de cálculo? *'"
+                        :placeholder="'Seleccione'"
+                        :prepend-icon="'mdi-math-integral'"
+                      >
+                        <template #tooltip>
+                          <empresa-tooltips name="ayudaFormulaConFalta" />
+                        </template>
+                      </bec-select>
+                    </v-col>
+                    <!--v-col cols="12" lg="6" md="12">
                       <bec-text-field
                         v-model="dataModel.mascara_codigo"
                         :clearable="true"
@@ -812,8 +829,8 @@
                           <empresa-tooltips name="ayudaMascara" />
                         </template>
                       </bec-text-field>
-                    </v-col>
-                    <v-col cols="12" lg="6" md="12">
+                    </v-col-->
+                    <!--v-col cols="12" lg="6" md="12">
                       <bec-text-field
                         v-model="dataModel.codigo_inicial"
                         :clearable="true"
@@ -843,8 +860,8 @@
                           <empresa-tooltips name="ayudaCodigoInicial" />
                         </template>
                       </bec-text-field>
-                    </v-col>
-                    <v-col cols="12" lg="6" md="12">
+                    </v-col-->
+                    <!--v-col cols="12" lg="6" md="12">
                       <bec-text-field
                         v-model="dataModel.codigo_actual"
                         :disabled="btnDisabled.compNoFiscCodigoActual"
@@ -855,7 +872,7 @@
                           <empresa-tooltips name="ayudaCodigoActual" />
                         </template>
                       </bec-text-field>
-                    </v-col>
+                    </v-col-->
                   </v-row>
                 </v-tabs-window-item>
               </v-form>
@@ -1633,8 +1650,8 @@ export default defineComponent({
         btnDisabled.value.tabBancos = false
 
         btnDisabled.value.crearRegistro = false
-        btnDisabled.value.compNoFiscMascara = true
-        btnDisabled.value.compNoFiscCodigoInicial = true
+        //btnDisabled.value.compNoFiscMascara = true
+        //btnDisabled.value.compNoFiscCodigoInicial = true
 
         await fetchDatosEmpresasNominaPorClienteId(props.id)
       }
@@ -2236,13 +2253,13 @@ export default defineComponent({
       }
     })
 
-    watch(
+    /*watch(
       () => dataModel.value.mascara_codigo,
       (nuevaMascara) => {
         if (props.id !== undefined && props.id !== null) return
         validarMascaraYActualizarCampos(nuevaMascara)
       },
-    )
+    )*/
 
     // 7. Lifecycle hooks (onMounted, mounted)
     // 8. Functions (fetch, metodos, async)
@@ -2294,8 +2311,8 @@ export default defineComponent({
 
       // 🧩 Campos NO fiscales
       // Se habilitan si existe al menos un esquema NO CONTPAQi
-      btnDisabled.value.compNoFiscMascara = !tieneNoContpaqi
-      btnDisabled.value.compNoFiscCodigoInicial = !tieneNoContpaqi
+      //btnDisabled.value.compNoFiscMascara = !tieneNoContpaqi
+      //btnDisabled.value.compNoFiscCodigoInicial = !tieneNoContpaqi
     }
 
     // 8. Functions (fetch, metodos, async) | Datos empresa
@@ -2306,16 +2323,33 @@ export default defineComponent({
     }
 
     const buscarDatosEmpresaNomina = async (codigo: number) => {
+
       resetModelEmpresa(true)
 
-      const empresaSeleccionada = getItemsEmpresaDatabase.value.find((item) => item.id === codigo)
-      const nombreBase = empresaSeleccionada?.nombre_base ?? ''
+      await tipoPeriodoStore.tipoPeriodoPorEmpresa(buildData())
 
-      await fetchDatosEmpresasNominaPorCliente(
-        dataModel.value.id_nomina_gape_cliente,
-        codigo,
-        nombreBase,
-      )
+      if (tipoPeriodoStore.tipoPeriodo.length === 0) {
+        dialogConfirmation.onOpenDialogInformation(
+          bancoStore.responseMessage || 'La empresa seleccionada no tiene periodos registrados. Por favor, registre al menos un periodo de su empresa dentro del sistema de CONTPAQi Nóminas para continuar.',
+          'Empresa sin periodos registrados',
+          'incorrect',
+          '#B00000',
+          1,
+        )
+
+        dataModel.value.id_empresa_database = null
+
+        return
+      } else {
+        const empresaSeleccionada = getItemsEmpresaDatabase.value.find((item) => item.id === codigo)
+        const nombreBase = empresaSeleccionada?.nombre_base ?? ''
+
+        await fetchDatosEmpresasNominaPorCliente(
+          dataModel.value.id_nomina_gape_cliente,
+          codigo,
+          nombreBase,
+        )
+      }
     }
 
     const fetchDatosEmpresasNominaPorCliente = async (
@@ -2329,8 +2363,8 @@ export default defineComponent({
         if (empresaStore.empresa && !Array.isArray(empresaStore.empresa)) {
           dataModel.value.razon_social = empresaStore.empresa.razon_social ?? ''
           dataModel.value.rfc = empresaStore.empresa.rfc ?? ''
-          dataModel.value.correo_notificacion = empresaStore.empresa.correo_notificacion ?? ''
-          dataModel.value.codigo_interno = empresaStore.empresa.codigo_interno ?? ''
+          //dataModel.value.correo_notificacion = empresaStore.empresa.correo_notificacion ?? ''
+          //dataModel.value.codigo_interno = empresaStore.empresa.codigo_interno ?? ''
         }
       } catch (error) {
         console.error('Error al cargar datps catálogos por empresa:', error)
@@ -2354,6 +2388,8 @@ export default defineComponent({
 
         // 1️⃣ Empresa
         setEmpresa(data.empresa)
+
+        fetchEmpresasNominaPorClienteAsignadas(data.empresa.id_nomina_gape_cliente)
 
         await conceptoStore.catalogoConceptoPrevision(buildData())
 
@@ -2535,6 +2571,11 @@ export default defineComponent({
       { concepto: 'No', codigo: 'no' },
     ])
 
+    const itemsVerificacion = ref([
+      { concepto: 'Si', codigo: true },
+      { concepto: 'No', codigo: false },
+    ])
+
     const modelSeleccionadosCombinacionParametrizacion = ref<TableCombinacionParametrizacion[]>([])
 
     // 5. Computed
@@ -2585,7 +2626,6 @@ export default defineComponent({
     // 7. Lifecycle hooks (onMounted, mounted)
     // 8. Functions (fetch, metodos, async)
     async function onClickTabParametrizacion() {
-
       // Si tiene al menos una de cotpaq va a buscar a la base de contpaq los periodos
 
       await tipoPeriodoStore.tipoPeriodoPorEmpresa(buildData())
@@ -2632,6 +2672,7 @@ export default defineComponent({
     function getDefaultBaseFee2(): string | null {
       return itemsBaseFEE.value.length ? itemsBaseFEE.value[0].codigo : null
     }
+
     const combinacionesConContpaqi = computed<Record<string, boolean>>(() => {
       const map: Record<string, boolean> = {}
 
@@ -2892,6 +2933,20 @@ export default defineComponent({
 
       if (!form || !form.valid) return
 
+      const hayParametrizacionValida = parametrizacionPayload.some((p) => {
+        return (
+          (p.combinacion_key && p.combinacion_key.trim() !== '') ||
+          p.id_periodo !== null ||
+          p.fee !== null ||
+          (p.previsiones && p.previsiones.length > 0)
+        )
+      })
+
+      console.log(parametrizacionPayload)
+      console.log(hayParametrizacionValida)
+
+      if (!hayParametrizacionValida) return
+
       try {
         loading.value = true
 
@@ -3007,6 +3062,7 @@ export default defineComponent({
       vconPrincipalRef,
       vrowBarraDeAccionesRef,
       vrowFiltrosRef,
+      itemsVerificacion,
     }
   },
 })

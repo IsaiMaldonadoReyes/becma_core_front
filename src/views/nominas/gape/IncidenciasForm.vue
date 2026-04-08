@@ -311,6 +311,18 @@
       </v-row>
     </v-row>
 
+    <v-overlay :model-value="loading" persistent class="align-center justify-center">
+      <v-card width="420" class="pa-6 text-center rounded-xl">
+        <v-icon size="40" color="primary">mdi-file-excel</v-icon>
+        <div class="text-h6 mt-2">Procesando formato</div>
+        <div class="text-caption mb-4 text-medium-emphasis">
+          Estamos procesando la información.
+          Este proceso puede tardar dependiendo del volumen de datos.
+        </div>
+        <v-progress-linear indeterminate color="primary" height="6" rounded />
+      </v-card>
+    </v-overlay>
+
     <!-- vrowFiltrosRef -->
 
     <incidencia-modal-log

@@ -45,7 +45,7 @@ export default defineComponent({
     dialogColor: { type: String, default: 'info' },
     dialogContent: { type: String, default: '' },
     dialogIcon: { type: String, default: 'info' },
-    dialogSpeedIcon: { type: Number, default: 0 },
+    dialogSpeedIcon: { type: Number, default: 0.5 },
     dialogTitle: { type: String, default: '' },
     dialogView: { type: Boolean, required: true },
   },

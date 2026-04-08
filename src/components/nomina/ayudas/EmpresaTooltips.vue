@@ -283,6 +283,45 @@
     </v-row>
   </v-card>
 
+  <!-- ayudaFormulaConFalta -->
+  <v-card
+    v-if="name === 'ayudaFormulaConFalta'"
+    :max-width="$vuetify.display.smAndDown ? '90vw' : '40vw'"
+    class="py-3"
+    color="transparent"
+    elevation="0"
+  >
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon icon="mdi-information-slab-circle-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Instrucción:</span> indique si se considerarán las faltas de asistencia en las formulas para los cálculos de la prenómina.
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-50 my-2" />
+    <v-row>
+      <v-col cols="1" class="d-flex align-center justify-center">
+        <v-icon class="mr-1" color="white" icon="mdi-lightbulb-on-outline" />
+      </v-col>
+      <v-col cols="11">
+        <span style="font-weight: bold; color: #2a73c5">Nota:</span>
+        Al guardar la empresa, se generarán automáticamente las fórmulas dentro del sistema CONTPAQi Nóminas.
+        Al seleccionar esta opción, se ejecutará el siguiente proceso:<br />
+        <ul style="margin-top: 8px; padding-left: 20px">
+          <li>
+            <b style="color: #2a73c5"><i>Si:</i></b>
+            las fórmulas se generarán considerando las faltas de asistencia
+          </li>
+          <li>
+            <b style="color: #2a73c5"><i>No:</i></b>
+            las fórmulas se generarán sin considerar las faltas de asistencia
+          </li>
+        </ul>
+      </v-col>
+    </v-row>
+  </v-card>
+
   <!-- ayudaCodigoInterno -->
   <v-card
     v-if="name === 'ayudaCodigoInterno'"
@@ -658,6 +697,7 @@ export default defineComponent({
         | 'ayudaFiltroBuscador'
         | 'ayudaBtnAddRowCombinacionEsquema'
         | 'ayudaBtnHabilitarTodo'
+        | 'ayudaFormulaConFalta'
         | string
       >,
       required: true,
