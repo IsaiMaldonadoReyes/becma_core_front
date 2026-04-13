@@ -27,6 +27,7 @@
               min-width="40px"
               width="40px"
               :disabled="btnDisabled.importarRegistros"
+              @click="onDecisionDownload"
             >
               <v-icon color="white" icon="mdi-upload" size="24px" />
             </v-btn>
@@ -48,6 +49,7 @@
               min-width="40px"
               width="40px"
               :disabled="btnDisabled.descargarFormato"
+              @click="onOpenModalExportFormEmpleados"
             >
               <v-icon color="white" icon="mdi-download" size="24px" />
             </v-btn>
@@ -445,6 +447,20 @@
         </v-card>
       </v-col>
     </v-row>
+    <empleado-modal-export-form
+      :dialog-title="modalExportFormEmpleados.titulo"
+      :dialog-view="modalExportFormEmpleados.dialog"
+      @close="onCloseModalExportFormEmpleados"
+      @cancel="onCloseModalExportFormEmpleados"
+    />
+    <empleado-modal-import-form
+      :dialog-event="modalImportFormEmpleados.evento"
+      :dialog-items="modalImportFormEmpleados.items"
+      :dialog-title="modalImportFormEmpleados.titulo"
+      :dialog-view="modalImportFormEmpleados.dialog"
+      @close="onCloseModalImportFormEmpleados"
+      @cancel="onCloseModalImportFormEmpleados"
+    />
   </v-container>
 </template>
 
@@ -460,6 +476,9 @@ import { useEmpleadoListDisableRules } from '@/composables/nomina/gape'
 
 // import components
 import { BecSelect, BecAutocomplete, BecTextField } from '@/components/core/becmaComponents'
+
+import EmpleadoModalExportForm from '@/views/nominas/gape/EmpleadoModalExportForm.vue'
+import EmpleadoModalImportForm from '@/views/nominas/gape/EmpleadoModalImportForm.vue'
 
 // import interfaces
 import type { EmpleadoModel } from '@/interfaces/nomina/gape'
@@ -478,7 +497,14 @@ import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'EmpleadoList',
-  components: { BecTextField, BecSelect, BecAutocomplete, EmpleadoListTooltips },
+  components: {
+    BecTextField,
+    BecSelect,
+    BecAutocomplete,
+    EmpleadoListTooltips,
+    EmpleadoModalExportForm,
+    EmpleadoModalImportForm,
+  },
 
   setup() {
     // 1. Imports
@@ -602,6 +628,9 @@ export default defineComponent({
 
     const vdtbPrincipalPaginaActual = ref(1)
 
+    const loading = ref(false)
+    const loadingUpload = ref(false)
+
     // 5. Computed | vrowTableRef
     const getVdtPrincipalTotalPaginas = computed(() =>
       Math.ceil(vdtbPrincipalItems.value.length / vdtbPrincipalItemsPorPagina.value),
@@ -636,6 +665,26 @@ export default defineComponent({
 
     const itemsClientesNomina = computed(() => clienteStore.clientes)
     const itemsEmpresaDatabase = computed(() => empresasStore.empresasList)
+
+    const modalExportFormEmpleados = ref<{
+      dialog: boolean
+      titulo: string
+    }>({
+      dialog: false,
+      titulo: '',
+    })
+
+    const modalImportFormEmpleados = ref<{
+      dialog: boolean
+      evento: string
+      items: []
+      titulo: string
+    }>({
+      dialog: false,
+      evento: '',
+      items: [],
+      titulo: '',
+    })
 
     const esquemaSeleccionado = computed(() => {
       const id = dataModel.value.id_nomina_gape_esquema
@@ -714,6 +763,91 @@ export default defineComponent({
       }
     }
 
+    const onOpenModalExportFormEmpleados = async () => {
+      modalExportFormEmpleados.value.dialog = true
+      modalExportFormEmpleados.value.titulo = 'Formato de importación'
+    }
+
+    const onCloseModalExportFormEmpleados = async () => {
+      modalExportFormEmpleados.value.dialog = false
+    }
+
+    const onDecisionDownload = async () => {
+      let mensaje = ''
+      let titulo = ''
+
+      // Mostrar ventana de importación
+      // Validar los campos, cliente, tipo de empresa, EMPRESA
+
+      titulo = 'Importación de empleados'
+      mensaje = '¿Está seguro que desea cargar los empleados?'
+
+      dialogConfirmation.onOpenDialogConfirmation(
+        mensaje,
+        validateUpload, // << callback directo
+        [],
+        titulo,
+        'alert',
+      )
+    }
+
+    const validateUpload = async () => {
+      modalImportFormEmpleados.value.dialog = true
+      modalImportFormEmpleados.value.titulo = 'Importación de excel'
+
+      dialogConfirmation.onCloseDialogConfirmation()
+
+      try {
+        loadingUpload.value = true
+
+        let titulo = 'Carga de empleados'
+        let mensaje =
+          'Los datos se guardaron de forma exitosa, revisar en el sistema de nóminas para confirmar.'
+
+        const data = buildFormData()
+        const formData = objectToFormData(data)
+
+        // 3. Agregas el archivo
+
+        const archivo = dataModel.value.archivo
+
+        if (archivo instanceof File) {
+          // v-file-upload devuelve un solo File
+          formData.append('file', archivo)
+        } else if (Array.isArray(archivo) && archivo.length > 0) {
+          // v-file-upload devuelve File[]
+          formData.append('file', archivo[0])
+        }
+
+        await incidenciaStore.uploadIncidencias(formData)
+
+        dialogConfirmation.onOpenDialogInformation(mensaje, titulo, 'correct', '#438701', 2)
+      } catch (error: any) {
+        if (error.type === 'validation') {
+          modalLogIncidencia.value = {
+            dialog: true,
+            evento: '',
+            items: error.errors,
+            titulo: 'hola',
+          }
+        } else {
+          dialogConfirmation.onOpenDialogInformation(
+            'Ocurrió un error inesperado al guardar.',
+            'Error',
+            'incorrect',
+            '#B00000',
+            2,
+          )
+        }
+      } finally {
+        loadingUpload.value = false
+      }
+    }
+
+    const onCloseModalImportFormEmpleados = async () => {
+      modalImportFormEmpleados.value.dialog = false
+    }
+
     const buildData = (extras: any = {}) => {
       return {
         idCliente: dataModel.value.id_nomina_gape_cliente,
@@ -738,6 +872,12 @@ export default defineComponent({
       itemsClientesNomina,
       itemsEmpresaDatabase,
       mergeProps,
+      modalExportFormEmpleados,
+      modalImportFormEmpleados,
+      onCloseModalExportFormEmpleados,
+      onCloseModalImportFormEmpleados,
+      onDecisionDownload,
+      onOpenModalExportFormEmpleados,
       smAndDown,
       vbrePrincipalItems,
       vbtnActivarRegistro,

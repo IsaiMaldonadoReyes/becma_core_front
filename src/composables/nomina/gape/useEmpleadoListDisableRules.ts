@@ -18,8 +18,8 @@ export const useEmpleadoListDisableRules = (dataModel: any) => {
   // 4️⃣ Computed final btnDisabled
   //
   const btnDisabled = computed(() => ({
-    importarRegistros: true,
-    descargarFormato: true,
+    importarRegistros: false,
+    descargarFormato: false,
     eliminarRegistros: true,
     guardarCambios: true,
     activarRegistro: true,
